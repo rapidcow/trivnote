@@ -1,0 +1,22 @@
+
+TRIVNOTE is a trivial note-taking application.
+It is trivial as in "requiring minimal effort"...
+
+JDK 17 is the plan, eh. :x
+
+Despite the self-deprecating naming, there are
+still a handful of subsystems involved:
+
+     org.rapidcow.trivnote.expr
+           Serialization stuff
+     org.rapidcow.trivnote.flow
+           Document flow model
+     org.rapidcow.trivnote.draw
+           Ink drawing model
+
+     org.rapidcow.android.trivnote
+           Scary stuff
+
+The first three subsystems should be compile-
+able without Android SDK.
+
