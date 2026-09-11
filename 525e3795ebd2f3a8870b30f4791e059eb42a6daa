@@ -1,0 +1,35 @@
+misattributed
+
+$ ~/tree/utils/diff-range rpi/master@{1} 4 @
+ORIG = b7367a74c0e062f93f1d1757d0686c23cfe8c82f (rpi/master@{1})
+HEAD = 6ce586830e9dcc36a6fe1d700939e7195d7fef31 (@)
+ 0:  b7367a7 =  0:  6ce5868 fixup: Trim down AI-ism text
+ 1:  e8ea5b6 =  1:  d705e03 explain the insane android boilerplate source tree
+ 2:  d2e9aa6 =  2:  c64894d Init android/ on Android Studio (with adjustments)
+ 3:  5bd8f45 =  3:  0ad2a16 Merge branch 'master' of nucbox:my/project/trivnote
+ 4:  1446d50 =  4:  f6c0938 apple-notes-drawing*: Recover per-point attributes
+ 5:  cb1f709 =  5:  02fe64d Examine PKStrokePoint (of PencilKit.framework)
+ 6:  5b2d842 =  6:  68dbb88 Find out who populates sFieldSizes/sFieldOffsets
+ 7:  b1942b5 =  7:  55cd26b Trace initWithArchive:sortedUUIDs:inks:transientArchiveDictionary:
+ 8:  d5ef1de =  8:  a5db695 Divorce legacy drawing interface from our interest
+ 9:  85d8054 =  9:  f962206 go up further
+10:  61694da = 10:  0c47a4a Examine legacy_drawing::Command::readFrom
+11:  15cc558 ! 11:  ad27abe Examine initWithArchive:loadNonInkingStrokes:error:
+--- a/15cc558955edd51806872b5110046c8cc798953c	2026-09-10 21:40:24.000000000 +0000
++++ b/ad27abe9972fa113efea1ec232a1b9c92f1e8141	2026-09-10 21:40:24.000000000 +0000
+@@ -1,7 +1,7 @@
+ tree ba7a1739ee1de519a422ede697ade3c24989c1ea
+ parent [12]
+-author Ethan Meng <rapidcow@NucBox-G3.local> 1789076170 +0800
++author Claude Sonnet 5 <claude@anthropic.com> 1789076170 +0800
+ committer Ethan Meng <rapidcow@NucBox-G3.local> 1789076424 +0800
+ 
+ Examine initWithArchive:loadNonInkingStrokes:error:
+ 
+12:  8f6754e = 12:  8f6754e Examine initWithLegacyArchive, the caller
+13:  7491998 = 13:  7491998 Merge branch 'master' of cooper:my/project/trivnote
+14:  bd5156e = 14:  bd5156e pad out the markdown table
+15:  6a413d2 = 15:  6a413d2 Refactor header-printing functions in version gatherer
+16:  5c614d8 = 16:  5c614d8 Examine readPointFromLegacyArchive from PencilKit.framework
+17:  50e530a = 17:  50e530a Collect system information
+18:  6c1afcc = 18:  6c1afcc Reverse-engineer the envelope from Notes.app
