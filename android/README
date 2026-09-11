@@ -1,0 +1,9 @@
+This is the Android application.  I think I
+will aim to support down to Android SDK 23,
+between Android 6.0, "Marshmallow" (2015-16)
+and Android 7.0, "Nougat" (2016-17).  This is
+so that it can be used jointly with the "blob"
+emojis before it was replaced in Android 8.0.
+
+I'm not sure if that's doable, or if I could
+get a hold of such a device.  But we'll see...

@@ -12,6 +12,8 @@ plugins {
     `java-library`
 }
 
+group = "org.rapidcow.trivnote"
+
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
