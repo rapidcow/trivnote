@@ -1,0 +1,147 @@
+android/ — topology
+====================
+
+This is a SEPARATE, self-contained Gradle build from ../java/ (which has
+its own gradlew and its own settings.gradle.kts). The two are linked by
+a Gradle *composite build*: settings.gradle.kts here does
+
+    includeBuild("../java")
+
+which pulls java/'s subprojects (libdraw, libexpr, libflow) in as if they
+were local modules, without publishing jars anywhere. app/build.gradle.kts
+then just says implementation("org.rapidcow.trivnote:libexpr") etc. and
+Gradle substitutes in the real ../java/libexpr project at build time
+(this only works because each java/*/build.gradle.kts declares
+group = "org.rapidcow.trivnote" — that's the coordinate Gradle matches on).
+
+android/
+├── gradlew, gradlew.bat          Gradle wrapper launcher scripts.
+├── gradle/
+│   ├── wrapper/
+│   │   ├── gradle-wrapper.jar
+│   │   └── gradle-wrapper.properties   Pins the exact Gradle version
+│   │                                   (currently 9.6.0) this project
+│   │                                   builds with, so every machine
+│   │                                   uses the same Gradle regardless
+│   │                                   of what's installed globally.
+│   ├── libs.versions.toml        Version catalog: single source of
+│   │                              truth for AGP / Kotlin / Compose /
+│   │                              AndroidX dependency versions, referenced
+│   │                              from build.gradle.kts files as
+│   │                              `libs.foo` / `libs.plugins.bar`.
+│   └── gradle-daemon-jvm.properties   Pins the JVM toolchain (currently
+│                                       25) the Gradle *daemon* process
+│                                       itself runs on. Auto-provisioned
+│                                       via the foojay-resolver plugin
+│                                       declared in settings.gradle.kts
+│                                       if not already installed locally.
+│
+├── settings.gradle.kts           rootProject.name = "trivnote";
+│                                  include(":app"); includeBuild("../java")
+│                                  — the composite-build link described above.
+│
+├── build.gradle.kts              Root/top-level build file: just declares
+│                                  which plugins (android-application,
+│                                  kotlin-compose) are available to
+│                                  subprojects, applied per-module below.
+│
+├── gradle.properties              Project-wide Gradle settings (JVM args,
+│                                   AndroidX flags, etc). Checked into git —
+│                                   shared identically by every developer.
+│                                   NOT the place for per-machine settings
+│                                   like a proxy (see note at bottom).
+│
+├── local.properties               *** what you asked to be reminded of ***
+│                                   Per-machine, per-developer settings that
+│                                   must NEVER be committed (it's in
+│                                   .gitignore, listed twice even).
+│                                   Right now it holds exactly one line:
+│                                       sdk.dir=/opt/android-sdk
+│                                   telling Gradle/AGP where the Android
+│                                   SDK lives ON THIS MACHINE. Every
+│                                   machine can have the SDK in a
+│                                   different place (Android Studio
+│                                   normally writes this file for you
+│                                   automatically the first time you open
+│                                   the project) — that's the whole reason
+│                                   it's gitignored instead of hardcoded
+│                                   into settings.gradle.kts: your laptop,
+│                                   this box, and anyone else's checkout
+│                                   can each point sdk.dir somewhere
+│                                   different without touching tracked files.
+│
+├── README                         Hand-written (not wizard boilerplate) —
+│                                   your note on targeting minSdk 23 for
+│                                   Marshmallow/Nougat-era "blob" emoji.
+│
+├── .gitignore                     Standard Android ignores: build/,
+│                                   .gradle/, local.properties (x2,
+│                                   harmlessly redundant), *.iml, plus a
+│                                   partial .idea/ ignore (shares
+│                                   project-level IDE config like vcs.xml,
+│                                   misc.xml; ignores per-user state like
+│                                   workspace.xml).
+│
+└── app/                           The actual Android application module.
+    ├── build.gradle.kts           namespace = org.rapidcow.android.trivnote
+    │                              applicationId = org.rapidcow.trivnote
+    │                              minSdk 23 / targetSdk 37 / compileSdk 37
+    │                              Depends on the three java/ libs (via
+    │                              the composite build) plus Compose/
+    │                              AndroidX libraries from the catalog.
+    ├── .gitignore                 Just ignores this module's /build.
+    └── src/
+        ├── main/
+        │   ├── AndroidManifest.xml     Single launcher Activity
+        │   │                            (.MainActivity).
+        │   ├── java/org/rapidcow/android/trivnote/
+        │   │   ├── MainActivity.kt     Stock "Hello Android!" Compose
+        │   │   │                        Scaffold — not yet customized.
+        │   │   └── ui/theme/
+        │   │       ├── Color.kt
+        │   │       ├── Theme.kt
+        │   │       └── Type.kt         Stock Compose Material3 theme.
+        │   ├── res/                    Standard Android resources: launcher
+        │   │   │                        icons at every density + adaptive
+        │   │   │                        icon XML, background/foreground
+        │   │   │                        drawables, values/ (colors,
+        │   │   │                        strings, themes), xml/ (Android
+        │   │   │                        12+ backup + data-extraction rules).
+        │   │   └── ...
+        │   └── keepRules/rules.keep    R8/ProGuard keep rules.
+        ├── test/java/.../ExampleUnitTest.kt          Stock JVM unit test.
+        └── androidTest/java/.../ExampleInstrumentedTest.kt
+                                                        Stock on-device test.
+
+Not shown above (generated/local, all gitignored):
+  .gradle/, build/, app/build/, .idea/*, .kotlin/  — build caches, compiled
+  output, IDE metadata, incremental-compiler state. Safe to delete anytime;
+  Gradle/Android Studio regenerate them.
+
+
+Proxy note (relevant if building from a machine that needs one)
+-----------------------------------------------------------------
+Gradle does NOT read the HTTP_PROXY / HTTPS_PROXY environment variables —
+it only honors JVM system properties. The systemProp.* lines you found in
+
+    ~/.gradle/gradle.properties        (note: ~/.gradle, i.e. the Gradle
+                                         USER home directory — NOT this
+                                         project's own ./gradle.properties)
+
+are exactly that mechanism:
+
+    systemProp.http.proxyHost=127.0.0.1
+    systemProp.http.proxyPort=7890
+    systemProp.https.proxyHost=127.0.0.1
+    systemProp.https.proxyPort=7890
+
+Because it lives in the Gradle *user* home (~/.gradle/gradle.properties),
+not in this repo's ./gradle.properties, it applies to every Gradle project
+you build on that machine and never gets committed/shared — which is the
+right place for it: a proxy setting is a fact about your network, not
+about this project, so it shouldn't end up in git and forced onto every
+other machine (like this one) that doesn't need it.
+
+If a proxy ever needs credentials, the equivalent keys are
+systemProp.http.proxyUser / systemProp.http.proxyPassword (and https.*
+variants), and systemProp.http.nonProxyHosts=host1|host2 to exclude hosts.
