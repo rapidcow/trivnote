@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * A symbol is an interned atom.  It is also
  * unquoted in wire s-expression representation.
  */
-public final class Symbol extends Atom
+public final class Symbol extends Scalar
 {
 	/**
 	 * Global symbol map.
