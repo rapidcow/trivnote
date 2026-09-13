@@ -3,18 +3,15 @@ package org.rapidcow.trivnote.libexpr;
 import java.util.Iterator;
 
 /**
- * A cons cell is a pair of datums.
+ * A cons cell is a pair of datums.  A chain of
+ * cons cells recursively is considered a list.
  */
 public final class Cons implements Datum, Iterable<Datum>
 {
-	/**
-	 * First half of the pair.
-	 */
+	/** Former half of the pair. */
 	final Datum car;
 
-	/**
-	 * Second half of the pair.
-	 */
+	/** Latter half of the pair. */
 	final Datum cdr;
 
 	public Cons(Datum car, Datum cdr)

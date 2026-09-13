@@ -3,13 +3,16 @@ package org.rapidcow.trivnote.libexpr;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/**
+ * List iterator.
+ */
 public final class Walk implements Iterator<Datum>
 {
 	private Datum tail;
 
-	public Walk(Datum tail)
+	public Walk(Datum node)
 	{
-		this.tail = tail;
+		this.tail = node;
 	}
 
 	@Override public Datum next()
@@ -26,6 +29,11 @@ public final class Walk implements Iterator<Datum>
 		return tail instanceof Cons;
 	}
 
+	/**
+	 * The cdr of the current iteration.
+	 * At the end of iteration, this is nil for a proper
+	 * list and a non-nil atom for an improper list.
+	 */
 	public Datum tail()
 	{
 		return tail;
