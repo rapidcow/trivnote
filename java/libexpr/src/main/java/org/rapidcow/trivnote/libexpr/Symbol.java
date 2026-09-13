@@ -1,4 +1,4 @@
-package org.rapidcow.trivnote.expr;
+package org.rapidcow.trivnote.libexpr;
 
 sealed interface Symbol
 	permits Symbol.Atom, Symbol.Cons

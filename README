@@ -7,11 +7,11 @@ JDK 17 is the plan, eh. :x
 Despite the self-deprecating naming, there are
 still a handful of subsystems involved:
 
-     org.rapidcow.trivnote.expr
+     org.rapidcow.trivnote.libexpr
            Serialization stuff
-     org.rapidcow.trivnote.flow
+     org.rapidcow.trivnote.libflow
            Document flow model
-     org.rapidcow.trivnote.draw
+     org.rapidcow.trivnote.libdraw
            Ink drawing model
 
      org.rapidcow.android.trivnote

@@ -1,4 +1,4 @@
-package org.rapidcow.trivnote.expr;
+package org.rapidcow.trivnote.libexpr;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
