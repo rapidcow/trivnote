@@ -1,7 +1,6 @@
 package org.rapidcow.trivnote.libexpr;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -23,13 +22,11 @@ public final class Symbol extends Atom
 
 	public static Symbol of(String value)
 	{
-		try {
-			return pool.get(value);
-		}
-		catch (NoSuchElementException e) {
-			Symbol atom = new Symbol(value);
+		Symbol atom = pool.get(value);
+		if (atom == null) {
+			atom = new Symbol(value);
 			pool.put(value, atom);
-			return atom;
 		}
+		return atom;
 	}
 }
