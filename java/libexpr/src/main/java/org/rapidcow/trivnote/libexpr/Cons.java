@@ -10,12 +10,12 @@ public final class Cons implements Datum, Iterable<Datum>
 	/**
 	 * First half of the pair.
 	 */
-	Datum car;
+	final Datum car;
 
 	/**
 	 * Second half of the pair.
 	 */
-	Datum cdr;
+	final Datum cdr;
 
 	public Cons(Datum car, Datum cdr)
 	{
