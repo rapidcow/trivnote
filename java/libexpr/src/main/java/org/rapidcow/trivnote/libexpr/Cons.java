@@ -30,7 +30,7 @@ public final class Cons implements Datum, Iterable<Datum>
 
 	public Datum cdr()
 	{
-		return car;
+		return cdr;
 	}
 
 	@Override public Iterator<Datum> iterator()
