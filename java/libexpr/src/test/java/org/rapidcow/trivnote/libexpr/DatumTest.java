@@ -17,7 +17,7 @@ public class DatumTest
 		/*
 		 * N.B. JUnit puts "expect" before "actual"
 		 */
-		assertEquals(true, (car = new Atom()).isAtom());
+		assertEquals(true, (car = new Scalar("hi")).isAtom());
 		assertEquals(true, (cdr = Nil.INSTANCE).isAtom());
 		assertEquals(false, (list = new Cons(car, cdr)).isAtom());
 
