@@ -21,6 +21,8 @@ public class DatumTest
 		assertEquals(true, (cdr = Nil.INSTANCE).isAtom());
 		assertEquals(false, (list = new Cons(car, cdr)).isAtom());
 
+		assertEquals("Scalar[value=hi]", car.toString());
+
 		here = new Walk(list);
 		assertEquals(true, here.hasNext());
 		assertEquals(car, here.next());

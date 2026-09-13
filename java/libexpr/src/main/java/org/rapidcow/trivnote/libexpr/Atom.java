@@ -18,7 +18,7 @@ public abstract sealed class Atom
 	protected Atom(String value)
 	{
 		if (value == null) {
-			String className = this.getClass().getSimpleName();
+			String className = getClass().getSimpleName();
 			throw new NullPointerException("value of a " + className + " must not be null");
 		}
 		this.value = value;
@@ -31,5 +31,11 @@ public abstract sealed class Atom
 	public String value()
 	{
 		return value;
+	}
+
+	@Override public String toString()
+	{
+		String className = getClass().getSimpleName();
+		return className + "[value=" + value + "]";
 	}
 }
