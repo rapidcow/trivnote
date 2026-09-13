@@ -1,2 +1,12 @@
 *.sw[a-p]
 .DS_Store
+
+# Eclipse-style local configs (notably generated
+# by jdtls) -- These are trivially re-derivable.
+.classpath
+.project
+.settings/
+
+# jdtls's own compiled *.class files (orthogonal to
+# Gradle's build in build/.)
+bin/
