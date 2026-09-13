@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class Symbol extends Atom
 {
 	/**
-	 * Global symbol map.
+	 * Global symbol pool.
 	 */
 	private static final Map<String, Symbol> pool
 		= new ConcurrentHashMap<>();
@@ -22,11 +22,9 @@ public final class Symbol extends Atom
 
 	public static Symbol of(String value)
 	{
-		Symbol atom = pool.get(value);
-		if (atom == null) {
-			atom = new Symbol(value);
-			pool.put(value, atom);
+		if (value == null) {
+			throw new NullPointerException("value of a Symbol must not be null");
 		}
-		return atom;
+		return pool.computeIfAbsent(value, Symbol::new);
 	}
 }
