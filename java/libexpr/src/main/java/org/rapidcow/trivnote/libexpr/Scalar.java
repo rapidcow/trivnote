@@ -1,33 +1,25 @@
 package org.rapidcow.trivnote.libexpr;
 
-public sealed class Scalar
-	implements Datum permits Symbol
+public final class Scalar extends Atom
 {
-	/* String value. */
-	final String value;
-
 	public Scalar(String value)
 	{
-		if (value == null) {
-			String className = this.getClass().getSimpleName();
-			throw new NullPointerException("value of a " + className + " must not be null");
-		}
-		this.value = value;
+		super(value);
 	}
 
-	public String value()
+	@Override public boolean equals(Object o)
 	{
-		return value;
-	}
-
-	@Override public boolean equals(Object that)
-	{
-		if (this == that) {
+		if (this == o) {
 			return true;
 		}
-		if (that instanceof Scalar atom) {
-			return this.value.equals(atom.value);
+		if (o instanceof Scalar atom) {
+			return value.equals(atom.value);
 		}
 		return false;
+	}
+
+	@Override public int hashCode()
+	{
+		return value.hashCode();
 	}
 }

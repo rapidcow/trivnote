@@ -2,10 +2,10 @@ package org.rapidcow.trivnote.libexpr;
 
 /**
  * A datum recursively defines an s-expression.
- * A datum is either a {@link Scalar}, a {@link Cons},
+ * A datum is either an {@link Atom}, a {@link Cons},
  * or {@link Nil}.
  */
-sealed interface Datum permits Scalar, Cons, Nil
+sealed interface Datum permits Atom, Cons, Nil
 {
 	/**
 	 * Return if this is an atom.  An atom
@@ -23,6 +23,6 @@ sealed interface Datum permits Scalar, Cons, Nil
 	 */
 	default boolean isList()
 	{
-		return !(this instanceof Scalar);
+		return !(this instanceof Atom);
 	}
 }
