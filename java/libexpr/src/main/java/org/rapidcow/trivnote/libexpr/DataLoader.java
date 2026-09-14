@@ -43,20 +43,55 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 
 	public class ParseException extends RuntimeException
 	{
-		protected String msg;
-		protected long row;
-		protected long col;
+		private final long row;
+		private final long col;
 
-		public ParseException(String msg, long row, long col)
+		public ParseException(
+			String message,
+			long lineOffset,
+			long charOffset
+		)
 		{
-			this.msg = msg;
-			this.row = row;
-			this.col = col;
+			this(message, null, lineOffset, charOffset);
+		}
+
+		public ParseException(
+			String message,
+			Throwable cause,
+			long lineOffset,
+			long charOffset
+		)
+		{
+			super(message, cause);
+			row = lineOffset;
+			col = charOffset;
 		}
 
 		@Override public String toString()
 		{
-			return "line " + (row + 1) + " char " + (col + 1) + ": " + msg;
+			return ("line " + getLineNumber() +
+				" char " + getCharNumber() +
+				": " + super.toString());
+		}
+
+		public long getLineOffset()
+		{
+			return row;
+		}
+
+		public long getLineNumber()
+		{
+			return row + 1;
+		}
+
+		public long getCharOffset()
+		{
+			return col;
+		}
+
+		public long getCharNumber()
+		{
+			return col + 1;
 		}
 	}
 
