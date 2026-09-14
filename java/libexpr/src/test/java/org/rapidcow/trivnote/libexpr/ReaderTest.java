@@ -38,7 +38,7 @@ public class ReaderTest
 
 	@Test void testReadScalar()
 	{
-		bff = new StringReader("(2.719 -0.898 \"1024\")");
+		bff = new StringReader("(2.719 -0.898 .67 -.1 \"1024\" \"abc\")");
 		rdr = new DataLoader(bff);
 		tok = rdr.next();
 		iter = new Walk(tok);
@@ -49,7 +49,10 @@ public class ReaderTest
 			List.of(
 				new Scalar("2.719"),
 				new Scalar("-0.898"),
-				new Scalar("1024")
+				new Scalar(".67"),
+				new Scalar("-.1"),
+				new Scalar("1024"),
+				new Scalar("abc")
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
 	}
