@@ -70,6 +70,22 @@ public class ReaderTest
 		assertEquals(Nil.INSTANCE, iter.tail());
 	}
 
+	@Test void testDatumComment()
+	{
+		bff = new StringReader("(#;A #;(OA deg 30) 42)");
+		rdr = new DataLoader(bff);
+		tok = rdr.next();
+		iter = new Walk(tok);
+
+		list = new ArrayList<>();
+		iter.forEachRemaining(list::add);
+		assertIterableEquals(
+			List.of(
+				new Scalar("42")
+			), list);
+		assertEquals(Nil.INSTANCE, iter.tail());
+	}
+
 	@Test void testSymbolQuote()
 	{
 		bff = new StringReader("(|foo bar| baz al|ter|na|tion|)");

@@ -187,13 +187,20 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			}
 
 			if (v == '#') {
-				if (( w = readChar() ) != -1
-					&& w == '|'
-				) {
-					skipBlockComment();
-					continue;
-				}
-				if (w != -1) {
+				if (( w = readChar() ) != -1) {
+					if (w == '|') {
+						skipBlockComment();
+						continue;
+					}
+					if (w == ';') {
+						if (readDatum(-1) == null) {
+							throw new ParseException(
+								"Expected datum following `#;'",
+								row, col
+							);
+						}
+						continue;
+					}
 					unreadChar(w);
 				}
 			}
