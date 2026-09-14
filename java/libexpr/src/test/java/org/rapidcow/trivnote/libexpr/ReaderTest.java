@@ -69,4 +69,41 @@ public class ReaderTest
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
 	}
+
+	@Test void testSymbolQuote()
+	{
+		bff = new StringReader("(|foo bar| baz)");
+		rdr = new DataLoader(bff);
+		tok = rdr.next();
+		iter = new Walk(tok);
+
+		list = new ArrayList<>();
+		iter.forEachRemaining(list::add);
+		assertIterableEquals(
+			List.of(
+				Symbol.of("foo bar"),
+				Symbol.of("baz")
+			), list);
+		assertEquals(Nil.INSTANCE, iter.tail());
+	}
+
+	@Test void testStringQuote()
+	{
+		/* ("say \"hi\"" "back\\slash" "line1\nline2") */
+		bff = new StringReader(
+			"(\"say \\\"hi\\\"\" \"back\\\\slash\" \"line1\\nline2\")");
+		rdr = new DataLoader(bff);
+		tok = rdr.next();
+		iter = new Walk(tok);
+
+		list = new ArrayList<>();
+		iter.forEachRemaining(list::add);
+		assertIterableEquals(
+			List.of(
+				new Scalar("say \"hi\""),
+				new Scalar("back\\slash"),
+				new Scalar("line1\nline2")
+			), list);
+		assertEquals(Nil.INSTANCE, iter.tail());
+	}
 }
