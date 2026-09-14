@@ -237,7 +237,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 
 			if (isPOSIXdigit(v)) {
 				sb = new StringBuilder().append((char) v);
-				if (( v = readPlain(sb) ) != -1) {
+				if (( v = readBare(sb) ) != -1) {
 					unreadChar(v);
 				}
 				return new Scalar(sb.toString());
@@ -249,7 +249,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 					sb = new StringBuilder()
 						.append((char) v)
 						.append((char) w);
-					if (( v = readPlain(sb) ) != -1) {
+					if (( v = readBare(sb) ) != -1) {
 						unreadChar(v);
 					}
 					return new Scalar(sb.toString());
@@ -304,7 +304,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		}
 	}
 
-	private int readPlain(StringBuilder sb) throws IOException
+	private int readBare(StringBuilder sb) throws IOException
 	{
 		int v;
 
@@ -375,7 +375,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 				}
 			}
 			else {
-				if (( v = readPlain(sb) ) == '|') {
+				if (( v = readBare(sb) ) == '|') {
 					bar = true;
 				}
 				else {
