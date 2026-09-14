@@ -299,6 +299,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 				sb.append((char) v);
 			}
 			else {
+				sb.append((char) v);
 				if (( v = readPlain(sb) ) == '|') {
 					bar = true;
 				} else {
