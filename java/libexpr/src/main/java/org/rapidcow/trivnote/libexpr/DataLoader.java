@@ -18,8 +18,13 @@ import java.util.NoSuchElementException;
 public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 {
 	protected final PushbackReader in;
-
+	private boolean fini = false;
+	private IOException eieio = null;
 	private Datum st = null;
+
+	private long row = 0;
+	private long col = 0;
+	private long ocl = 0;
 
 	public DataLoader(Reader file)
 	{
@@ -36,6 +41,25 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		this(file, StandardCharsets.UTF_8);
 	}
 
+	public class ParseException extends RuntimeException
+	{
+		protected String msg;
+		protected long row;
+		protected long col;
+
+		public ParseException(String msg, long row, long col)
+		{
+			this.msg = msg;
+			this.row = row;
+			this.col = col;
+		}
+
+		@Override public String toString()
+		{
+			return "line " + (row + 1) + " char " + (col + 1) + ": " + msg;
+		}
+	}
+
 	private static boolean isPOSIXspace(int v)
 	{
 		return (
@@ -46,6 +70,31 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			|| v == '\013' /* 0x0B  VT */
 			|| v == '\f'   /* 0x0C  FF */
 		);
+	}
+
+	private int readChar() throws IOException
+	{
+		int v = in.read();
+		if (v != -1) {
+			ocl = col;
+			if (v == '\n') {
+				row++;
+				col = 0;
+			}
+			else {
+				col++;
+			}
+		}
+		return v;
+	}
+
+	private void unreadChar(int v) throws IOException
+	{
+		if (v == '\n') {
+			row--;
+		}
+		col = ocl;
+		in.unread(v);
 	}
 
 	private static boolean isPOSIXdigit(int v)
@@ -60,12 +109,15 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 
 	@Override public boolean hasNext()
 	{
+		if (fini) {
+			return false;
+		}
 		if (st == null) {
 			try {
 				st = readDatum();
 			} catch (IOException e) {
-				/* XXX: nasty; maybe we should learn from java.util.Scanner */
-				throw new java.io.UncheckedIOException(e);
+				eieio = e;
+				fini = true;
 			}
 		}
 		return st != null;
@@ -80,6 +132,11 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			return s;
 		}
 		throw new NoSuchElementException();
+	}
+
+	public IOException eio()
+	{
+		return eieio;
 	}
 
 	public Datum readDatum() throws IOException
@@ -111,7 +168,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			throw new RuntimeException("unreachable");
 		}
 
-		while (( v = in.read() ) != -1) {
+		while (( v = readChar() ) != -1) {
 			if (isPOSIXspace(v)) {
 				continue;
 			}
@@ -121,7 +178,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			}
 
 			if (v == ';') {
-				while (( v = in.read() ) != -1) {
+				while (( v = readChar() ) != -1) {
 					if (v == '\n') {
 						break;
 					}
@@ -130,14 +187,14 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			}
 
 			if (v == '#') {
-				if (( w = in.read() ) != -1
+				if (( w = readChar() ) != -1
 					&& w == '|'
 				) {
 					skipBlockComment();
 					continue;
 				}
 				if (w != -1) {
-					in.unread(w);
+					unreadChar(w);
 				}
 			}
 
@@ -158,8 +215,9 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			}
 
 			if (v == ')' || v == ']' || v == '}') {
-				throw new RuntimeException(
-					"Mismatched `" + v + "'"
+				throw new ParseException(
+					"Mismatched `" + v + "'",
+					row, col
 				);
 			}
 
@@ -172,7 +230,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			if (v == '|') {
 				sb = new StringBuilder();
 				if (( v = readToken(sb, v) ) != -1) {
-					in.unread(v);
+					unreadChar(v);
 				}
 				return Symbol.of(sb.toString());
 			}
@@ -180,29 +238,30 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			if (isPOSIXdigit(v)) {
 				sb = new StringBuilder().append((char) v);
 				if (( v = readPlain(sb) ) != -1) {
-					in.unread(v);
+					unreadChar(v);
 				}
 				return new Scalar(sb.toString());
 			}
 			else if (v == '-' || v == '+') {
-				if (( w = in.read() ) != -1
+				if (( w = readChar() ) != -1
 					&& isPOSIXdigit(w)
 				) {
-					in.unread(w);
-					sb = new StringBuilder().append((char) v);
+					sb = new StringBuilder()
+						.append((char) v)
+						.append((char) w);
 					if (( v = readPlain(sb) ) != -1) {
-						in.unread(v);
+						unreadChar(v);
 					}
 					return new Scalar(sb.toString());
 				}
 				if (w != -1) {
-					in.unread(w);
+					unreadChar(w);
 				}
 			}
 
 			sb = new StringBuilder();
 			if (( v = readToken(sb, v) ) != -1) {
-				in.unread(v);
+				unreadChar(v);
 			}
 			return Symbol.of(sb.toString());
 		}
@@ -210,7 +269,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		if (bg == -1) {
 			return null;
 		} else {
-			throw new RuntimeException("Unterminated `" + (char) bg + "' list");
+			throw new ParseException("Unterminated `" + (char) bg + "' list", row, col);
 		}
 	}
 
@@ -219,27 +278,27 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		int v, w;
 		int d = 1;
 
-		while (d > 0 && ( v = in.read() ) != -1) {
+		while (d > 0 && ( v = readChar() ) != -1) {
 			if (v == '#') {
-				if (( w = in.read() ) != -1
+				if (( w = readChar() ) != -1
 					&& w == '|'
 				) {
 					d++;
 					continue;
 				}
 				if (w != -1) {
-					in.unread(w);
+					unreadChar(w);
 				}
 			}
 			else if (v == '|') {
-				if (( w = in.read() ) != -1
+				if (( w = readChar() ) != -1
 					&& w == '#'
 				) {
 					d--;
 					continue;
 				}
 				if (w != -1) {
-					in.unread(w);
+					unreadChar(w);
 				}
 			}
 		}
@@ -249,7 +308,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 	{
 		int v;
 
-		while (( v = in.read() ) != -1) {
+		while (( v = readChar() ) != -1) {
 			if (isPOSIXspace(v)) {
 				return -1;
 			}
@@ -272,13 +331,13 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 	{
 		int v, w;
 
-		while (( v = in.read() ) != -1) {
+		while (( v = readChar() ) != -1) {
 			if (v == '"') {
 				return;
 			}
 
 			if (v == '\\') {
-				if (( w = in.read() ) != -1) {
+				if (( w = readChar() ) != -1) {
 					v = w;
 				}
 			}
@@ -286,7 +345,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			sb.append((char) v);
 		}
 
-		throw new RuntimeException("Unterminated quote \"...\"");
+		throw new ParseException("Unterminated quote \"...\"", row, col);
 	}
 
 	private int readToken(StringBuilder sb, int v) throws IOException
@@ -300,7 +359,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 
 		for (;;) {
 			if (bar) {
-				if (( v = in.read() ) == -1) {
+				if (( v = readChar() ) == -1) {
 					break;
 				}
 				if (v == '|') {
@@ -308,7 +367,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 				}
 				else {
 					if (v == '\\') {
-						if (( w = in.read() ) != -1) {
+						if (( w = readChar() ) != -1) {
 							v = w;
 						}
 					}
@@ -326,7 +385,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		}
 
 		if (bar) {
-			throw new RuntimeException("Unterminated quote |...|");
+			throw new ParseException("Unterminated quote |...|", row, col);
 		}
 
 		return v;
