@@ -111,7 +111,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			dot = o;
 		}
 
-		static final  Token DOT = new Token(null, true);
+		static final Token DOT = new Token(null, true);
 	}
 
 	private static boolean isPOSIXspace(int v)
