@@ -1,9 +1,9 @@
 package org.rapidcow.trivnote.libexpr;
 
-import java.io.Writer;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.IOException;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 

@@ -1,10 +1,10 @@
 package org.rapidcow.trivnote.libexpr;
 
-import java.io.Reader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PushbackReader;
-import java.io.IOException;
+import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
