@@ -34,4 +34,22 @@ public class ReaderTest
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
 	}
+
+	@Test void testReadScalar()
+	{
+		bff = new StringReader("(2.719 -0.898 \"1024\")");
+		rdr = new DataLoader(bff);
+		tok = rdr.next();
+		iter = new Walk(tok);
+
+		list = new ArrayList<>();
+		iter.forEachRemaining(list::add);
+		assertIterableEquals(
+			List.of(
+				new Scalar("2.719"),
+				new Scalar("-0.898"),
+				new Scalar("1024")
+			), list);
+		assertEquals(Nil.INSTANCE, iter.tail());
+	}
 }
