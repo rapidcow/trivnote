@@ -181,7 +181,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			}
 			else if (v == '-' || v == '+') {
 				if (( w = in.read() ) != -1
-					&& isPOSIXdigit(v)
+					&& isPOSIXdigit(w)
 				) {
 					in.unread(w);
 					sb = new StringBuilder().append((char) v);
