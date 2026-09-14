@@ -86,6 +86,23 @@ public class ReaderTest
 		assertEquals(Nil.INSTANCE, iter.tail());
 	}
 
+	@Test void testDottedPair()
+	{
+		bff = new StringReader("(a b . c)");
+		rdr = new DataLoader(bff);
+		tok = rdr.next();
+		iter = new Walk(tok);
+
+		list = new ArrayList<>();
+		iter.forEachRemaining(list::add);
+		assertIterableEquals(
+			List.of(
+				Symbol.of("a"),
+				Symbol.of("b")
+			), list);
+		assertEquals(Symbol.of("c"), iter.tail());
+	}
+
 	@Test void testSymbolQuote()
 	{
 		bff = new StringReader("(|foo bar| baz al|ter|na|tion|)");
