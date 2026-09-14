@@ -60,6 +60,25 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		}
 	}
 
+	private static class Token
+	{
+		final Datum value;
+		final boolean dot;
+
+		Token(Datum v)
+		{
+			this(v, false);
+		}
+
+		Token(Datum v, boolean o)
+		{
+			value = v;
+			dot = o;
+		}
+
+		static final  Token DOT = new Token(null, true);
+	}
+
 	private static boolean isPOSIXspace(int v)
 	{
 		return (
@@ -141,14 +160,21 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 
 	public Datum readDatum() throws IOException
 	{
-		return readDatum(-1);
+		Token tk = readDatum(-1);
+		if (tk == null) {
+			return null;
+		}
+		if (tk.dot) {
+			throw new ParseException("Unexpected `.'", row, col);
+		}
+		return tk.value;
 	}
 
-	private Datum readDatum(int bg) throws IOException
+	private Token readDatum(int bg) throws IOException
 	{
-		int v, w, eg;
-		Cons ts;
+		int v, w, eg, sg;
 		Datum s;
+		Token tk;
 		StringBuilder sb;
 
 		switch (bg) {
@@ -175,6 +201,22 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 
 			if (v == eg) {
 				return null;
+			}
+
+			if (bg != -1 && v == '.') {
+				if (( w = readChar() ) != -1) {
+					if (isPOSIXspace(w)) {
+						return Token.DOT;
+					}
+					else if (
+						w == '(' || w == '[' || w == '{' ||
+						w == ')' || w == ']' || w == '}'
+					) {
+						unreadChar(w);
+						return Token.DOT;
+					}
+					unreadChar(w);
+				}
 			}
 
 			if (v == ';') {
@@ -207,18 +249,51 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 
 			if (v == '(' || v == '[' || v == '{') {
 				Deque<Datum> q = new ArrayDeque<>();
-				while (( s = readDatum(v) ) != null) {
-					q.push(s);
-				}
-				if (q.isEmpty()) {
-					return Nil.INSTANCE;
-				} else {
-					ts = new Cons(q.pop(), Nil.INSTANCE);
-					while (!q.isEmpty()) {
-						ts = new Cons(q.pop(), ts);
+				sg = 0;  /* stage */
+				while (( tk = readDatum(v) ) != null) {
+					if (sg == 0) {
+						if (tk.dot) {
+							if (q.isEmpty()) {
+								throw new ParseException(
+									"Unexpected `.'",
+									row, col
+								);
+							}
+							sg++;
+						} else {
+							q.push(tk.value);
+						}
 					}
-					return ts;
+					else if (sg == 1) {
+						if (tk.dot) {
+							throw new ParseException(
+								"Unexpected `.'",
+								row, col
+							);
+						}
+						q.push(tk.value);
+						sg++;
+					}
+					else {
+						throw new ParseException(
+							"Excess datum following `.'",
+							row, col
+						);
+					}
 				}
+				if (sg == 0) {
+					q.push(Nil.INSTANCE);
+				} else if (sg == 1) {
+					throw new ParseException(
+						"Missing datum following `.'",
+						row, col
+					);
+				}
+				s = q.pop();
+				while (!q.isEmpty()) {
+					s = new Cons(q.pop(), s);
+				}
+				return new Token(s);
 			}
 
 			if (v == ')' || v == ']' || v == '}') {
@@ -231,23 +306,23 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			if (v == '"') {
 				sb = new StringBuilder();
 				readQuote(sb);
-				return new Scalar(sb.toString());
+				return new Token(new Scalar(sb.toString()));
 			}
 
 			if (v == '|') {
 				sb = new StringBuilder();
-				if (( v = readToken(sb, v) ) != -1) {
+				if (( v = readWord(sb, v) ) != -1) {
 					unreadChar(v);
 				}
-				return Symbol.of(sb.toString());
+				return new Token(Symbol.of(sb.toString()));
 			}
 
 			if (isPOSIXdigit(v)) {
 				sb = new StringBuilder().append((char) v);
-				if (( v = readBare(sb) ) != -1) {
+				if (( v = readPlain(sb) ) != -1) {
 					unreadChar(v);
 				}
-				return new Scalar(sb.toString());
+				return new Token(new Scalar(sb.toString()));
 			}
 			else if (v == '-' || v == '+') {
 				if (( w = readChar() ) != -1
@@ -256,10 +331,10 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 					sb = new StringBuilder()
 						.append((char) v)
 						.append((char) w);
-					if (( v = readBare(sb) ) != -1) {
+					if (( v = readPlain(sb) ) != -1) {
 						unreadChar(v);
 					}
-					return new Scalar(sb.toString());
+					return new Token(new Scalar(sb.toString()));
 				}
 				if (w != -1) {
 					unreadChar(w);
@@ -267,10 +342,10 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			}
 
 			sb = new StringBuilder();
-			if (( v = readToken(sb, v) ) != -1) {
+			if (( v = readWord(sb, v) ) != -1) {
 				unreadChar(v);
 			}
-			return Symbol.of(sb.toString());
+			return new Token(Symbol.of(sb.toString()));
 		}
 
 		if (bg == -1) {
@@ -311,7 +386,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		}
 	}
 
-	private int readBare(StringBuilder sb) throws IOException
+	private int readPlain(StringBuilder sb) throws IOException
 	{
 		int v;
 
@@ -355,7 +430,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		throw new ParseException("Unterminated quote \"...\"", row, col);
 	}
 
-	private int readToken(StringBuilder sb, int v) throws IOException
+	private int readWord(StringBuilder sb, int v) throws IOException
 	{
 		boolean bar;
 		int w;
@@ -382,7 +457,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 				}
 			}
 			else {
-				if (( v = readBare(sb) ) == '|') {
+				if (( v = readPlain(sb) ) == '|') {
 					bar = true;
 				}
 				else {
