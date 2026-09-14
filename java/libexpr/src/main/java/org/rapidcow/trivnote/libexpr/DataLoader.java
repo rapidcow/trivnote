@@ -62,7 +62,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 	{
 		if (st == null) {
 			try {
-				st = readDatum(-1);
+				st = readDatum();
 			} catch (IOException e) {
 				/* XXX: nasty; maybe we should learn from java.util.Scanner */
 				throw new java.io.UncheckedIOException(e);
@@ -80,6 +80,11 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			return s;
 		}
 		throw new NoSuchElementException();
+	}
+
+	public Datum readDatum() throws IOException
+	{
+		return readDatum(-1);
 	}
 
 	private Datum readDatum(int bg) throws IOException
