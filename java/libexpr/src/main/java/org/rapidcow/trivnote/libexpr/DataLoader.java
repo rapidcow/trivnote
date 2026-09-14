@@ -286,31 +286,39 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 
 	private int readToken(StringBuilder sb, int v) throws IOException
 	{
-		boolean bar = (v == '|');
+		boolean bar;
 		int w;
 
-		do {
+		if (!( bar = (v == '|') )) {
+			sb.append((char) v);
+		}
+
+		for (;;) {
 			if (bar) {
+				if (( v = in.read() ) == -1) {
+					break;
+				}
 				if (v == '|') {
 					bar = false;
 				}
-
-				else if (v == '\\') {
-					if (( w = in.read() ) != -1) {
-						v = w;
+				else {
+					if (v == '\\') {
+						if (( w = in.read() ) != -1) {
+							v = w;
+						}
 					}
+					sb.append((char) v);
 				}
-				sb.append((char) v);
 			}
 			else {
-				sb.append((char) v);
 				if (( v = readPlain(sb) ) == '|') {
 					bar = true;
-				} else {
+				}
+				else {
 					break;
 				}
 			}
-		} while (( v = in.read() ) != -1);
+		}
 
 		if (bar) {
 			throw new RuntimeException("Unterminated quote |...|");
