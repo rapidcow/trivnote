@@ -72,7 +72,7 @@ public class ReaderTest
 
 	@Test void testSymbolQuote()
 	{
-		bff = new StringReader("(|foo bar| baz)");
+		bff = new StringReader("(|foo bar| baz al|ter|na|tion|)");
 		rdr = new DataLoader(bff);
 		tok = rdr.next();
 		iter = new Walk(tok);
@@ -82,7 +82,8 @@ public class ReaderTest
 		assertIterableEquals(
 			List.of(
 				Symbol.of("foo bar"),
-				Symbol.of("baz")
+				Symbol.of("baz"),
+				Symbol.of("alternation")
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
 	}
