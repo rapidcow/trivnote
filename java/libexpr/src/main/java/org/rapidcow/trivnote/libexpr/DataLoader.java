@@ -202,7 +202,11 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			return Symbol.of(sb.toString());
 		}
 
-		return null;
+		if (bg == -1) {
+			return null;
+		} else {
+			throw new RuntimeException("Unterminated `" + (char) bg + "' list");
+		}
 	}
 
 	private void skipBlockComment() throws IOException
@@ -277,7 +281,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			sb.append((char) v);
 		}
 
-		throw new RuntimeException("Unterminated quote");
+		throw new RuntimeException("Unterminated quote \"...\"");
 	}
 
 	private int readToken(StringBuilder sb, int v) throws IOException
@@ -307,6 +311,10 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 				}
 			}
 		} while (( v = in.read() ) != -1);
+
+		if (bar) {
+			throw new RuntimeException("Unterminated quote |...|");
+		}
 
 		return v;
 	}
