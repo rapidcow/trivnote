@@ -173,7 +173,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			}
 
 			if (isPOSIXdigit(v)) {
-				sb = new StringBuilder().append(v);
+				sb = new StringBuilder().append((char) v);
 				if (( v = readPlain(sb) ) != -1) {
 					in.unread(v);
 				}
@@ -184,7 +184,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 					&& isPOSIXdigit(v)
 				) {
 					in.unread(w);
-					sb = new StringBuilder().append(v);
+					sb = new StringBuilder().append((char) v);
 					if (( v = readPlain(sb) ) != -1) {
 						in.unread(v);
 					}
@@ -253,7 +253,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 				break;
 			}
 
-			sb.append(v);
+			sb.append((char) v);
 		}
 
 		return v;
@@ -274,7 +274,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 				}
 			}
 
-			sb.append(v);
+			sb.append((char) v);
 		}
 
 		throw new RuntimeException("Unterminated quote");
@@ -296,7 +296,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 						v = w;
 					}
 				}
-				sb.append(v);
+				sb.append((char) v);
 			}
 			else {
 				if (( v = readPlain(sb) ) == '|') {
