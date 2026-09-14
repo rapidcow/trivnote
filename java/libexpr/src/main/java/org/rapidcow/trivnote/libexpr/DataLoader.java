@@ -369,26 +369,31 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			}
 			else if (v == '-' || v == '+') {
 				if (( w = readChar() ) != -1) {
-					sb.append((char) v);
-					v = w;  /* rotate */
-					if (isPOSIXdigit(v)) {
+					if (isPOSIXdigit(w)) {
 						sb.append((char) v);
+						sb.append((char) w);
 						if (( v = readPlain(sb) ) != -1) {
 							unreadChar(v);
 						}
 						return new Token(new Scalar(sb.toString()));
 					}
-					if (v == '.') {
+					if (w == '.') {
+						sb.append((char) v);
+						v = w;  /* rotate */
 						if (( w = readChar() ) != -1) {
-							sb.append((char) v);
 							if (isPOSIXdigit(w)) {
+								sb.append((char) v);
 								sb.append((char) w);
 								if (( v = readPlain(sb) ) != -1) {
 									unreadChar(v);
 								}
 								return new Token(new Scalar(sb.toString()));
 							}
+							unreadChar(w);
 						}
+					}
+					else {
+						unreadChar(w);
 					}
 				}
 			}
