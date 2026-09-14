@@ -190,6 +190,34 @@ public class ReaderTest
 		assertEquals(Nil.INSTANCE, iter.tail());
 	}
 
+	/*
+	 * In R7RS there is a grammar rule specifically named
+	 * "peculiar identifiers" -- this tests those.
+	 *
+	 * (It is a mere coincidence some of these symbols
+	 * resemble faces.)
+	 */
+	@Test void testWeirdIdentifiers()
+	{
+		bff = new StringReader("(+ - +. -. -.o +.=)");
+		rdr = new DataLoader(bff);
+		tok = rdr.next();
+		iter = new Walk(tok);
+
+		list = new ArrayList<>();
+		iter.forEachRemaining(list::add);
+		assertIterableEquals(
+			List.of(
+				Symbol.of("+"),
+				Symbol.of("-"),
+				Symbol.of("+."),
+				Symbol.of("-."),
+				Symbol.of("-.o"),
+				Symbol.of("+.=")
+			), list);
+		assertEquals(Nil.INSTANCE, iter.tail());
+	}
+
 	@Test void testDottedPairLeadingDotFails()
 	{
 		bff = new StringReader("(. a)");
