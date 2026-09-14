@@ -91,6 +91,11 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		);
 	}
 
+	private static boolean isPOSIXdigit(int v)
+	{
+		return '0' <= v && v <= '9';
+	}
+
 	private int readChar() throws IOException
 	{
 		int v = in.read();
@@ -114,11 +119,6 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		}
 		col = ocl;
 		in.unread(v);
-	}
-
-	private static boolean isPOSIXdigit(int v)
-	{
-		return '0' <= v && v <= '9';
 	}
 
 	@Override public Iterator<Datum> iterator()
