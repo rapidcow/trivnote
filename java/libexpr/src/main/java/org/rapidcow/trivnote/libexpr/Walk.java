@@ -18,8 +18,8 @@ public final class Walk implements Iterator<Datum>
 	@Override public Datum next()
 	{
 		if (tail instanceof Cons cell) {
-			tail = cell.cdr;
-			return cell.car;
+			tail = cell.cdr();
+			return cell.car();
 		}
 		throw new NoSuchElementException();
 	}

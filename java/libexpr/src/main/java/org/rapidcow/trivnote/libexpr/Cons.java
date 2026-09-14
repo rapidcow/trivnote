@@ -9,10 +9,10 @@ import java.util.Iterator;
 public final class Cons implements Datum, Iterable<Datum>
 {
 	/** Former half of the pair. */
-	final Datum car;
+	private final Datum car;
 
 	/** Latter half of the pair. */
-	final Datum cdr;
+	private final Datum cdr;
 
 	public Cons(Datum car, Datum cdr)
 	{
