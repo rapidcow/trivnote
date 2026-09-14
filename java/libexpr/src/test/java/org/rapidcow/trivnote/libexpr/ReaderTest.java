@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ReaderTest
 {
@@ -101,6 +102,129 @@ public class ReaderTest
 				Symbol.of("b")
 			), list);
 		assertEquals(Symbol.of("c"), iter.tail());
+	}
+
+	@Test void testDottedPairNested()
+	{
+		/* (a . (b c)) is equivalent to (a b c) */
+		bff = new StringReader("(a . (b c))");
+		rdr = new DataLoader(bff);
+		tok = rdr.next();
+		iter = new Walk(tok);
+
+		list = new ArrayList<>();
+		iter.forEachRemaining(list::add);
+		assertIterableEquals(
+			List.of(
+				Symbol.of("a"),
+				Symbol.of("b"),
+				Symbol.of("c")
+			), list);
+		assertEquals(Nil.INSTANCE, iter.tail());
+	}
+
+	@Test void testDottedPairNoSpaceBeforeBracket()
+	{
+		/*
+		 * Dot need not be space-separated from a bracket: `.(c)'
+		 * is `. (c)', and consing b onto (c) yields (b c), so the
+		 * whole thing flattens to the proper list (a b c).
+		 */
+		bff = new StringReader("(a b .(c))");
+		rdr = new DataLoader(bff);
+		tok = rdr.next();
+		iter = new Walk(tok);
+
+		list = new ArrayList<>();
+		iter.forEachRemaining(list::add);
+		assertIterableEquals(
+			List.of(
+				Symbol.of("a"),
+				Symbol.of("b"),
+				Symbol.of("c")
+			), list);
+		assertEquals(Nil.INSTANCE, iter.tail());
+	}
+
+	@Test void testDotGluedToAtomIsOrdinarySymbol()
+	{
+		/*
+		 * A `.' immediately followed by a non-delimiter character
+		 * is not the pair marker -- it is just the first character
+		 * of a symbol.
+		 */
+		bff = new StringReader("(a b .c)");
+		rdr = new DataLoader(bff);
+		tok = rdr.next();
+		iter = new Walk(tok);
+
+		list = new ArrayList<>();
+		iter.forEachRemaining(list::add);
+		assertIterableEquals(
+			List.of(
+				Symbol.of("a"),
+				Symbol.of("b"),
+				Symbol.of(".c")
+			), list);
+		assertEquals(Nil.INSTANCE, iter.tail());
+	}
+
+	@Test void testDotAsOrdinarySymbolChar()
+	{
+		/* a dot not delimiter-bounded is just a symbol character */
+		bff = new StringReader("(... a.b)");
+		rdr = new DataLoader(bff);
+		tok = rdr.next();
+		iter = new Walk(tok);
+
+		list = new ArrayList<>();
+		iter.forEachRemaining(list::add);
+		assertIterableEquals(
+			List.of(
+				Symbol.of("..."),
+				Symbol.of("a.b")
+			), list);
+		assertEquals(Nil.INSTANCE, iter.tail());
+	}
+
+	@Test void testDottedPairLeadingDotFails()
+	{
+		bff = new StringReader("(. a)");
+		rdr = new DataLoader(bff);
+		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
+	}
+
+	@Test void testDottedPairDoubleDotFails()
+	{
+		bff = new StringReader("(a . . b)");
+		rdr = new DataLoader(bff);
+		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
+	}
+
+	@Test void testDottedPairExcessDatumFails()
+	{
+		bff = new StringReader("(a . b c)");
+		rdr = new DataLoader(bff);
+		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
+	}
+
+	@Test void testDottedPairMissingDatumFails()
+	{
+		bff = new StringReader("(a . )");
+		rdr = new DataLoader(bff);
+		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
+	}
+
+	@Test void testTopLevelDotIsOrdinarySymbol()
+	{
+		/*
+		 * The dot is only a pair separator inside a bracketed list;
+		 * at the top level it is read as an ordinary symbol.
+		 */
+		bff = new StringReader(". a");
+		rdr = new DataLoader(bff);
+		assertEquals(Symbol.of("."), rdr.next());
+		assertEquals(Symbol.of("a"), rdr.next());
 	}
 
 	@Test void testSymbolQuote()
