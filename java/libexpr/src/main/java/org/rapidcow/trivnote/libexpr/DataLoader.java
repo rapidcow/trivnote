@@ -245,7 +245,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 				return -1;
 			}
 
-			if (v == '"' || v == '|'
+			if (v == '"' || v == '|' || v == ';'
 				|| v == '(' || v == ')'
 				|| v == '[' || v == ']'
 				|| v == '{' || v == '}'
