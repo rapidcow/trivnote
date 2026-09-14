@@ -347,14 +347,13 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 				);
 			}
 
+			sb = new StringBuilder();
 			if (v == '"') {
-				sb = new StringBuilder();
 				readQuote(sb);
 				return new Token(new Scalar(sb.toString()));
 			}
 
 			if (v == '|') {
-				sb = new StringBuilder();
 				if (( v = readWord(sb, v) ) != -1) {
 					unreadChar(v);
 				}
@@ -370,38 +369,30 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			}
 			else if (v == '-' || v == '+') {
 				if (( w = readChar() ) != -1) {
-					if (isPOSIXdigit(w)) {
-						sb = new StringBuilder()
-							.append((char) v)
-							.append((char) w);
+					sb.append((char) v);
+					v = w;  /* rotate */
+					if (isPOSIXdigit(v)) {
+						sb.append((char) v);
 						if (( v = readPlain(sb) ) != -1) {
 							unreadChar(v);
 						}
 						return new Token(new Scalar(sb.toString()));
 					}
-					if (w == '.') {
-						sb = new StringBuilder().append((char) v);
-						v = w;  /* rotate: v now holds the `.' */
+					if (v == '.') {
 						if (( w = readChar() ) != -1) {
+							sb.append((char) v);
 							if (isPOSIXdigit(w)) {
-								sb.append((char) v).append((char) w);
+								sb.append((char) w);
 								if (( v = readPlain(sb) ) != -1) {
 									unreadChar(v);
 								}
 								return new Token(new Scalar(sb.toString()));
 							}
-							unreadChar(w);
 						}
-						if (( w = readWord(sb, v) ) != -1) {
-							unreadChar(w);
-						}
-						return new Token(Symbol.of(sb.toString()));
 					}
-					unreadChar(w);
 				}
 			}
 
-			sb = new StringBuilder();
 			if (( v = readWord(sb, v) ) != -1) {
 				unreadChar(v);
 			}
