@@ -215,16 +215,11 @@ public class ReaderTest
 		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
 	}
 
-	@Test void testTopLevelDotIsOrdinarySymbol()
+	@Test void testTopLevelDotIsIllegal()
 	{
-		/*
-		 * The dot is only a pair separator inside a bracketed list;
-		 * at the top level it is read as an ordinary symbol.
-		 */
 		bff = new StringReader(". a");
 		rdr = new DataLoader(bff);
-		assertEquals(Symbol.of("."), rdr.next());
-		assertEquals(Symbol.of("a"), rdr.next());
+		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
 	}
 
 	@Test void testSymbolQuote()

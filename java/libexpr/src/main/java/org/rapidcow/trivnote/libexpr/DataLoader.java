@@ -203,7 +203,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 				return null;
 			}
 
-			if (bg != -1 && v == '.') {
+			if (v == '.') {
 				if (( w = readChar() ) != -1) {
 					if (isPOSIXspace(w)) {
 						return Token.DOT;
