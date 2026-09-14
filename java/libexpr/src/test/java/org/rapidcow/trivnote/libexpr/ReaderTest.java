@@ -52,4 +52,21 @@ public class ReaderTest
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
 	}
+
+	@Test void testLineComment()
+	{
+		bff = new StringReader("(abc;comment\ndef)");
+		rdr = new DataLoader(bff);
+		tok = rdr.next();
+		iter = new Walk(tok);
+
+		list = new ArrayList<>();
+		iter.forEachRemaining(list::add);
+		assertIterableEquals(
+			List.of(
+				Symbol.of("abc"),
+				Symbol.of("def")
+			), list);
+		assertEquals(Nil.INSTANCE, iter.tail());
+	}
 }
