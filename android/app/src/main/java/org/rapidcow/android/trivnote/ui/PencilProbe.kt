@@ -21,7 +21,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 
 /*
- * operator-functions
+ * operator-functions (these are implicit "traits"
+ * (most certainly not the right word) required to
+ * how to read to/write from a "mutable state".)
+ *
+ * Because of how it may not be obvious how they are
+ * referenced (and contrarily, when they cease to be
+ * referenced), they are imported/aliased separately.
  */
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
