@@ -76,8 +76,7 @@ android/
         │   ├── AndroidManifest.xml     Single launcher Activity
         │   │                            (.MainActivity).
         │   ├── java/org/rapidcow/android/trivnote/
-        │   │   ├── MainActivity.kt     Stock "Hello Android!" Compose
-        │   │   │                        Scaffold -- not yet customized.
+        │   │   ├── MainActivity.kt     Entry point idk
         │   │   └── ui/theme/
         │   │       ├── Color.kt
         │   │       ├── Theme.kt
