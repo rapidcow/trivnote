@@ -32,6 +32,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 
+import org.rapidcow.android.trivnote.ui.theme.BlueLight
+
 /*
  * This is the sensor information struct designed by
  * Claude for the other eponymous Swift test program.
@@ -68,6 +70,6 @@ fun PencilProbe(modifier: Modifier = Modifier)
     var reading by remember { mutableStateOf<PenReading?>(null) }
 
     Canvas(modifier = modifier.fillMaxSize()) {
-        drawCircle(color = Color.Blue)
+        drawCircle(color = BlueLight)
     }
 }
