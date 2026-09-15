@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 
 /*
  * operator-functions
@@ -61,10 +62,6 @@ fun PencilProbe(modifier: Modifier = Modifier)
     var reading by remember { mutableStateOf<PenReading?>(null) }
 
     Canvas(modifier = modifier.fillMaxSize()) {
-        /*
-         * We're supposed to do something in this lambda,
-         * but this has hurt my brain enough that
-         * I am going to stop here.
-         */
+        drawCircle(color = Color.Blue)
     }
 }
