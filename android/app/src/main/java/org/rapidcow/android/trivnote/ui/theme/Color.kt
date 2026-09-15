@@ -9,3 +9,10 @@ val Pink80 = Color(0xFFEFB8C8)
 val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
+
+/*
+ * https://materialui.co/colors/blue/500
+ * https://materialui.co/colors/blue/700
+ */
+val BlueLight = Color(0x2196F3FF)
+val BlueDark = Color(0x1976D2FF)
