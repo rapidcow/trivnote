@@ -13,10 +13,10 @@ import kotlin.math.PI
 
 import android.view.MotionEvent
 import androidx.compose.foundation.Canvas
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -79,6 +79,7 @@ fun PencilProbe(modifier: Modifier = Modifier)
 {
     var reading by remember { mutableStateOf<PenReading?>(null) }
     val textMeasurer = rememberTextMeasurer()
+    val textColor = MaterialTheme.colorScheme.onBackground
 
     Canvas(
         modifier = modifier
@@ -119,7 +120,7 @@ fun PencilProbe(modifier: Modifier = Modifier)
             style = TextStyle(
                 fontFamily = FontFamily.Monospace,
                 fontSize = 16.sp,
-                color = Color.White,
+                color = textColor,
             ),
         )
     }
