@@ -1,0 +1,7 @@
+oh yeah that's just how it's supposed to work...
+https://developer.android.com/reference/kotlin/androidx/compose/material/MaterialTheme
+
+it's kind of like importing django.conf.settings
+as they *look* like an external module, but the
+values come from us (like in this case, the Triv-
+noteTheme is where it gets the colors from)...
