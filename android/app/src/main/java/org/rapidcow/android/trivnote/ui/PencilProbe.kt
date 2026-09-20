@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 
 /*
  * operator-functions (these are implicit "traits"
@@ -37,7 +38,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 
-import org.rapidcow.android.trivnote.ui.theme.BlueDark
 import org.rapidcow.android.trivnote.ui.theme.BlueLight
 
 /*
@@ -93,11 +93,18 @@ fun PencilProbe(modifier: Modifier = Modifier)
         /* ?. similarly here.  This is the Kotlin way of doing
          * `if (x != null) { do stuff with x }'...? */
         reading?.let { currentReading ->
+            if (currentReading.isPenDown) {
+                drawCircle(
+                    center = currentReading.location,
+                    color = BlueLight.copy(alpha = 0.6f),
+                    radius = 12f,
+                )
+            }
             drawCircle(
                 center = currentReading.location,
-                /* Kotlin doesn't have a ternary operator. what the S? */
-                color = if (currentReading.isPenDown) BlueDark else BlueLight,
+                color = BlueLight,
                 radius = 12f,
+                style = Stroke(width = 2f),
             )
         }
     }
