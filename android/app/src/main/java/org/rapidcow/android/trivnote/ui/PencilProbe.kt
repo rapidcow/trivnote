@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -30,13 +31,9 @@ import androidx.compose.ui.graphics.drawscope.Stroke
  * Because of how it may not be obvious how they are
  * referenced (and contrarily, when they cease to be
  * referenced), they are imported/aliased separately.
- *
- * Thankfully these wannabes all start with lowercase,
- * so it's easier to tell.
  */
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.input.pointer.pointerInteropFilter
 
 import org.rapidcow.android.trivnote.ui.theme.Blue
 
