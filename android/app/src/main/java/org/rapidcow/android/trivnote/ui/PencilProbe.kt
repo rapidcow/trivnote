@@ -97,14 +97,14 @@ fun PencilProbe(modifier: Modifier = Modifier)
                 drawCircle(
                     center = currentReading.location,
                     color = BlueLight.copy(alpha = 0.6f),
-                    radius = 12f,
+                    radius = 24f,
                 )
             }
             drawCircle(
                 center = currentReading.location,
                 color = BlueLight,
-                radius = 12f,
-                style = Stroke(width = 2f),
+                radius = 24f,
+                style = Stroke(width = 4f),
             )
         }
     }
