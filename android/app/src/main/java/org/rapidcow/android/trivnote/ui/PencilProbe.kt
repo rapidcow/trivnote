@@ -11,6 +11,7 @@ package org.rapidcow.android.trivnote.ui
 
 import kotlin.math.PI
 
+import android.view.MotionEvent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -28,9 +29,13 @@ import androidx.compose.ui.graphics.Color
  * Because of how it may not be obvious how they are
  * referenced (and contrarily, when they cease to be
  * referenced), they are imported/aliased separately.
+ *
+ * Thankfully these wannabes all start with lowercase,
+ * so it's easier to tell.
  */
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 
 import org.rapidcow.android.trivnote.ui.theme.BlueLight
 
@@ -69,7 +74,53 @@ fun PencilProbe(modifier: Modifier = Modifier)
 {
     var reading by remember { mutableStateOf<PenReading?>(null) }
 
-    Canvas(modifier = modifier.fillMaxSize()) {
-        drawCircle(color = BlueLight)
+    /* Technically this is a function call, but all of
+     * Jetpack Compose is essentially DSL to me, so I am
+     * just writing all of these like one. */
+    Canvas ( modifier = modifier
+        .fillMaxSize()
+        /* https://gist.github.com/Debdutta-Panda/2db64ebac52c8c8863144e0489b0fc4c */
+        .pointerInteropFilter { motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_UP -> reading = liftPen(reading, motionEvent)
+                MotionEvent.ACTION_DOWN -> reading = readPen(reading, motionEvent)
+                MotionEvent.ACTION_MOVE -> reading = readPen(reading, motionEvent)
+            }
+            true
+        }
+    ) {
+        /* ?. similarly here.  This is the Kotlin way of doing
+         * `if (x != null) { do stuff with x }'...? */
+        reading?.let { currentReading ->
+            drawCircle(
+                center = currentReading.location,
+                color = BlueLight,
+                /* XXX: What do we put here? */
+                // radius = 48f,
+            )
+        }
     }
+}
+
+private fun liftPen(reading: PenReading?, event: MotionEvent): PenReading?
+{
+    /* The ?. operator just evaluates to null when `reading' itself is null. */
+    return reading?.copy(isPenDown = false)
+}
+
+private fun readPen(reading: PenReading?, event: MotionEvent): PenReading
+{
+    /*
+       There seems to be the option to pass pointerIndex to some of these?
+       I hope it is fine that I leave some of those out...
+
+       It also seems possible to turn .getX() -> .x but i am not doing that
+     */
+    return PenReading(
+        location = Offset(event.getX(), event.getX()),
+        isPenDown = true,
+        azimuthAngle = event.getOrientation(),
+        altitudeAngle = event.getAxisValue(MotionEvent.AXIS_TILT),
+        forceFraction = event.getPressure()
+    )
 }
