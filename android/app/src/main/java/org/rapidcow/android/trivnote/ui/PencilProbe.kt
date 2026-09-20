@@ -37,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 
+import org.rapidcow.android.trivnote.ui.theme.BlueDark
 import org.rapidcow.android.trivnote.ui.theme.BlueLight
 
 /*
@@ -94,9 +95,9 @@ fun PencilProbe(modifier: Modifier = Modifier)
         reading?.let { currentReading ->
             drawCircle(
                 center = currentReading.location,
-                color = BlueLight,
-                /* XXX: What do we put here? */
-                // radius = 48f,
+                /* Kotlin doesn't have a ternary operator. what the S? */
+                color = if (currentReading.isPenDown) BlueDark else BlueLight,
+                radius = 12f,
             )
         }
     }
@@ -117,7 +118,7 @@ private fun readPen(reading: PenReading?, event: MotionEvent): PenReading
        It also seems possible to turn .getX() -> .x but i am not doing that
      */
     return PenReading(
-        location = Offset(event.getX(), event.getX()),
+        location = Offset(event.getX(), event.getY()),
         isPenDown = true,
         azimuthAngle = event.getOrientation(),
         altitudeAngle = event.getAxisValue(MotionEvent.AXIS_TILT),
