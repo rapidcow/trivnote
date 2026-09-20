@@ -119,7 +119,7 @@ fun PencilProbe(modifier: Modifier = Modifier)
             style = TextStyle(
                 fontFamily = FontFamily.Monospace,
                 fontSize = 16.sp,
-                color = Color.Black,
+                color = Color.White,
             ),
         )
     }
