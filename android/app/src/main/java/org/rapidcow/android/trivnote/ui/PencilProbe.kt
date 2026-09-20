@@ -13,15 +13,19 @@ import kotlin.math.PI
 
 import android.view.MotionEvent
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.dp   /* Device-independent pixel */
+import androidx.compose.ui.unit.sp   /* Scalable pixel */
 
 /*
  * operator-functions (these are implicit "traits"
@@ -71,11 +75,10 @@ private data class PenReading(
 fun PencilProbe(modifier: Modifier = Modifier)
 {
     var reading by remember { mutableStateOf<PenReading?>(null) }
+    val textMeasurer = rememberTextMeasurer()
 
-    /* Technically this is a function call, but all of
-     * Jetpack Compose is essentially DSL to me, so I am
-     * just writing all of these like one. */
-    Canvas ( modifier = modifier
+    Canvas(
+        modifier = modifier
         .fillMaxSize()
         /* https://gist.github.com/Debdutta-Panda/2db64ebac52c8c8863144e0489b0fc4c */
         .pointerInteropFilter { motionEvent ->
@@ -104,6 +107,18 @@ fun PencilProbe(modifier: Modifier = Modifier)
                 style = Stroke(width = 4f),
             )
         }
+
+        /* Partially provided by Claude :) */
+        drawText(
+            textMeasurer = textMeasurer,
+            text = diagnosticsText(reading),
+            topLeft = Offset(8.dp.toPx(), 8.dp.toPx()),
+            style = TextStyle(
+                fontFamily = FontFamily.Monospace,
+                fontSize = 16.sp,
+                color = Color.Black,
+            ),
+        )
     }
 }
 
@@ -128,4 +143,33 @@ private fun readPen(reading: PenReading?, event: MotionEvent): PenReading
         altitudeAngle = event.getAxisValue(MotionEvent.AXIS_TILT),
         forceFraction = event.getPressure()
     )
+}
+
+private fun diagnosticsText(reading: PenReading?): String
+{
+    if (reading == null) { return """
+point     -
+azimuth   -
+altitude  -
+force     -
+"""
+    }
+
+    val x = reading.location.x
+    val y = reading.location.y
+    val azimuthAngle = reading.azimuthAngle
+    val altitudeAngle = reading.altitudeAngle
+    val forceFraction = reading.forceFraction
+
+    return """
+point     (${formatFloat(x)}, ${formatFloat(y)})
+azimuth   ${formatFloat(azimuthAngle)} rad
+altitude  ${formatFloat(altitudeAngle)} rad
+force     ${formatFloat(altitudeAngle)}%
+"""
+}
+
+private fun formatFloat(x: Float): String
+{
+    return "%+.4f".format(x)
 }
