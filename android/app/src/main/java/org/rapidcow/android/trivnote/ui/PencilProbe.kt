@@ -169,7 +169,7 @@ force     -
 point     (${formatFloat(x)}, ${formatFloat(y)})
 azimuth   ${formatFloat(azimuthAngle)} rad
 altitude  ${formatFloat(altitudeAngle)} rad
-force     ${formatFloat(altitudeAngle)}%
+force     ${formatFloat(forceFraction)}%
 """
 }
 
