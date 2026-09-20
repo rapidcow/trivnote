@@ -12,7 +12,5 @@ val Pink40 = Color(0xFF7D5260)
 
 /*
  * https://materialui.co/colors/blue/500
- * https://materialui.co/colors/blue/700
  */
-val BlueLight = Color(0xFF2196F3)  // #2196F3
-val BlueDark = Color(0xFF1976D2)   // #1976D2
+val Blue = Color(0xFF2196F3)  // #2196F3

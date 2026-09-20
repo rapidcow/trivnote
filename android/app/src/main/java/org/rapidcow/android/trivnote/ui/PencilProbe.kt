@@ -38,7 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 
-import org.rapidcow.android.trivnote.ui.theme.BlueLight
+import org.rapidcow.android.trivnote.ui.theme.Blue
 
 /*
  * This is the sensor information struct designed by
@@ -96,13 +96,13 @@ fun PencilProbe(modifier: Modifier = Modifier)
             if (currentReading.isPenDown) {
                 drawCircle(
                     center = currentReading.location,
-                    color = BlueLight.copy(alpha = 0.6f),
+                    color = Blue.copy(alpha = 0.6f),
                     radius = 24f,
                 )
             }
             drawCircle(
                 center = currentReading.location,
-                color = BlueLight,
+                color = Blue,
                 radius = 24f,
                 style = Stroke(width = 4f),
             )
