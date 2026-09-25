@@ -1,0 +1,18 @@
+Revision history of trivnote-libexpr
+
+
+0.0.0  2026-09-24  RC
+    This was "done" a few days ago, but pinning this as a
+    usable beta-ish version.
+
+    - libexpr can represent s-expressions with cons cells/atoms.
+      (( I respect Clojure/EDN, but i refuse to live without
+         dotted pairs. :,> ))
+
+    * libexpr can read s-expressions.  it understands symbols
+      (interned in a symbol pool) and scalars (other strings).
+      it is agnostic (in that the pool grows monotonically as
+      it comes across anything that looks like a symbol), and is
+      definitely vulnerable to DoS if there are too many symbols.
+      (( That is the cost of not locking myself in to any
+         specific vocabulary that i will reflect on later. ))

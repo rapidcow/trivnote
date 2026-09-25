@@ -1,0 +1,9 @@
+Revision history of trivnote-android
+
+
+0.0.0  2026-09-24  RC
+
+    * boilerplate with Android Studio, empty activity,
+      Kotlin with Jetpack Compose.
+
+    * pen test.  See comment in ui/PencilProbe.kt.
