@@ -13,6 +13,8 @@ plugins {
 }
 
 group = "org.rapidcow.trivnote"
+// Bump this in gradle.properties!
+version = project.findProperty("VERSION_NAME") as String
 
 repositories {
     // Use Maven Central for resolving dependencies.
