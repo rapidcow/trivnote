@@ -5,7 +5,8 @@ package org.rapidcow.trivnote.libexpr;
  * A datum is either an {@link Atom}, a {@link Cons},
  * or {@link Nil}.
  */
-sealed interface Datum permits Atom, Cons, Nil
+public sealed interface Datum
+	permits Atom, Cons, Nil
 {
 	/**
 	 * Return if this is an atom.  An atom
