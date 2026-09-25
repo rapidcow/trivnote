@@ -13,8 +13,10 @@ android {
         applicationId = "org.rapidcow.trivnote"
         minSdk = 23
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
+
+        // Bump these via gradle.properties at the ROOT of android/.
+        versionCode = (project.findProperty("VERSION_CODE") as String).toInt()
+        versionName = project.findProperty("VERSION_NAME") as String
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
