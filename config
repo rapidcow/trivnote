@@ -21,4 +21,4 @@
 [shell "com.termux@RCs-Tab-S7.local"]
 	permission = rwsx
 [shell "jackylin0036@gmail.com"]
-	permission = rwx
+	permission = rx
