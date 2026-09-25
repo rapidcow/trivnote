@@ -43,3 +43,12 @@ tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
 }
+
+tasks.javadoc {
+    (options as StandardJavadocDocletOptions).apply {
+        // Enable all documentation checks
+        addBooleanOption("Xdoclint:all", true)
+        // Suppress routine progress output
+        addBooleanOption("quiet", true)
+    }
+}
