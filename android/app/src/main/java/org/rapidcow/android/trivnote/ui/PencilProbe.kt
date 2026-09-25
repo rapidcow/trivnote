@@ -1,9 +1,13 @@
 /* vim: set et sts=4 sw=4: ==========================
  *
- * PencilProbe.kt - S Pen sensor test for my Samsung
- * tablet while I beg Apple to not cancel my Mac Mini
- * because payment did not through and Apple hasn't
- * tried charging me since for some reason eughhhhh
+ * ui.PencilProbe - S Pen sensor test
+ *
+ *   - point shows the (x,y) coordinates;
+ *   - azimuth shows the rotation about the z-axis;
+ *   - altitude shows the rotation above the x-y plane;
+ *   - force shows the pressure exerted on the pen tip.
+ *
+ * Angles measured in radians, force measured in [0,1].
  *
  ================================================= */
 
