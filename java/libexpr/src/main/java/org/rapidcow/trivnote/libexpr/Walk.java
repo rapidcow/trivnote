@@ -10,11 +10,21 @@ public final class Walk implements Iterator<Datum>
 {
 	private Datum tail;
 
+	/**
+	 * Creates a list iterator.
+	 *
+	 * @param node  starting datum
+	 */
 	public Walk(Datum node)
 	{
 		this.tail = node;
 	}
 
+	/**
+	 * {@return the next datum}
+	 *
+	 * @throws NoSuchElementException on end of list
+	 */
 	@Override public Datum next()
 	{
 		if (tail instanceof Cons cell) {
@@ -24,13 +34,16 @@ public final class Walk implements Iterator<Datum>
 		throw new NoSuchElementException();
 	}
 
+	/**
+	 * {@return whether any datum remains}
+	 */
 	@Override public boolean hasNext()
 	{
 		return tail instanceof Cons;
 	}
 
 	/**
-	 * The cdr of the current iteration.
+	 * {@return the datum of the current iteration}
 	 * At the end of iteration, this is nil for a proper
 	 * list and a non-nil atom for an improper list.
 	 */

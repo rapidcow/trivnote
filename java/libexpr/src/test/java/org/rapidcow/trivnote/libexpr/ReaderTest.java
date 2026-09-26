@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ReaderTest
@@ -34,6 +35,7 @@ public class ReaderTest
 				Symbol.of("baz")
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testReadScalar()
@@ -55,6 +57,7 @@ public class ReaderTest
 				new Scalar("abc")
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testLineComment()
@@ -72,6 +75,7 @@ public class ReaderTest
 				Symbol.of("def")
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testDatumComment()
@@ -88,6 +92,7 @@ public class ReaderTest
 				new Scalar("42")
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testDottedPair()
@@ -105,6 +110,7 @@ public class ReaderTest
 				Symbol.of("b")
 			), list);
 		assertEquals(Symbol.of("c"), iter.tail());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testDottedPairNested()
@@ -124,6 +130,7 @@ public class ReaderTest
 				Symbol.of("c")
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testDottedPairNoSpaceBeforeBracket()
@@ -147,6 +154,7 @@ public class ReaderTest
 				Symbol.of("c")
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testDotGluedToAtomIsOrdinarySymbol()
@@ -170,6 +178,7 @@ public class ReaderTest
 				Symbol.of(".c")
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testDotAsOrdinarySymbolChar()
@@ -188,6 +197,7 @@ public class ReaderTest
 				Symbol.of("a.b")
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
+		assertNull(rdr.eio());
 	}
 
 	/*
@@ -216,6 +226,7 @@ public class ReaderTest
 				Symbol.of("+.=")
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testDottedPairLeadingDotFails()
@@ -223,6 +234,7 @@ public class ReaderTest
 		bff = new StringReader("(. a)");
 		rdr = new DataLoader(bff);
 		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testDottedPairDoubleDotFails()
@@ -230,6 +242,7 @@ public class ReaderTest
 		bff = new StringReader("(a . . b)");
 		rdr = new DataLoader(bff);
 		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testDottedPairExcessDatumFails()
@@ -237,6 +250,7 @@ public class ReaderTest
 		bff = new StringReader("(a . b c)");
 		rdr = new DataLoader(bff);
 		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testDottedPairMissingDatumFails()
@@ -244,6 +258,7 @@ public class ReaderTest
 		bff = new StringReader("(a . )");
 		rdr = new DataLoader(bff);
 		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testTopLevelDotIsIllegal()
@@ -251,6 +266,7 @@ public class ReaderTest
 		bff = new StringReader(". a");
 		rdr = new DataLoader(bff);
 		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testSymbolQuote()
@@ -269,6 +285,7 @@ public class ReaderTest
 				Symbol.of("alternation")
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
+		assertNull(rdr.eio());
 	}
 
 	@Test void testStringQuote()
@@ -289,5 +306,6 @@ public class ReaderTest
 				new Scalar("line1\nline2")
 			), list);
 		assertEquals(Nil.INSTANCE, iter.tail());
+		assertNull(rdr.eio());
 	}
 }
