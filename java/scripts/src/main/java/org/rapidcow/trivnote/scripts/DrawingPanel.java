@@ -7,15 +7,20 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
+import javax.swing.AbstractAction;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
 class DrawingPanel extends JPanel
 {
 	private List<Stroke> art;
 	private int revealed = 0;
+	private Timer timer;
 
 	DrawingPanel(List<Stroke> strokes)
 	{
@@ -25,7 +30,7 @@ class DrawingPanel extends JPanel
 	/** Reveals one stroke every {@code millisPerStroke}, starting immediately. */
 	void animate(int millisPerStroke)
 	{
-		Timer timer = new Timer(millisPerStroke, null);
+		timer = new Timer(millisPerStroke, null);
 		timer.setInitialDelay(0);
 		timer.addActionListener(e -> {
 			revealed++;
@@ -35,6 +40,18 @@ class DrawingPanel extends JPanel
 			}
 		});
 		timer.start();
+
+		getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "toggle");
+		getActionMap().put("toggle", new AbstractAction() {
+			@Override public void actionPerformed(ActionEvent e)
+			{
+				if (timer.isRunning()) {
+					timer.stop();
+				} else {
+					timer.start();
+				}
+			}
+		});
 	}
 
 	@Override protected void paintComponent(Graphics graphics)
