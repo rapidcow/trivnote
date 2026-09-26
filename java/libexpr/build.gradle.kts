@@ -50,5 +50,9 @@ tasks.javadoc {
         addBooleanOption("Xdoclint:all", true)
         // Suppress routine progress output
         addBooleanOption("quiet", true)
+        // UTF-8 all the way!
+        encoding = "UTF-8"
+        charSet  = "UTF-8"
+        docEncoding = "UTF-8"
     }
 }
