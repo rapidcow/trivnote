@@ -121,14 +121,9 @@ public class PreviewAppleNotesDrawing
 			Clock sortId = loadClock(fields.get("sort-id"));
 			String uuid = ((Atom) first(fields.get("uuid"))).value();
 			Ink ink = kit.get(Integer.parseInt(((Atom) first(fields.get("ink-index"))).value()));
-			Datum tNode;
-			AffineTransform map;
-			if (( tNode = fields.get("transform") ) != null) {
-				map = loadTransform(tNode);
-			} else {
-				map = new AffineTransform();  /* identity */
-			}
-			strokes.add(new Stroke(sortId, uuid, ink, map, loadPoints(fields.get("points"))));
+			AffineTransform map = loadTransformOrIdentity(fields.get("transform"));
+			AffineTransform inkMap = loadTransformOrIdentity(fields.get("ink-transform"));
+			strokes.add(new Stroke(sortId, uuid, ink, map, inkMap, loadPoints(fields.get("points"))));
 		}
 		strokes.sort(Comparator.comparing(Stroke::clock));
 		return strokes;
@@ -284,6 +279,12 @@ public class PreviewAppleNotesDrawing
 			throw up( "improper list (tail is: " + it.tail() + ")" );
 		}
 		return new Clock(args[0], args[1], args[2]);
+	}
+
+	/* both `transform' and `ink-transform' are absent on most strokes */
+	private static AffineTransform loadTransformOrIdentity(Datum node)
+	{
+		return node == null ? new AffineTransform() : loadTransform(node);
 	}
 
 	private static AffineTransform loadTransform(Datum node)
