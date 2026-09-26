@@ -10,6 +10,7 @@
 plugins {
     // Apply the java-library plugin for API and implementation separation.
     `java-library`
+    `maven-publish`
 }
 
 group = "org.rapidcow.trivnote"
@@ -56,5 +57,18 @@ tasks.javadoc {
         encoding = "UTF-8"
         charSet  = "UTF-8"
         docEncoding = "UTF-8"
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+    repositories {
+        maven {
+            url = uri(layout.buildDirectory.dir("repo"))
+        }
     }
 }
