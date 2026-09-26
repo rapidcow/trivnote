@@ -13,6 +13,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import java.awt.Dimension;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 import org.rapidcow.trivnote.libexpr.Atom;
 import org.rapidcow.trivnote.libexpr.Cons;
 import org.rapidcow.trivnote.libexpr.DataLoader;
@@ -81,10 +85,22 @@ public class PreviewAppleNotesDrawing
 		drawing = toAlist(rV);
 
 		List<Stroke> strokes = loadStrokes(drawing.get("strokes"));
-		System.out.println(strokes.size() + " stroke(s) loaded");
-		for (Stroke stroke : strokes) {
-			System.out.println("  " + stroke.uuid() + ": " + stroke.points().size() + " point(s)");
-		}
+		System.out.println(strokes.size()
+			+ " stroke"
+			+ (strokes.size() == 1 ? "" : "s")
+			+ " loaded");
+
+		SwingUtilities.invokeLater(() -> {
+			DrawingPanel panel = new DrawingPanel();
+			panel.setPreferredSize(new Dimension(900, 700));
+
+			JFrame window = new JFrame("Apple Notes Drawing");
+			window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			window.setContentPane(panel);
+			window.pack();
+			window.setLocationRelativeTo(null);  // Center on screen.
+			window.setVisible(true);
+		});
 	}
 
 	/*
