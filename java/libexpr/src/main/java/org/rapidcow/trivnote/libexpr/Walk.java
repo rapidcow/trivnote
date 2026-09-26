@@ -2,6 +2,7 @@ package org.rapidcow.trivnote.libexpr;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 /**
  * List iterator.
@@ -14,10 +15,11 @@ public final class Walk implements Iterator<Datum>
 	 * Creates a list iterator.
 	 *
 	 * @param node  starting datum
+	 * @throws NullPointerException on null {@code node}
 	 */
 	public Walk(Datum node)
 	{
-		this.tail = node;
+		this.tail = Objects.requireNonNull(node, "node must not be null");
 	}
 
 	/**
