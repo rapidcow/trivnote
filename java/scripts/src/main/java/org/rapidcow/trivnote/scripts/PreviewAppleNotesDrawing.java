@@ -14,12 +14,14 @@ public class PreviewAppleNotesDrawing
 {
 	public static void main(String[] args) throws IOException
 	{
+		Path path;
+
 		if (args.length != 1) {
 			System.err.println("usage: PreviewAppleNotesDrawing FILE");
 			System.exit(1);
 		}
 
-		Path path = Path.of(args[0]);
+		path = Path.of(args[0]);
 		try (BufferedReader in = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
 			DataLoader loader = new DataLoader(in);
 			Datum datum = loader.readDatum();
