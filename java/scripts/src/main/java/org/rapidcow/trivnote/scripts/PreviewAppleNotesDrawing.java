@@ -212,20 +212,3 @@ public class PreviewAppleNotesDrawing
 		return jc;
 	}
 }
-
-/**
- * A single point sampled along a stroke.
- *
- * @param x      horizontal position
- * @param y      vertical position
- * @param radius stroke radius at this point
- */
-record Point(double x, double y, double radius) {}
-
-/**
- * A single stroke, as a sequence of points.
- *
- * @param uuid   stroke identifier
- * @param points points in drawing order
- */
-record Stroke(String uuid, List<Point> points) {}
