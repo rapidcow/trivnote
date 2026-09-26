@@ -46,7 +46,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 	 * @param file    input byte stream
 	 * @param charset character encoding
 	 */
-	public DataLoader(InputStream file, Charset charset) throws IOException
+	public DataLoader(InputStream file, Charset charset)
 	{
 		this(new InputStreamReader(file, charset));
 	}
@@ -57,7 +57,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 	 *
 	 * @param file  input byte stream
 	 */
-	public DataLoader(InputStream file) throws IOException
+	public DataLoader(InputStream file)
 	{
 		this(file, StandardCharsets.UTF_8);
 	}

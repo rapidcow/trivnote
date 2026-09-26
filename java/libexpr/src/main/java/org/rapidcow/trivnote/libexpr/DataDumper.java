@@ -1,6 +1,5 @@
 package org.rapidcow.trivnote.libexpr;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -33,7 +32,7 @@ public class DataDumper
 	 * @param file    output byte stream
 	 * @param charset character encoding
 	 */
-	public DataDumper(OutputStream file, Charset charset) throws IOException
+	public DataDumper(OutputStream file, Charset charset)
 	{
 		this(new OutputStreamWriter(file, charset));
 	}
@@ -44,7 +43,7 @@ public class DataDumper
 	 *
 	 * @param file  output byte stream
 	 */
-	public DataDumper(OutputStream file) throws IOException
+	public DataDumper(OutputStream file)
 	{
 		this(file, StandardCharsets.UTF_8);
 	}
