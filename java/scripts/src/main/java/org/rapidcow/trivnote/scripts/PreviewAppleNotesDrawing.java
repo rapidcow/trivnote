@@ -104,7 +104,7 @@ public class PreviewAppleNotesDrawing
 			window.pack();
 			window.setLocationRelativeTo(null);  // Center on screen.
 			window.setVisible(true);
-			panel.animate(500);
+			panel.animate(50);
 		});
 	}
 
@@ -122,8 +122,8 @@ public class PreviewAppleNotesDrawing
 			Clock sortId = loadClock(fields.get("sort-id"));
 			String uuid = ((Atom) first(fields.get("uuid"))).value();
 			Ink ink = kit.get(Integer.parseInt(((Atom) first(fields.get("ink-index"))).value()));
-			AffineTransform map = loadTransformOrIdentity(fields.get("transform"));
-			AffineTransform inkMap = loadTransformOrIdentity(fields.get("ink-transform"));
+			AffineTransform map = loadTransformOrIdentity(fields.get("transform"), fields.get("substrokes"));
+			AffineTransform inkMap = loadTransformOrIdentity(fields.get("ink-transform"), null);
 			strokes.add(new Stroke(sortId, uuid, ink, map, inkMap, loadPoints(fields.get("points"))));
 		}
 		strokes.sort(Comparator.comparing(Stroke::clock));
@@ -282,10 +282,29 @@ public class PreviewAppleNotesDrawing
 		return new Clock(args[0], args[1], args[2]);
 	}
 
-	/* both `transform' and `ink-transform' are absent on most strokes */
-	private static AffineTransform loadTransformOrIdentity(Datum node)
+	/*
+	 * Both `transform' and `ink-transform' are absent on most strokes.
+	 * When `transform' itself is missing but the stroke has a nested
+	 * (substrokes (stroke ...) ...) -- the post-erase leftover fragment
+	 * drawing.md describes -- that child usually still carries a real
+	 * `transform', which is the one the whole (pre-erase) point list
+	 * was actually meant to be placed with. `substrokesNode' is null
+	 * when this fallback doesn't apply (e.g. for ink-transform).
+	 */
+	private static AffineTransform loadTransformOrIdentity(Datum node, Datum substrokesNode)
 	{
-		return node == null ? new AffineTransform() : loadTransform(node);
+		if (node != null) {
+			return loadTransform(node);
+		}
+		if (substrokesNode != null) {
+			for (Datum sub : tagged("stroke", substrokesNode)) {
+				Datum childTransform = toAlist(sub).get("transform");
+				if (childTransform != null) {
+					return loadTransform(childTransform);
+				}
+			}
+		}
+		return new AffineTransform();
 	}
 
 	private static AffineTransform loadTransform(Datum node)
