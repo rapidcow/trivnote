@@ -16,6 +16,7 @@ import java.nio.file.Path;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.geom.AffineTransform;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -120,7 +121,14 @@ public class PreviewAppleNotesDrawing
 			Clock sortId = loadClock(fields.get("sort-id"));
 			String uuid = ((Atom) first(fields.get("uuid"))).value();
 			Ink ink = kit.get(Integer.parseInt(((Atom) first(fields.get("ink-index"))).value()));
-			strokes.add(new Stroke(sortId, uuid, ink, loadPoints(fields.get("points"))));
+			Datum tNode;
+			AffineTransform map;
+			if (( tNode = fields.get("transform") ) != null) {
+				map = loadTransform(tNode);
+			} else {
+				map = new AffineTransform();  /* identity */
+			}
+			strokes.add(new Stroke(sortId, uuid, ink, map, loadPoints(fields.get("points"))));
 		}
 		strokes.sort(Comparator.comparing(Stroke::clock));
 		return strokes;
@@ -276,5 +284,26 @@ public class PreviewAppleNotesDrawing
 			throw up( "improper list (tail is: " + it.tail() + ")" );
 		}
 		return new Clock(args[0], args[1], args[2]);
+	}
+
+	private static AffineTransform loadTransform(Datum node)
+	{
+		Walk it = new Walk(node);
+		float[] args = new float[6];
+		int i = 0;
+		while (it.hasNext()) {
+			if (i >= 6) {
+				throw up( "wrong arity" );
+			}
+			String value = ((Atom) it.next()).value();
+			args[i++] = Float.parseFloat(value);
+		}
+		if (i != 6) {
+			throw up( "wrong arity" );
+		}
+		if (it.tail() != Nil.INSTANCE) {
+			throw up( "improper list (tail is: " + it.tail() + ")" );
+		}
+		return new AffineTransform(args);
 	}
 }
