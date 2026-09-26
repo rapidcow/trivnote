@@ -13,11 +13,15 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * R7RS-ish s-expression reader.
+ * R7RS-ish S-expression reader.
  */
 public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 {
+	/**
+	 * Input character stream.
+	 */
 	protected final PushbackReader in;
+
 	private boolean fini = false;
 	private IOException eieio = null;
 	private Datum st = null;
@@ -26,35 +30,81 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 	private long col = 0;
 	private long ocl = 0;
 
+	/**
+	 * Creates a reader from a character stream.
+	 *
+	 * @param file  input character stream
+	 */
 	public DataLoader(Reader file)
 	{
 		this.in = new PushbackReader(file);
 	}
 
+	/**
+	 * Creates a reader from a byte stream.
+	 *
+	 * @param file    input byte stream
+	 * @param charset character encoding
+	 */
 	public DataLoader(InputStream file, Charset charset) throws IOException
 	{
 		this(new InputStreamReader(file, charset));
 	}
 
+	/**
+	 * Creates a reader from a byte stream with the default
+	 * character encoding, {@link StandardCharsets#UTF_8}.
+	 *
+	 * @param file  input byte stream
+	 */
 	public DataLoader(InputStream file) throws IOException
 	{
 		this(file, StandardCharsets.UTF_8);
 	}
 
+	/**
+	 * Parsing exception.
+	 */
 	public class ParseException extends RuntimeException
 	{
-		private final long row;
-		private final long col;
+		/* Exceptions are serializable, so Javadoc is necessary. */
 
+		/**
+		 * Line offset (0-indexed).
+		 */
+		private final long lineOffset;
+
+		/**
+		 * Column offset (0-indexed).
+		 */
+		private final long charOffset;
+
+		/**
+		 * Creates a new parsing exception without chaining.
+		 *
+		 * @param message    passed to {@link RuntimeException#RuntimeException(String)}
+		 * @param lineOffset line offset (0-indexed)
+		 * @param charOffset column offset (0-indexed)
+		 */
 		public ParseException(
 			String message,
 			long lineOffset,
 			long charOffset
 		)
 		{
-			this(message, null, lineOffset, charOffset);
+			super(message);
+			this.lineOffset = lineOffset;
+			this.charOffset = charOffset;
 		}
 
+		/**
+		 * Creates a new parsing exception with chaining.
+		 *
+		 * @param message   passed to {@link RuntimeException#RuntimeException(String, Throwable)}
+		 * @param cause     passed to {@link RuntimeException#RuntimeException(String, Throwable)}
+		 * @param lineOffset line offset (0-indexed)
+		 * @param charOffset column offset (0-indexed)
+		 */
 		public ParseException(
 			String message,
 			Throwable cause,
@@ -63,8 +113,8 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		)
 		{
 			super(message, cause);
-			row = lineOffset;
-			col = charOffset;
+			this.lineOffset = lineOffset;
+			this.charOffset = charOffset;
 		}
 
 		@Override public String toString()
@@ -74,21 +124,33 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 				": " + super.toString());
 		}
 
+		/**
+		 * {@return the line offset (0-based) of this exception}
+		 */
 		public long getLineOffset()
 		{
 			return row;
 		}
 
+		/**
+		 * {@return the line number (1-based) of this exception}
+		 */
 		public long getLineNumber()
 		{
 			return row + 1;
 		}
 
+		/**
+		 * {@return the column number (1-based) of this exception}
+		 */
 		public long getCharOffset()
 		{
 			return col;
 		}
 
+		/**
+		 * {@return the column number (1-based) of this exception}
+		 */
 		public long getCharNumber()
 		{
 			return col + 1;
@@ -156,11 +218,19 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		in.unread(v);
 	}
 
+	/**
+	 * {@return this}
+	 */
 	@Override public Iterator<Datum> iterator()
 	{
 		return this;
 	}
 
+	/**
+	 * {@return whether no I/O error occurred, and any datum remains}
+	 * If false, caller should check {@link #eio()} to distinguish
+	 * I/O error and EOF.
+	 */
 	@Override public boolean hasNext()
 	{
 		if (fini) {
@@ -177,6 +247,14 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		return st != null;
 	}
 
+	/**
+	 * {@return the next datum in the stream}
+	 * Caller should check {@link #eio()} to check for
+	 * I/O error and EOF.
+	 *
+	 * @throws NoSuchElementException on I/O error, or EOF
+	 * @throws ParseException on syntax error
+	 */
 	@Override public Datum next()
 	{
 		Datum s;
@@ -185,14 +263,25 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			st = null;
 			return s;
 		}
-		throw new NoSuchElementException();
+		throw new NoSuchElementException(eieio);
 	}
 
+	/**
+	 * {@return the most recent I/O error}
+	 * Caller is responsible to check this to
+	 * tell EOF from I/O error.
+	 */
 	public IOException eio()
 	{
 		return eieio;
 	}
 
+	/**
+	 * Reads and returns the next datum.
+	 *
+	 * @return the next datum, or {@code null} on EOF
+	 * @throws IOException on {@link Reader#read} error
+	 */
 	public Datum readDatum() throws IOException
 	{
 		Token tk = readDatum(-1);

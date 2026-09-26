@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A symbol is an interned atom.  It is also
- * unquoted in wire s-expression representation.
+ * Interned {@link Atom}.
+ * It is unquoted in wire S-expression representation.
  */
 public final class Symbol extends Atom
 {
@@ -20,8 +20,21 @@ public final class Symbol extends Atom
 		super(value);
 	}
 
+	/**
+	 * {@return the unique symbol for the given value}
+	 * This function has the possible side-effect of
+	 * creating a new entry in the symbol table.
+	 *
+	 * @param value  the given value
+	 * @throws NullPointerException on null {@code value}
+	 */
 	public static Symbol of(String value)
 	{
+		/*
+		 * Even if Symbol::new (which calls Atom::new) already
+		 * checks for null, HashMap would be totally uncool with
+		 * looking up a null key, so we must catch it early here.
+		 */
 		if (value == null) {
 			throw new NullPointerException("value of a Symbol must not be null");
 		}

@@ -1,20 +1,33 @@
 package org.rapidcow.trivnote.libexpr;
 
 /**
- * An atom is just any non-cons non-nil datum.
- * Concretely, there are two types of atoms:
+ * A non-cons non-nil {@link Datum}.
+ * Concretely, it covers two types of atoms:
  *
  * <ul>
  *   <li> The {@link Scalar}, which holds an arbitrary value. </li>
  *   <li> The {@link Symbol}, which holds a unique, interned
  *        value from a (hopefully) fixed pool of vocabulary. </li>
  * </ul>
+ *
+ * <p>
+ * Presently, an atom’s value is a freeform Unicode
+ * string, represented by {@link #value()}.
  */
 public abstract sealed class Atom
 	implements Datum permits Scalar, Symbol
 {
+	/**
+	 * Value of this datum.  May not be null.
+	 */
 	protected final String value;
 
+	/**
+	 * Create a new atom with the given value.
+	 *
+	 * @param value  value
+	 * @throws NullPointerException on null {@code value}
+	 */
 	protected Atom(String value)
 	{
 		if (value == null) {
@@ -25,14 +38,14 @@ public abstract sealed class Atom
 	}
 
 	/**
-	 * Return the value.  Presently, an atom's
-	 * value is simply a freeform Unicode string.
+	 * {@return the value of this datum}
 	 */
 	public String value()
 	{
 		return value;
 	}
 
+	/* This mimics a record's toString() override. */
 	@Override public String toString()
 	{
 		String className = getClass().getSimpleName();
