@@ -45,6 +45,7 @@ class DrawingPanel extends JPanel
 
 		for (Stroke stroke : art) {
 			canvas.setColor(stroke.brush().color());
+			canvas.setTransform(stroke.affineMap());
 			Path2D.Double path = new Path2D.Double();
 			boolean lifted = true;
 
