@@ -91,7 +91,7 @@ public class PreviewAppleNotesDrawing
 			+ " loaded");
 
 		SwingUtilities.invokeLater(() -> {
-			DrawingPanel panel = new DrawingPanel();
+			DrawingPanel panel = new DrawingPanel(strokes);
 			panel.setPreferredSize(new Dimension(900, 700));
 
 			JFrame window = new JFrame("Apple Notes Drawing");
