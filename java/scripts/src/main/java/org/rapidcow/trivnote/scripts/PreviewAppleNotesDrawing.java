@@ -86,7 +86,7 @@ public class PreviewAppleNotesDrawing
 
 		drawing = toAlist(rV);
 
-		List<Ink> brushKit = loadInk(drawing.get("ink"));
+		List<Ink> brushKit = loadInk(drawing.get("inks"));
 		List<Stroke> strokes = loadStrokes(brushKit, drawing.get("strokes"));
 		System.out.println(strokes.size()
 			+ " stroke"
@@ -119,7 +119,7 @@ public class PreviewAppleNotesDrawing
 			Map<String,Datum> fields = toAlist(node);
 			Clock sortId = loadClock(fields.get("sort-id"));
 			String uuid = ((Atom) first(fields.get("uuid"))).value();
-			Ink ink = kit.get(Integer.parseInt(((Atom) fields.get("ink-index")).value()));
+			Ink ink = kit.get(Integer.parseInt(((Atom) first(fields.get("ink-index"))).value()));
 			strokes.add(new Stroke(sortId, uuid, ink, loadPoints(fields.get("points"))));
 		}
 		strokes.sort(Comparator.comparing(Stroke::clock));
