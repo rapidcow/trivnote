@@ -104,6 +104,7 @@ public class PreviewAppleNotesDrawing
 			window.pack();
 			window.setLocationRelativeTo(null);  // Center on screen.
 			window.setVisible(true);
+			panel.animate(500);
 		});
 	}
 
