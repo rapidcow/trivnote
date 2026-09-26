@@ -126,7 +126,7 @@ public class PreviewAppleNotesDrawing
 			AffineTransform inkMap = loadTransformOrIdentity(fields.get("ink-transform"), null);
 			strokes.add(new Stroke(sortId, uuid, ink, map, inkMap, loadPoints(fields.get("points"))));
 		}
-		// strokes.sort(Comparator.comparing(Stroke::clock));
+		strokes.sort(Comparator.comparing(Stroke::clock));
 		return strokes;
 	}
 
