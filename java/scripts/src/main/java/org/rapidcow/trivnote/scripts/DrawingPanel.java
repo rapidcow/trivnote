@@ -38,7 +38,7 @@ class DrawingPanel extends JPanel
 			RenderingHints.VALUE_ANTIALIAS_ON
 		);
 		canvas.setStroke(new BasicStroke(
-			5.0f,  /* Full width */
+			2.5f,  /* Full width */
 			BasicStroke.CAP_ROUND,
 			BasicStroke.JOIN_ROUND
 		));
