@@ -3,6 +3,7 @@ package org.rapidcow.trivnote.scripts;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -84,7 +86,8 @@ public class PreviewAppleNotesDrawing
 
 		drawing = toAlist(rV);
 
-		List<Stroke> strokes = loadStrokes(drawing.get("strokes"));
+		List<Ink> brushKit = loadInk(drawing.get("ink"));
+		List<Stroke> strokes = loadStrokes(brushKit, drawing.get("strokes"));
 		System.out.println(strokes.size()
 			+ " stroke"
 			+ (strokes.size() == 1 ? "" : "s")
@@ -109,14 +112,17 @@ public class PreviewAppleNotesDrawing
 	 * be used directly here (every entry shares the same "stroke"
 	 * tag, which toAlist would reject as a duplicate key).
 	 */
-	private static List<Stroke> loadStrokes(Datum strokesNode)
+	private static List<Stroke> loadStrokes(List<Ink> kit, Datum strokesNode)
 	{
 		List<Stroke> strokes = new ArrayList<>();
 		for (Datum node : tagged("stroke", strokesNode)) {
 			Map<String,Datum> fields = toAlist(node);
+			Clock sortId = loadClock(fields.get("sort-id"));
 			String uuid = ((Atom) first(fields.get("uuid"))).value();
-			strokes.add(new Stroke(uuid, loadPoints(fields.get("points"))));
+			Ink ink = kit.get(Integer.parseInt(((Atom) fields.get("ink-index")).value()));
+			strokes.add(new Stroke(sortId, uuid, ink, loadPoints(fields.get("points"))));
 		}
+		strokes.sort(Comparator.comparing(Stroke::clock));
 		return strokes;
 	}
 
@@ -226,5 +232,49 @@ public class PreviewAppleNotesDrawing
 			throw up( "improper list (tail is: " + it.tail() + ")" );
 		}
 		return jc;
+	}
+
+	private static List<Ink> loadInk(Datum root)
+	{
+		List<Ink> brushKit = new ArrayList<>();
+		for (Datum node : tagged("ink", root)) {
+			Map<String,Datum> props = toAlist(node);
+			Datum colorNode = props.get("color");
+			float[] chan = new float[4];
+			Color color;
+			Walk colorIt = new Walk(colorNode);
+			int i = 0;
+			while (colorIt.hasNext()) {
+				if (i >= 4) {
+					throw up( "wrong arity" );
+				}
+				String value = ((Atom) colorIt.next()).value();
+				chan[i++] = Float.parseFloat(value);
+			}
+			if (colorIt.tail() != Nil.INSTANCE) {
+				throw up( "improper list (tail is: " + colorIt.tail() + ")" );
+			}
+			color = new Color(chan[0], chan[1], chan[2], chan[3]);
+			brushKit.add(new Ink(color));
+		}
+		return brushKit;
+	}
+
+	private static Clock loadClock(Datum node)
+	{
+		Walk it = new Walk(node);
+		int[] args = new int[3];
+		int i = 0;
+		while (it.hasNext()) {
+			if (i >= 3) {
+				throw up( "wrong arity" );
+			}
+			String value = ((Atom) it.next()).value();
+			args[i++] = Integer.parseInt(value);
+		}
+		if (it.tail() != Nil.INSTANCE) {
+			throw up( "improper list (tail is: " + it.tail() + ")" );
+		}
+		return new Clock(args[0], args[1], args[2]);
 	}
 }
