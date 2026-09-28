@@ -48,6 +48,17 @@ tasks.named<Test>("test") {
 }
 
 tasks.javadoc {
+    // Used to rewrite generated javadoc source links to point at GitLab
+    // instead of the local HTML source mirror (see doLast below).
+    // Declared here rather than at script scope so the doLast action
+    // below doesn't need to capture the whole build script object,
+    // which the configuration cache disallows serializing.
+    val gitPrefix = providers.exec {
+        workingDir = projectDir
+        commandLine("git", "rev-parse", "--show-prefix")
+    }.standardOutput.asText.map { it.trim() }
+    val gitTag = "${project.name}/${project.version}"
+
     (options as StandardJavadocDocletOptions).apply {
         // Enable all documentation checks
         addBooleanOption("Xdoclint:all", true)
@@ -57,6 +68,40 @@ tasks.javadoc {
         encoding = "UTF-8"
         charSet  = "UTF-8"
         docEncoding = "UTF-8"
+        // Adds a per-line "view source" link to every class/member,
+        // pointed at a local HTML mirror of the source (rewritten to
+        // point at gitweb instead, below).
+        addBooleanOption("linksource", true)
+    }
+
+    doLast {
+        val javadocTask = this as Javadoc
+        val destDir = javadocTask.destinationDir ?: return@doLast
+        val srcRoot = gitPrefix.get() + "src/main/java"
+        val baseUrl = "https://gitlab.com/rapidcow/trivnote/-/blob/$gitTag/$srcRoot"
+
+        // -linksource points every class/member at a local HTML mirror
+        // of the source, e.g. "../../../../src-html/.../Atom.html#line-23"
+        // (nested classes get their own mirror page, e.g.
+        // "DataLoader.ParseException.html", which is really just a copy
+        // of "DataLoader.html" since they share one source file).
+        // Rewrite those into direct links to the tagged source on GitLab
+        // and drop the now-unused local mirror.
+        val sourceLink = Regex("""(?:\.\./)*src-html/([^"#]+?)\.html#line-(\d+)""")
+        destDir.walkTopDown()
+            .filter { it.isFile && it.extension == "html" && "src-html" !in it.path }
+            .forEach { file ->
+                val text = file.readText()
+                val rewritten = sourceLink.replace(text) { match ->
+                    val (classPath, line) = match.destructured
+                    val slash = classPath.lastIndexOf('/')
+                    val dir = if (slash >= 0) classPath.substring(0, slash + 1) else ""
+                    val topLevelClass = classPath.substring(slash + 1).substringBefore('.')
+                    "$baseUrl/$dir$topLevelClass.java#L$line"
+                }
+                if (rewritten != text) file.writeText(rewritten)
+            }
+        File(destDir, "src-html").deleteRecursively()
     }
 }
 
