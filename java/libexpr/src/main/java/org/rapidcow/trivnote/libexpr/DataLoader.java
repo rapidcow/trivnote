@@ -62,101 +62,6 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		this(file, StandardCharsets.UTF_8);
 	}
 
-	/**
-	 * Parsing exception.
-	 */
-	public class ParseException extends RuntimeException
-	{
-		/* Exceptions are serializable, so Javadoc is necessary. */
-
-		/**
-		 * Line offset (0-indexed).
-		 */
-		private final long lineOffset;
-
-		/**
-		 * Column offset (0-indexed).
-		 */
-		private final long charOffset;
-
-		/**
-		 * Creates a new parsing exception without chaining.
-		 *
-		 * @param message    passed to {@link RuntimeException#RuntimeException(String)}
-		 * @param lineOffset line offset (0-indexed)
-		 * @param charOffset column offset (0-indexed)
-		 */
-		public ParseException(
-			String message,
-			long lineOffset,
-			long charOffset
-		)
-		{
-			super(message);
-			this.lineOffset = lineOffset;
-			this.charOffset = charOffset;
-		}
-
-		/**
-		 * Creates a new parsing exception with chaining.
-		 *
-		 * @param message   passed to {@link RuntimeException#RuntimeException(String, Throwable)}
-		 * @param cause     passed to {@link RuntimeException#RuntimeException(String, Throwable)}
-		 * @param lineOffset line offset (0-indexed)
-		 * @param charOffset column offset (0-indexed)
-		 */
-		public ParseException(
-			String message,
-			Throwable cause,
-			long lineOffset,
-			long charOffset
-		)
-		{
-			super(message, cause);
-			this.lineOffset = lineOffset;
-			this.charOffset = charOffset;
-		}
-
-		@Override public String toString()
-		{
-			return ("line " + getLineNumber() +
-				" char " + getCharNumber() +
-				": " + super.toString());
-		}
-
-		/**
-		 * {@return the line offset (0-based) of this exception}
-		 */
-		public long getLineOffset()
-		{
-			return row;
-		}
-
-		/**
-		 * {@return the line number (1-based) of this exception}
-		 */
-		public long getLineNumber()
-		{
-			return row + 1;
-		}
-
-		/**
-		 * {@return the column number (1-based) of this exception}
-		 */
-		public long getCharOffset()
-		{
-			return col;
-		}
-
-		/**
-		 * {@return the column number (1-based) of this exception}
-		 */
-		public long getCharNumber()
-		{
-			return col + 1;
-		}
-	}
-
 	private static class Token
 	{
 		final Datum value;
@@ -289,7 +194,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			return null;
 		}
 		if (tk.dot) {
-			throw new ParseException("Unexpected `.'", row, col);
+			throw new DataLoadingException("Unexpected `.'", row, col);
 		}
 		return tk.value;
 	}
@@ -369,7 +274,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 					}
 					if (w == ';') {
 						if (readDatum(-1) == null) {
-							throw new ParseException(
+							throw new DataLoadingException(
 								"Expected datum following `#;'",
 								row, col
 							);
@@ -387,7 +292,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 					if (sg == 0) {
 						if (tk.dot) {
 							if (q.isEmpty()) {
-								throw new ParseException(
+								throw new DataLoadingException(
 									"Unexpected `.'",
 									row, col
 								);
@@ -399,7 +304,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 					}
 					else if (sg == 1) {
 						if (tk.dot) {
-							throw new ParseException(
+							throw new DataLoadingException(
 								"Unexpected `.'",
 								row, col
 							);
@@ -408,7 +313,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 						sg++;
 					}
 					else {
-						throw new ParseException(
+						throw new DataLoadingException(
 							"Excess datum following `.'",
 							row, col
 						);
@@ -417,7 +322,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 				if (sg == 0) {
 					q.push(Nil.INSTANCE);
 				} else if (sg == 1) {
-					throw new ParseException(
+					throw new DataLoadingException(
 						"Missing datum following `.'",
 						row, col
 					);
@@ -430,7 +335,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			}
 
 			if (v == ')' || v == ']' || v == '}') {
-				throw new ParseException(
+				throw new DataLoadingException(
 					"Mismatched `" + v + "'",
 					row, col
 				);
@@ -496,7 +401,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		if (bg == -1) {
 			return null;
 		} else {
-			throw new ParseException("Unterminated `" + (char) bg + "' list", row, col);
+			throw new DataLoadingException("Unterminated `" + (char) bg + "' list", row, col);
 		}
 	}
 
@@ -572,7 +477,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			sb.append((char) v);
 		}
 
-		throw new ParseException("Unterminated quote \"...\"", row, col);
+		throw new DataLoadingException("Unterminated quote \"...\"", row, col);
 	}
 
 	private int readWord(StringBuilder sb, int v) throws IOException
@@ -612,7 +517,7 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		}
 
 		if (bar) {
-			throw new ParseException("Unterminated quote |...|", row, col);
+			throw new DataLoadingException("Unterminated quote |...|", row, col);
 		}
 
 		return v;
