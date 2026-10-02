@@ -233,7 +233,7 @@ public class ReaderTest
 	{
 		bff = new StringReader("(. a)");
 		rdr = new DataLoader(bff);
-		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
+		assertThrows(DataLoadingException.class, () -> rdr.next());
 		assertNull(rdr.eio());
 	}
 
@@ -241,7 +241,7 @@ public class ReaderTest
 	{
 		bff = new StringReader("(a . . b)");
 		rdr = new DataLoader(bff);
-		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
+		assertThrows(DataLoadingException.class, () -> rdr.next());
 		assertNull(rdr.eio());
 	}
 
@@ -249,7 +249,7 @@ public class ReaderTest
 	{
 		bff = new StringReader("(a . b c)");
 		rdr = new DataLoader(bff);
-		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
+		assertThrows(DataLoadingException.class, () -> rdr.next());
 		assertNull(rdr.eio());
 	}
 
@@ -257,7 +257,7 @@ public class ReaderTest
 	{
 		bff = new StringReader("(a . )");
 		rdr = new DataLoader(bff);
-		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
+		assertThrows(DataLoadingException.class, () -> rdr.next());
 		assertNull(rdr.eio());
 	}
 
@@ -265,7 +265,7 @@ public class ReaderTest
 	{
 		bff = new StringReader(". a");
 		rdr = new DataLoader(bff);
-		assertThrows(DataLoader.ParseException.class, () -> rdr.next());
+		assertThrows(DataLoadingException.class, () -> rdr.next());
 		assertNull(rdr.eio());
 	}
 
