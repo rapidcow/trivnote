@@ -18,6 +18,7 @@ import javax.swing.Timer;
 
 class DrawingPanel extends JPanel
 {
+	private static final long serialVersionUID = 9207469320884566458L;
 	private List<Stroke> art;
 	private int revealed = 0;
 	private Timer timer;
