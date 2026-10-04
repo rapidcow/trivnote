@@ -66,7 +66,7 @@ tasks.javadoc {
         addBooleanOption("quiet", true)
         // UTF-8 all the way!
         encoding = "UTF-8"
-        charSet  = "UTF-8"
+        charSet = "UTF-8"
         docEncoding = "UTF-8"
         // Adds a per-line "view source" link to every class/member,
         // pointed at a local HTML mirror of the source (rewritten to
