@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# bootstrap - generate ./configure and friends from configure.ac
+#
+# Needs autoconf, automake and libtool (for libtoolize).
+#
+set -e
+#cd "$(dirname "$0")"   # Please just run me from this directory!
+mkdir -p build-aux m4
+exec autoreconf --force --install --verbose
