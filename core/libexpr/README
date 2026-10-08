@@ -1,0 +1,16 @@
+core/libexpr - C port of trivnote-libexpr
+
+Reads (and, eventually, writes) the same R7RS-ish S-expressions as
+the Java library, so that iOS and Qt/X11 frontends can share the
+data format.  This was my bad idea; don't blame Claude for this...
+
+Here is a cool idea called "out-of-tree" builds.  Basically you
+can keep the source tree clean on a system without the luxury of
+running Git.  The idea is as follows:
+
+    ./bootstrap                 # generate ./configure; Git only!
+    mkdir /tmp/b && cd /tmp/b   # out-of-tree builds are encouraged
+    ${OLDPWD}/configure [CFLAGS=...] [--prefix=...]
+    make && make install
+
+LGPL version 3 or later for this guy too.

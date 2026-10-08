@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: trx
+Description: trivnote S-expression library
+Version: @PACKAGE_VERSION@
+Libs: -L${libdir} -ltrx
+Cflags: -I${includedir}
