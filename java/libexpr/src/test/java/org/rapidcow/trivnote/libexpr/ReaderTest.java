@@ -11,6 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+/**
+ * {@link org.rapidcow.trivnote.libexpr.DataLoader} test.
+ */
 public class ReaderTest
 {
 	private Reader input;
