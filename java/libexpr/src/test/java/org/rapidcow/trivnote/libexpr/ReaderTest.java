@@ -13,40 +13,40 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ReaderTest
 {
-	private Reader bff;
-	private Datum tok;
-	private DataLoader rdr;
+	private Reader input;
+	private Datum token;
+	private DataLoader loader;
 	private List<Datum> list;
-	private Walk iter;
+	private Walk walk;
 
 	@Test void testReadSymbol()
 	{
-		bff = new StringReader("(foo bar baz)");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		input = new StringReader("(foo bar baz)");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
 				Symbol.of("foo"),
 				Symbol.of("bar"),
 				Symbol.of("baz")
 			), list);
-		assertEquals(Nil.INSTANCE, iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(Nil.INSTANCE, walk.tail());
+		assertNull(loader.eio());
 	}
 
 	@Test void testReadScalar()
 	{
-		bff = new StringReader("(2.719 -0.898 .67 -.1 \"1024\" \"abc\")");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		input = new StringReader("(2.719 -0.898 .67 -.1 \"1024\" \"abc\")");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
 				new Scalar("2.719"),
@@ -56,81 +56,81 @@ public class ReaderTest
 				new Scalar("1024"),
 				new Scalar("abc")
 			), list);
-		assertEquals(Nil.INSTANCE, iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(Nil.INSTANCE, walk.tail());
+		assertNull(loader.eio());
 	}
 
 	@Test void testLineComment()
 	{
-		bff = new StringReader("(abc;comment\ndef)");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		input = new StringReader("(abc;comment\ndef)");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
 				Symbol.of("abc"),
 				Symbol.of("def")
 			), list);
-		assertEquals(Nil.INSTANCE, iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(Nil.INSTANCE, walk.tail());
+		assertNull(loader.eio());
 	}
 
 	@Test void testDatumComment()
 	{
-		bff = new StringReader("(#;A #;(OA deg 30) 42)");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		input = new StringReader("(#;A #;(OA deg 30) 42)");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
 				new Scalar("42")
 			), list);
-		assertEquals(Nil.INSTANCE, iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(Nil.INSTANCE, walk.tail());
+		assertNull(loader.eio());
 	}
 
 	@Test void testDottedPair()
 	{
-		bff = new StringReader("(a b . c)");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		input = new StringReader("(a b . c)");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
 				Symbol.of("a"),
 				Symbol.of("b")
 			), list);
-		assertEquals(Symbol.of("c"), iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(Symbol.of("c"), walk.tail());
+		assertNull(loader.eio());
 	}
 
 	@Test void testDottedPairNested()
 	{
 		/* (a . (b c)) is equivalent to (a b c) */
-		bff = new StringReader("(a . (b c))");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		input = new StringReader("(a . (b c))");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
 				Symbol.of("a"),
 				Symbol.of("b"),
 				Symbol.of("c")
 			), list);
-		assertEquals(Nil.INSTANCE, iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(Nil.INSTANCE, walk.tail());
+		assertNull(loader.eio());
 	}
 
 	@Test void testDottedPairNoSpaceBeforeBracket()
@@ -140,64 +140,64 @@ public class ReaderTest
 		 * is `. (c)', and consing b onto (c) yields (b c), so the
 		 * whole thing flattens to the proper list (a b c).
 		 */
-		bff = new StringReader("(a b .(c))");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		input = new StringReader("(a b .(c))");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
 				Symbol.of("a"),
 				Symbol.of("b"),
 				Symbol.of("c")
 			), list);
-		assertEquals(Nil.INSTANCE, iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(Nil.INSTANCE, walk.tail());
+		assertNull(loader.eio());
 	}
 
 	@Test void testDotGluedToAtomIsOrdinarySymbol()
 	{
 		/*
-		 * A `.' immediately followed by a non-delimiter character
+		 * A `.' immediately followed by a non-delimwalk character
 		 * is not the pair marker -- it is just the first character
 		 * of a symbol.
 		 */
-		bff = new StringReader("(a b .c)");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		input = new StringReader("(a b .c)");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
 				Symbol.of("a"),
 				Symbol.of("b"),
 				Symbol.of(".c")
 			), list);
-		assertEquals(Nil.INSTANCE, iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(Nil.INSTANCE, walk.tail());
+		assertNull(loader.eio());
 	}
 
 	@Test void testDotAsOrdinarySymbolChar()
 	{
-		/* a dot not delimiter-bounded is just a symbol character */
-		bff = new StringReader("(... a.b)");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		/* a dot not delimwalk-bounded is just a symbol character */
+		input = new StringReader("(... a.b)");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
 				Symbol.of("..."),
 				Symbol.of("a.b")
 			), list);
-		assertEquals(Nil.INSTANCE, iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(Nil.INSTANCE, walk.tail());
+		assertNull(loader.eio());
 	}
 
 	/*
@@ -209,13 +209,13 @@ public class ReaderTest
 	 */
 	@Test void testWeirdIdentifiers()
 	{
-		bff = new StringReader("(+ - +. -. -.o +.=)");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		input = new StringReader("(+ - +. -. -.o +.=)");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
 				Symbol.of("+"),
@@ -225,147 +225,147 @@ public class ReaderTest
 				Symbol.of("-.o"),
 				Symbol.of("+.=")
 			), list);
-		assertEquals(Nil.INSTANCE, iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(Nil.INSTANCE, walk.tail());
+		assertNull(loader.eio());
 	}
 
 	@Test void testDottedPairLeadingDotFails()
 	{
-		bff = new StringReader("(. a)");
-		rdr = new DataLoader(bff);
-		assertThrows(DataLoadingException.class, () -> rdr.next());
-		assertNull(rdr.eio());
+		input = new StringReader("(. a)");
+		loader = new DataLoader(input);
+		assertThrows(DataLoadingException.class, () -> loader.next());
+		assertNull(loader.eio());
 	}
 
 	@Test void testDottedPairDoubleDotFails()
 	{
-		bff = new StringReader("(a . . b)");
-		rdr = new DataLoader(bff);
-		assertThrows(DataLoadingException.class, () -> rdr.next());
-		assertNull(rdr.eio());
+		input = new StringReader("(a . . b)");
+		loader = new DataLoader(input);
+		assertThrows(DataLoadingException.class, () -> loader.next());
+		assertNull(loader.eio());
 	}
 
 	@Test void testDottedPairExcessDatumFails()
 	{
-		bff = new StringReader("(a . b c)");
-		rdr = new DataLoader(bff);
-		assertThrows(DataLoadingException.class, () -> rdr.next());
-		assertNull(rdr.eio());
+		input = new StringReader("(a . b c)");
+		loader = new DataLoader(input);
+		assertThrows(DataLoadingException.class, () -> loader.next());
+		assertNull(loader.eio());
 	}
 
 	@Test void testDottedPairMissingDatumFails()
 	{
-		bff = new StringReader("(a . )");
-		rdr = new DataLoader(bff);
-		assertThrows(DataLoadingException.class, () -> rdr.next());
-		assertNull(rdr.eio());
+		input = new StringReader("(a . )");
+		loader = new DataLoader(input);
+		assertThrows(DataLoadingException.class, () -> loader.next());
+		assertNull(loader.eio());
 	}
 
 	@Test void testTopLevelDotIsIllegal()
 	{
-		bff = new StringReader(". a");
-		rdr = new DataLoader(bff);
-		assertThrows(DataLoadingException.class, () -> rdr.next());
-		assertNull(rdr.eio());
+		input = new StringReader(". a");
+		loader = new DataLoader(input);
+		assertThrows(DataLoadingException.class, () -> loader.next());
+		assertNull(loader.eio());
 	}
 
 	@Test void testTopLevelDotAtEofIsIllegal()
 	{
 		/* used to read as the symbol `.' */
-		bff = new StringReader(".");
-		rdr = new DataLoader(bff);
-		assertThrows(DataLoadingException.class, () -> rdr.next());
-		assertNull(rdr.eio());
+		input = new StringReader(".");
+		loader = new DataLoader(input);
+		assertThrows(DataLoadingException.class, () -> loader.next());
+		assertNull(loader.eio());
 	}
 
 	@Test void testDottedPairDotAtEofFails()
 	{
-		bff = new StringReader("(a .");
-		rdr = new DataLoader(bff);
-		assertThrows(DataLoadingException.class, () -> rdr.next());
-		assertNull(rdr.eio());
+		input = new StringReader("(a .");
+		loader = new DataLoader(input);
+		assertThrows(DataLoadingException.class, () -> loader.next());
+		assertNull(loader.eio());
 	}
 
 	@Test void testDottedPairNoSpaceBeforeQuote()
 	{
 		/* `.' followed by `"' is the pair marker, as with a bracket */
-		bff = new StringReader("(a .\"b\")");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		input = new StringReader("(a .\"b\")");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(List.of(Symbol.of("a")), list);
-		assertEquals(new Scalar("b"), iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(new Scalar("b"), walk.tail());
+		assertNull(loader.eio());
 	}
 
 	@Test void testDottedPairNoSpaceBeforeBar()
 	{
-		bff = new StringReader("(a .|b c|)");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		input = new StringReader("(a .|b c|)");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(List.of(Symbol.of("a")), list);
-		assertEquals(Symbol.of("b c"), iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(Symbol.of("b c"), walk.tail());
+		assertNull(loader.eio());
 	}
 
 	@Test void testDottedPairDotBeforeLineComment()
 	{
-		bff = new StringReader("(a .;comment\nb)");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		input = new StringReader("(a .;comment\nb)");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(List.of(Symbol.of("a")), list);
-		assertEquals(Symbol.of("b"), iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(Symbol.of("b"), walk.tail());
+		assertNull(loader.eio());
 	}
 
 	@Test void testSymbolQuote()
 	{
-		bff = new StringReader("(|foo bar| baz al|ter|na|tion|)");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		input = new StringReader("(|foo bar| baz al|ter|na|tion|)");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
 				Symbol.of("foo bar"),
 				Symbol.of("baz"),
 				Symbol.of("alternation")
 			), list);
-		assertEquals(Nil.INSTANCE, iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(Nil.INSTANCE, walk.tail());
+		assertNull(loader.eio());
 	}
 
 	@Test void testStringQuote()
 	{
 		/* ("say \"hi\"" "back\\slash" "line1\nline2") */
-		bff = new StringReader(
+		input = new StringReader(
 			"(\"say \\\"hi\\\"\" \"back\\\\slash\" \"line1\\nline2\")");
-		rdr = new DataLoader(bff);
-		tok = rdr.next();
-		iter = new Walk(tok);
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
 
 		list = new ArrayList<>();
-		iter.forEachRemaining(list::add);
+		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
 				new Scalar("say \"hi\""),
 				new Scalar("back\\slash"),
 				new Scalar("line1\nline2")
 			), list);
-		assertEquals(Nil.INSTANCE, iter.tail());
-		assertNull(rdr.eio());
+		assertEquals(Nil.INSTANCE, walk.tail());
+		assertNull(loader.eio());
 	}
 }
