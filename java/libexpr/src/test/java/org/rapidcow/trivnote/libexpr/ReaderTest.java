@@ -269,6 +269,66 @@ public class ReaderTest
 		assertNull(rdr.eio());
 	}
 
+	@Test void testTopLevelDotAtEofIsIllegal()
+	{
+		/* used to read as the symbol `.' */
+		bff = new StringReader(".");
+		rdr = new DataLoader(bff);
+		assertThrows(DataLoadingException.class, () -> rdr.next());
+		assertNull(rdr.eio());
+	}
+
+	@Test void testDottedPairDotAtEofFails()
+	{
+		bff = new StringReader("(a .");
+		rdr = new DataLoader(bff);
+		assertThrows(DataLoadingException.class, () -> rdr.next());
+		assertNull(rdr.eio());
+	}
+
+	@Test void testDottedPairNoSpaceBeforeQuote()
+	{
+		/* `.' followed by `"' is the pair marker, as with a bracket */
+		bff = new StringReader("(a .\"b\")");
+		rdr = new DataLoader(bff);
+		tok = rdr.next();
+		iter = new Walk(tok);
+
+		list = new ArrayList<>();
+		iter.forEachRemaining(list::add);
+		assertIterableEquals(List.of(Symbol.of("a")), list);
+		assertEquals(new Scalar("b"), iter.tail());
+		assertNull(rdr.eio());
+	}
+
+	@Test void testDottedPairNoSpaceBeforeBar()
+	{
+		bff = new StringReader("(a .|b c|)");
+		rdr = new DataLoader(bff);
+		tok = rdr.next();
+		iter = new Walk(tok);
+
+		list = new ArrayList<>();
+		iter.forEachRemaining(list::add);
+		assertIterableEquals(List.of(Symbol.of("a")), list);
+		assertEquals(Symbol.of("b c"), iter.tail());
+		assertNull(rdr.eio());
+	}
+
+	@Test void testDottedPairDotBeforeLineComment()
+	{
+		bff = new StringReader("(a .;comment\nb)");
+		rdr = new DataLoader(bff);
+		tok = rdr.next();
+		iter = new Walk(tok);
+
+		list = new ArrayList<>();
+		iter.forEachRemaining(list::add);
+		assertIterableEquals(List.of(Symbol.of("a")), list);
+		assertEquals(Symbol.of("b"), iter.tail());
+		assertNull(rdr.eio());
+	}
+
 	@Test void testSymbolQuote()
 	{
 		bff = new StringReader("(|foo bar| baz al|ter|na|tion|)");

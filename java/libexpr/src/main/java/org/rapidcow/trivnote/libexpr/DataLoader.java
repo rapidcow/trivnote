@@ -233,13 +233,17 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 			}
 
 			if (v == '.') {
-				if (( w = readChar() ) != -1) {
+				if (( w = readChar() ) == -1) {
+					return Token.DOT;
+				}
+				else {
 					if (isPOSIXspace(w)) {
 						return Token.DOT;
 					}
 					else if (
 						w == '(' || w == '[' || w == '{' ||
-						w == ')' || w == ']' || w == '}'
+						w == ')' || w == ']' || w == '}' ||
+						w == '"' || w == '|' || w == ';'
 					) {
 						unreadChar(w);
 						return Token.DOT;
