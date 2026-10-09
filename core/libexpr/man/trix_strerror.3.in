@@ -1,36 +1,36 @@
 .Dd October 8, 2026
-.Dt TRX_STRERROR 3
+.Dt TRIX_STRERROR 3
 .Os @PACKAGE_STRING@
 .Sh NAME
-.Nm trx_strerror
+.Nm trix_strerror
 .Nd describe a status code
 .Sh SYNOPSIS
-.In trivnote/trx.h
+.In triv/expr.h
 .Ft const char *
-.Fn trx_strerror "int status"
+.Fn trix_strerror "int status"
 .Sh DESCRIPTION
 The
-.Fn trx_strerror
+.Fn trix_strerror
 function returns a static, human-readable description of a status
 code.
 The status codes are:
-.Bl -tag -width ".Dv TRX_ENOMEM"
-.It Dv TRX_OK
+.Bl -tag -width ".Dv TRIX_ENOMEM"
+.It Dv TRIX_OK
 Success (0).
-.It Dv TRX_EOF
+.It Dv TRIX_EOF
 End of input.
-.It Dv TRX_ENOMEM
+.It Dv TRIX_ENOMEM
 An allocation failed.
-.It Dv TRX_EIO
+.It Dv TRIX_EIO
 The read callback reported an error.
-.It Dv TRX_EBAD
+.It Dv TRIX_EBAD
 The input is malformed.
-.It Dv TRX_ENOSYS
+.It Dv TRIX_ENOSYS
 Not implemented yet.
 .El
 .Sh RETURN VALUES
 The
-.Fn trx_strerror
+.Fn trix_strerror
 function returns a string that must not be modified or freed.
 An unrecognised code yields
 .Qq unknown status .
