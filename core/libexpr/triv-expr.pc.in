@@ -3,8 +3,8 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: trx
+Name: triv-expr
 Description: trivnote S-expression library
 Version: @PACKAGE_VERSION@
-Libs: -L${libdir} -ltrx
+Libs: -L${libdir} -ltriv-expr
 Cflags: -I${includedir}

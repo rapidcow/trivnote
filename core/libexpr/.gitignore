@@ -12,8 +12,9 @@
 /config.status
 /libtool
 /stamp-h1
-/trx.pc
 /m4/*
+/triv-expr.pc
+/triv-expr-*
 /*.tar.*
 .deps/
 .libs/
