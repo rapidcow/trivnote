@@ -20,10 +20,6 @@ still a handful of subsystems involved:
 The first three subsystems should be compile-
 able without Android SDK.
 
-Regarding licensing, I am going with LGPL
-(version 3 or later) in both the library and in
-the drawing.  I hope the linking exception can
-allow proprietary components while the core app
-stays free. :)
+Regarding licensing, see LICENSE.
 
 WWW: https://foss.rapidcow.org/project/trivnote/
