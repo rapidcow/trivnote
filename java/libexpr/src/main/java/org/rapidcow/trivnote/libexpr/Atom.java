@@ -19,8 +19,14 @@ package org.rapidcow.trivnote.libexpr;
  * Presently, an atom’s value is a freeform Unicode
  * string, represented by {@link #value()}.
  */
-public abstract sealed class Atom
-	implements Datum permits Scalar, Symbol
+public abstract sealed
+class
+	Atom
+implements
+	Datum
+permits
+	Scalar,
+	Symbol
 {
 	/**
 	 * Value of this datum.  May not be null.
@@ -33,7 +39,8 @@ public abstract sealed class Atom
 	 * @param value  value
 	 * @throws NullPointerException on null {@code value}
 	 */
-	protected Atom(String value)
+	protected
+	Atom(String value)
 	{
 		if (value == null) {
 			String className = getClass().getSimpleName();
@@ -45,13 +52,16 @@ public abstract sealed class Atom
 	/**
 	 * {@return the value of this datum}
 	 */
-	public String value()
+	public String
+	value()
 	{
 		return value;
 	}
 
 	/* This mimics a record's toString() override. */
-	@Override public String toString()
+	@Override
+	public String
+	toString()
 	{
 		String className = getClass().getSimpleName();
 		return className + "[value=" + value + "]";

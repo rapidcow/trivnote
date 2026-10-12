@@ -14,7 +14,9 @@ import java.nio.charset.StandardCharsets;
 /**
  * S-expression writer.  This class is incomplete.
  */
-public class DataDumper
+public
+class
+	DataDumper
 {
 	/**
 	 * Output character stream.
@@ -26,7 +28,8 @@ public class DataDumper
 	 *
 	 * @param file  output character stream
 	 */
-	public DataDumper(Writer file)
+	public
+	DataDumper(Writer file)
 	{
 		this.out = file;
 	}
@@ -37,7 +40,8 @@ public class DataDumper
 	 * @param file    output byte stream
 	 * @param charset character encoding
 	 */
-	public DataDumper(OutputStream file, Charset charset)
+	public
+	DataDumper(OutputStream file, Charset charset)
 	{
 		this(new OutputStreamWriter(file, charset));
 	}
@@ -48,7 +52,8 @@ public class DataDumper
 	 *
 	 * @param file  output byte stream
 	 */
-	public DataDumper(OutputStream file)
+	public
+	DataDumper(OutputStream file)
 	{
 		this(file, StandardCharsets.UTF_8);
 	}

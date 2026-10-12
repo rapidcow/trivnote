@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * {@link org.rapidcow.trivnote.libexpr.DataLoader} test.
  */
-public class ReaderTest
+class ReaderTest
 {
 	private Reader input;
 	private Datum token;

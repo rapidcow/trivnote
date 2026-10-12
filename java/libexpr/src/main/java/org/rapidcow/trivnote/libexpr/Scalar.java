@@ -10,7 +10,11 @@ package org.rapidcow.trivnote.libexpr;
  * represented by its string representation
  * stored in {@link #value()}.
  */
-public final class Scalar extends Atom
+public final
+class
+	Scalar
+extends
+	Atom
 {
 	/**
 	 * Creates an immutable scalar atom.
@@ -18,7 +22,8 @@ public final class Scalar extends Atom
 	 * @param value  value
 	 * @throws NullPointerException on null {@code value}
 	 */
-	public Scalar(String value)
+	public
+	Scalar(String value)
 	{
 		super(value);
 	}
@@ -29,7 +34,9 @@ public final class Scalar extends Atom
 	 *
 	 * @param o  object to be compared against
 	 */
-	@Override public boolean equals(Object o)
+	@Override
+	public boolean
+	equals(Object o)
 	{
 		if (this == o) {
 			return true;
@@ -44,7 +51,9 @@ public final class Scalar extends Atom
 	 * {@return hash code for this}
 	 * Equal scalars hash to the same code.
 	 */
-	@Override public int hashCode()
+	@Override
+	public int
+	hashCode()
 	{
 		return value.hashCode();
 	}

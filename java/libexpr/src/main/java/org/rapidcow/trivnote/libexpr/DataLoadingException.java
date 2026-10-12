@@ -8,7 +8,11 @@ package org.rapidcow.trivnote.libexpr;
 /**
  * Parsing exception.
  */
-public class DataLoadingException extends RuntimeException
+public
+class
+	DataLoadingException
+extends
+	RuntimeException
 {
 	private static final long serialVersionUID = 2823174540633306742L;
 
@@ -31,11 +35,11 @@ public class DataLoadingException extends RuntimeException
 	 * @param lineOffset line offset (0-indexed)
 	 * @param charOffset column offset (0-indexed)
 	 */
-	public DataLoadingException(
+	public
+	DataLoadingException(
 		String message,
 		long lineOffset,
-		long charOffset
-	)
+		long charOffset)
 	{
 		super(message);
 		this.lineOffset = lineOffset;
@@ -50,19 +54,21 @@ public class DataLoadingException extends RuntimeException
 	 * @param lineOffset line offset (0-indexed)
 	 * @param charOffset column offset (0-indexed)
 	 */
-	public DataLoadingException(
+	public
+	DataLoadingException(
 		String message,
 		Throwable cause,
 		long lineOffset,
-		long charOffset
-	)
+		long charOffset)
 	{
 		super(message, cause);
 		this.lineOffset = lineOffset;
 		this.charOffset = charOffset;
 	}
 
-	@Override public String toString()
+	@Override
+	public String
+	toString()
 	{
 		return ("line " + getLineNumber() +
 			" char " + getCharNumber() +
@@ -72,7 +78,8 @@ public class DataLoadingException extends RuntimeException
 	/**
 	 * {@return the line offset (0-based) of this exception}
 	 */
-	public long getLineOffset()
+	public long
+	getLineOffset()
 	{
 		return lineOffset;
 	}
@@ -80,7 +87,8 @@ public class DataLoadingException extends RuntimeException
 	/**
 	 * {@return the line number (1-based) of this exception}
 	 */
-	public long getLineNumber()
+	public long
+	getLineNumber()
 	{
 		return lineOffset + 1;
 	}
@@ -88,7 +96,8 @@ public class DataLoadingException extends RuntimeException
 	/**
 	 * {@return the column number (1-based) of this exception}
 	 */
-	public long getCharOffset()
+	public long
+	getCharOffset()
 	{
 		return charOffset;
 	}
@@ -96,7 +105,8 @@ public class DataLoadingException extends RuntimeException
 	/**
 	 * {@return the column number (1-based) of this exception}
 	 */
-	public long getCharNumber()
+	public long
+	getCharNumber()
 	{
 		return charOffset + 1;
 	}
