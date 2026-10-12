@@ -1,5 +1,10 @@
 /* vim: set et sts=4 sw=4: ==========================
  *
+ * Copyright 2026 rapidcow!
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * ==================================================
+ *
  * ui.PencilProbe - S Pen sensor test
  *
  *   - point shows the (x,y) coordinates;
@@ -8,9 +13,7 @@
  *   - force shows the pressure exerted on the pen tip.
  *
  * Angles measured in radians, force measured in [0,1].
- *
  ================================================= */
-
 package org.rapidcow.android.trivnote.ui
 
 import kotlin.math.PI
