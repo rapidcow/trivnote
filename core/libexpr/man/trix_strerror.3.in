@@ -32,5 +32,5 @@ Not implemented yet.
 The
 .Fn trix_strerror
 function returns a string that must not be modified or freed.
-An unrecognised code yields
+An unrecognized code yields
 .Qq unknown status .
