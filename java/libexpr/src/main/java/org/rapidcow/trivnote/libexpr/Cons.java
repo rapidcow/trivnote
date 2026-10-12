@@ -19,7 +19,12 @@ import java.util.Objects;
  * It is otherwise considered <em>improper</em>.
  * Cons cells are {@link Iterable} as a list.
  */
-public final class Cons implements Datum, Iterable<Datum>
+public final
+class
+	Cons
+implements
+	Datum,
+	Iterable<Datum>
 {
 	private final Datum car;
 	private final Datum cdr;
@@ -31,7 +36,8 @@ public final class Cons implements Datum, Iterable<Datum>
 	 * @param cdr  the latter half
 	 * @throws NullPointerException on null {@code car} or {@code cdr}
 	 */
-	public Cons(Datum car, Datum cdr)
+	public
+	Cons(Datum car, Datum cdr)
 	{
 		this.car = Objects.requireNonNull(car, "car must not be null");
 		this.cdr = Objects.requireNonNull(cdr, "cdr must not be null");
@@ -40,7 +46,8 @@ public final class Cons implements Datum, Iterable<Datum>
 	/**
 	 * {@return the former half}
 	 */
-	public Datum car()
+	public Datum
+	car()
 	{
 		return car;
 	}
@@ -48,7 +55,8 @@ public final class Cons implements Datum, Iterable<Datum>
 	/**
 	 * {@return the latter half}
 	 */
-	public Datum cdr()
+	public Datum
+	cdr()
 	{
 		return cdr;
 	}
@@ -56,7 +64,9 @@ public final class Cons implements Datum, Iterable<Datum>
 	/**
 	 * {@return a list iterator for this}
 	 */
-	@Override public Iterator<Datum> iterator()
+	@Override
+	public Iterator<Datum>
+	iterator()
 	{
 		return new Walk(this);
 	}

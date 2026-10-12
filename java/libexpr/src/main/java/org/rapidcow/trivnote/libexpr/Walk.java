@@ -12,7 +12,11 @@ import java.util.Objects;
 /**
  * List iterator.
  */
-public final class Walk implements Iterator<Datum>
+public final
+class
+	Walk
+implements
+	Iterator<Datum>
 {
 	private Datum tail;
 
@@ -22,7 +26,8 @@ public final class Walk implements Iterator<Datum>
 	 * @param node  starting datum
 	 * @throws NullPointerException on null {@code node}
 	 */
-	public Walk(Datum node)
+	public
+	Walk(Datum node)
 	{
 		this.tail = Objects.requireNonNull(node, "node must not be null");
 	}
@@ -32,7 +37,9 @@ public final class Walk implements Iterator<Datum>
 	 *
 	 * @throws NoSuchElementException on end of list
 	 */
-	@Override public Datum next()
+	@Override
+	public Datum
+	next()
 	{
 		if (tail instanceof Cons cell) {
 			tail = cell.cdr();
@@ -44,7 +51,9 @@ public final class Walk implements Iterator<Datum>
 	/**
 	 * {@return whether any datum remains}
 	 */
-	@Override public boolean hasNext()
+	@Override
+	public boolean
+	hasNext()
 	{
 		return tail instanceof Cons;
 	}
@@ -54,7 +63,8 @@ public final class Walk implements Iterator<Datum>
 	 * At the end of iteration, this is nil for a proper
 	 * list and a non-nil atom for an improper list.
 	 */
-	public Datum tail()
+	public Datum
+	tail()
 	{
 		return tail;
 	}

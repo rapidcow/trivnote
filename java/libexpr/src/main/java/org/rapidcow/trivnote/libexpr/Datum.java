@@ -15,14 +15,20 @@ package org.rapidcow.trivnote.libexpr;
  * distinguished from the {@link Atom} class) and
  * a “list”.
  */
-public sealed interface Datum
-	permits Atom, Cons, Nil
+public sealed
+interface
+	Datum
+permits
+	Atom,
+	Cons,
+	Nil
 {
 	/**
 	 * {@return whether this is an atom}  An atom
 	 * is any datum that is not a cons cell.
 	 */
-	default boolean isAtom()
+	default boolean
+	isAtom()
 	{
 		return !(this instanceof Cons);
 	}
@@ -33,7 +39,8 @@ public sealed interface Datum
 	 * iterable, though you must cast it to the
 	 * specific class to please the compiler.
 	 */
-	default boolean isList()
+	default boolean
+	isList()
 	{
 		return !(this instanceof Atom);
 	}

@@ -20,7 +20,12 @@ import java.util.NoSuchElementException;
 /**
  * R7RS-ish S-expression reader.
  */
-public class DataLoader implements Iterable<Datum>, Iterator<Datum>
+public
+class
+	DataLoader
+implements
+	Iterable<Datum>,
+	Iterator<Datum>
 {
 	/**
 	 * Input character stream.
@@ -40,7 +45,8 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 	 *
 	 * @param file  input character stream
 	 */
-	public DataLoader(Reader file)
+	public
+	DataLoader(Reader file)
 	{
 		this.in = new PushbackReader(file);
 	}
@@ -51,7 +57,8 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 	 * @param file    input byte stream
 	 * @param charset character encoding
 	 */
-	public DataLoader(InputStream file, Charset charset)
+	public
+	DataLoader(InputStream file, Charset charset)
 	{
 		this(new InputStreamReader(file, charset));
 	}
@@ -62,12 +69,15 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 	 *
 	 * @param file  input byte stream
 	 */
-	public DataLoader(InputStream file)
+	public
+	DataLoader(InputStream file)
 	{
 		this(file, StandardCharsets.UTF_8);
 	}
 
-	private static class Token
+	private
+	static class
+		Token
 	{
 		final Datum value;
 		final boolean dot;
@@ -86,7 +96,8 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		static final Token DOT = new Token(null, true);
 	}
 
-	private static boolean isPOSIXspace(int v)
+	private static boolean
+	isPOSIXspace(int v)
 	{
 		return (
 			v == ' '    /* 0x20  SP */
@@ -98,12 +109,16 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		);
 	}
 
-	private static boolean isPOSIXdigit(int v)
+	private static boolean
+	isPOSIXdigit(int v)
 	{
 		return '0' <= v && v <= '9';
 	}
 
-	private int readChar() throws IOException
+	private int
+	readChar()
+	throws
+		IOException
 	{
 		int v = in.read();
 		if (v != -1) {
@@ -119,7 +134,10 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		return v;
 	}
 
-	private void unreadChar(int v) throws IOException
+	private void
+	unreadChar(int v)
+	throws
+		IOException
 	{
 		if (v == '\n') {
 			row--;
@@ -131,7 +149,9 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 	/**
 	 * {@return this}
 	 */
-	@Override public Iterator<Datum> iterator()
+	@Override
+	public Iterator<Datum>
+	iterator()
 	{
 		return this;
 	}
@@ -141,7 +161,9 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 	 * If false, caller should check {@link #eio()} to distinguish
 	 * I/O error and EOF.
 	 */
-	@Override public boolean hasNext()
+	@Override
+	public boolean
+	hasNext()
 	{
 		if (fini) {
 			return false;
@@ -165,7 +187,9 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 	 * @throws NoSuchElementException on I/O error, or EOF
 	 * @throws ParseException on syntax error
 	 */
-	@Override public Datum next()
+	@Override
+	public Datum
+	next()
 	{
 		Datum s;
 		if (hasNext()) {
@@ -181,7 +205,8 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 	 * Caller is responsible to check this to
 	 * tell EOF from I/O error.
 	 */
-	public IOException eio()
+	public IOException
+	eio()
 	{
 		return eieio;
 	}
@@ -192,7 +217,10 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 	 * @return the next datum, or {@code null} on EOF
 	 * @throws IOException on {@link Reader#read} error
 	 */
-	public Datum readDatum() throws IOException
+	public Datum
+	readDatum()
+	throws
+		IOException
 	{
 		Token tk = readDatum(-1);
 		if (tk == null) {
@@ -204,7 +232,10 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		return tk.value;
 	}
 
-	private Token readDatum(int bg) throws IOException
+	private Token
+	readDatum(int bg)
+	throws
+		IOException
 	{
 		int v, w, eg, sg;
 		Datum s;
@@ -414,7 +445,10 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		}
 	}
 
-	private void skipBlockComment() throws IOException
+	private void
+	skipBlockComment()
+	throws
+		IOException
 	{
 		int v, w;
 		int d = 1;
@@ -445,7 +479,10 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		}
 	}
 
-	private int readPlain(StringBuilder sb) throws IOException
+	private int
+	readPlain(StringBuilder sb)
+	throws
+		IOException
 	{
 		int v;
 
@@ -468,7 +505,10 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		return v;
 	}
 
-	private void readQuote(StringBuilder sb) throws IOException
+	private void
+	readQuote(StringBuilder sb)
+	throws
+		IOException
 	{
 		int v, w;
 
@@ -489,7 +529,10 @@ public class DataLoader implements Iterable<Datum>, Iterator<Datum>
 		throw new DataLoadingException("Unterminated quote \"...\"", row, col);
 	}
 
-	private int readWord(StringBuilder sb, int v) throws IOException
+	private int
+	readWord(StringBuilder sb, int v)
+	throws
+		IOException
 	{
 		boolean bar;
 		int w;

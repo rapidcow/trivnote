@@ -12,7 +12,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * Interned {@link Atom}.
  * It is unquoted in wire S-expression representation.
  */
-public final class Symbol extends Atom
+public final
+class
+	Symbol
+extends
+	Atom
 {
 	/**
 	 * Global symbol pool.
@@ -20,7 +24,8 @@ public final class Symbol extends Atom
 	private static final Map<String, Symbol> pool
 		= new ConcurrentHashMap<>();
 
-	private Symbol(String value)
+	private
+	Symbol(String value)
 	{
 		super(value);
 	}
@@ -33,7 +38,8 @@ public final class Symbol extends Atom
 	 * @param value  the given value
 	 * @throws NullPointerException on null {@code value}
 	 */
-	public static Symbol of(String value)
+	public static Symbol
+	of(String value)
 	{
 		/*
 		 * Even if Symbol::new (which calls Atom::new) already
