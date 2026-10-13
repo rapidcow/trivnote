@@ -530,7 +530,7 @@ implements
 				return value;
 			}
 			if (value > (Integer.MAX_VALUE - digit) / radix) {
-				throw new DataLoadingException("Escape exceeds MAX_INT", row, col);
+				throw new DataLoadingException("Code point overflow", row, col);
 			}
 			value = value * radix + digit;
 			if (++count == limit) { return value; }
@@ -561,10 +561,10 @@ implements
 			case -1:
 				throw new DataLoadingException("Unterminated quote", row, col);
 			case 'a': sb.append('\007'); break;
-			case 'b': sb.append('\b'); break;
-			case 't': sb.append('\t'); break;
-			case 'n': sb.append('\n'); break;
-			case 'r': sb.append('\r'); break;
+			case 'b': sb.append('\010'); break;
+			case 't': sb.append('\011'); break;
+			case 'n': sb.append('\012'); break;
+			case 'r': sb.append('\015'); break;
 			case 'e': sb.append('\033'); break;
 			case 'c':
 				w = readChar();
@@ -603,7 +603,7 @@ implements
 			default: sb.appendCodePoint(v);
 			}
 		}
-		throw new DataLoadingException("Unterminated quote", row, col);
+		throw new DataLoadingException("Unterminated quote \"...\"", row, col);
 	}
 
 	private int
