@@ -560,12 +560,14 @@ implements
 			switch (v) {
 			case -1:
 				throw new DataLoadingException("Unterminated quote", row, col);
-			case 'a': sb.append('\007'); break;
-			case 'b': sb.append('\010'); break;
-			case 't': sb.append('\011'); break;
-			case 'n': sb.append('\012'); break;
-			case 'r': sb.append('\015'); break;
-			case 'e': sb.append('\033'); break;
+			case 'a': sb.append('\007'); break;  /* BEL */
+			case 'b': sb.append('\010'); break;  /* BS (backspace) */
+			case 't': sb.append('\011'); break;  /* HT (h-tab) */
+			case 'n': sb.append('\012'); break;  /* LF (new line) */
+			case 'v': sb.append('\013'); break;  /* VT (v-tab) */
+			case 'f': sb.append('\014'); break;  /* FF (new page) */
+			case 'r': sb.append('\015'); break;  /* CR */
+			case 'e': sb.append('\033'); break;  /* ESC */
 			case 'c':
 				w = readChar();
 				if (w < 0 || w > 127) {
