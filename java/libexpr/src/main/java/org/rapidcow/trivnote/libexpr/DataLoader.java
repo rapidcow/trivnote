@@ -505,28 +505,105 @@ implements
 		return v;
 	}
 
+	private static int
+	escapeDigit(int v, int radix)
+	{
+		int d = v >= '0' && v <= '9' ? v - '0'
+			: v >= 'a' && v <= 'f' ? v - 'a' + 10
+			: v >= 'A' && v <= 'F' ? v - 'A' + 10 : -1;
+		return d < radix ? d : -1;
+	}
+
+	private int
+	readEscapeNumber(int radix, int limit, int v, boolean braced)
+	throws
+		IOException
+	{
+		int value = 0, count = 0;
+		for (;;) {
+			int digit = escapeDigit(v, radix);
+			if (digit < 0) {
+				if (braced && v != '}') {
+					throw new DataLoadingException("Expected digit or closing brace in escape", row, col);
+				}
+				if (!braced && v != -1) { unreadChar(v); }
+				return value;
+			}
+			if (value > (Integer.MAX_VALUE - digit) / radix) {
+				throw new DataLoadingException("Escape exceeds MAX_INT", row, col);
+			}
+			value = value * radix + digit;
+			if (++count == limit) { return value; }
+			v = readChar();
+		}
+	}
+
+	private void
+	appendEscapeCodePoint(StringBuilder sb, int value)
+	{
+		if (!Character.isValidCodePoint(value)) {
+			throw new DataLoadingException("Invalid escape code point", row, col);
+		}
+		sb.appendCodePoint(value);
+	}
+
 	private void
 	readQuote(StringBuilder sb)
 	throws
 		IOException
 	{
 		int v, w;
-
-		while (( v = readChar() ) != -1) {
-			if (v == '"') {
-				return;
-			}
-
-			if (v == '\\') {
-				if (( w = readChar() ) != -1) {
-					v = w;
+		while ((v = readChar()) != -1) {
+			if (v == '"') { return; }
+			if (v != '\\') { sb.append((char) v); continue; }
+			v = readChar();
+			switch (v) {
+			case -1:
+				throw new DataLoadingException("Unterminated quote", row, col);
+			case 'a': sb.append('\007'); break;
+			case 'b': sb.append('\b'); break;
+			case 't': sb.append('\t'); break;
+			case 'n': sb.append('\n'); break;
+			case 'r': sb.append('\r'); break;
+			case 'e': sb.append('\033'); break;
+			case 'c':
+				w = readChar();
+				if (w < 0 || w > 127) {
+					throw new DataLoadingException("Expected ASCII character after control escape", row, col);
 				}
+				sb.appendCodePoint(w ^ '@');
+				break;
+			case 'x': case 'o':
+				w = readChar();
+				if (v == 'o' && w != '{') {
+					throw new DataLoadingException("Expected opening brace after octal escape", row, col);
+				}
+				boolean braced = w == '{';
+				appendEscapeCodePoint(sb, readEscapeNumber(v == 'x' ? 16 : 8,
+					braced ? -1 : 2, braced ? readChar() : w, braced));
+				break;
+			case '0': case '1': case '2': case '3':
+			case '4': case '5': case '6': case '7':
+				appendEscapeCodePoint(sb, readEscapeNumber(8, 3, v, false));
+				break;
+			case ' ': case '\t': case '\r': case '\n':
+				while (v == ' ' || v == '\t') { v = readChar(); }
+				if (v != '\r' && v != '\n') {
+					throw new DataLoadingException("Expected line ending in escape", row, col);
+				}
+				if (v == '\r') {
+					v = readChar();
+					if (v != '\n' && v != -1) { unreadChar(v); }
+				}
+				while ((v = readChar()) == ' ' || v == '\t') {
+					/* Discard indentation following the line ending. */
+				}
+				if (v != -1) { unreadChar(v); }
+				break;
+			default: sb.appendCodePoint(v);
 			}
-
-			sb.append((char) v);
 		}
-
-		throw new DataLoadingException("Unterminated quote \"...\"", row, col);
+		throw new DataLoadingException("Unterminated quote", row, col);
 	}
 
 	private int
