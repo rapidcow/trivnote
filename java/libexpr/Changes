@@ -3,6 +3,7 @@ Revision history of trivnote-libexpr
 
 0.1.0
     *** DataLoader.ParseException renamed to DataLoadingException
+    * Racket/Perl-ish "..." escapes!
 
 0.0.0  2026-09-24  RC
     This was "done" a few days ago, but pinning this as a
