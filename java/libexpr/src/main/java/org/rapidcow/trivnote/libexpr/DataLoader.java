@@ -547,10 +547,10 @@ implements
 	}
 
 	private void
-	appendEscapeCodePoint(StringBuilder sb, int value)
+	strictAppendCodePoint(StringBuilder sb, int value)
 	{
 		if (!Character.isValidCodePoint(value)) {
-			throw new DataLoadingException("Invalid escape code point", row, col);
+			throw new DataLoadingException("Invalid code point", row, col);
 		}
 		sb.appendCodePoint(value);
 	}
@@ -598,12 +598,12 @@ implements
 						+ "octal escape", row, col);
 				}
 				boolean braced = (w == '{');
-				appendEscapeCodePoint(sb, readEscapeNumber(v == 'x' ? 16 : 8,
+				strictAppendCodePoint(sb, readEscapeNumber(v == 'x' ? 16 : 8,
 					braced ? -1 : 2, braced ? readChar() : w, braced));
 				break;
 			case '0': case '1': case '2': case '3':
 			case '4': case '5': case '6': case '7':
-				appendEscapeCodePoint(sb, readEscapeNumber(8, 3, v, false));
+				strictAppendCodePoint(sb, readEscapeNumber(8, 3, v, false));
 				break;
 			case ' ': case '\t': case '\r': case '\n':
 				/* XXX: I don't know what this case means? */
