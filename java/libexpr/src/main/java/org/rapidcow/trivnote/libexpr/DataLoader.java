@@ -516,7 +516,7 @@ implements
 	}
 
 	private int
-	readEscapeNumber(int radix, int limit, int v, boolean braced)
+	readEscapeNumber(int radix, int limit, int v, boolean curly)
 	throws
 		IOException
 	{
@@ -525,12 +525,12 @@ implements
 		for (;;) {
 			int digit = parseDigit(v, radix);
 			if (digit < 0) {
-				if (braced && v != '}') {
+				if (curly && v != '}') {
 					throw new DataLoadingException(
 						"Expected base-" + radix + " digit or "
 						+ "closing brace in escape", row, col);
 				}
-				if (!braced && v != -1) {
+				if (!curly && v != -1) {
 					unreadChar(v);
 				}
 				return value;
@@ -561,7 +561,7 @@ implements
 		IOException
 	{
 		int v, w;
-		while ((v = readChar()) != -1) {
+		while (( v = readChar() ) != -1) {
 			if (v == '"') {
 				return;
 			}
@@ -597,9 +597,9 @@ implements
 						"Expected opening brace after "
 						+ "octal escape", row, col);
 				}
-				boolean braced = (w == '{');
+				boolean curly = (w == '{');
 				strictAppendCodePoint(sb, readEscapeNumber(v == 'x' ? 16 : 8,
-					braced ? -1 : 2, braced ? readChar() : w, braced));
+					curly ? -1 : 2, curly ? readChar() : w, curly));
 				break;
 			case '0': case '1': case '2': case '3':
 			case '4': case '5': case '6': case '7':
@@ -621,7 +621,7 @@ implements
 						unreadChar(v);
 					}
 				}
-				while ((v = readChar()) == ' ' || v == '\t') {
+				while (( v = readChar() ) == ' ' || v == '\t') {
 					/* Discard indentation following the line ending. */
 				}
 				if (v != -1) {
