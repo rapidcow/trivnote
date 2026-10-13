@@ -387,7 +387,7 @@ class ReaderTest
 
 	@Test void testStringNamedEscapes()
 	{
-		assertStringEscape("\\a\\b\\t\\n\\r\\e\\\"\\\\\\|", "\007\b\t\n\r\033\"\\|");
+		assertStringEscape("\\a\\b\\t\\n\\v\\f\\r\\e\\\"\\\\\\|", "\007\b\t\n\013\014\r\033\"\\|");
 		assertStringEscape("\\q", "q");
 	}
 
