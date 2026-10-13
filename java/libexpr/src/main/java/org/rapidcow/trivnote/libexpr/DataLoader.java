@@ -506,7 +506,7 @@ implements
 	}
 
 	private static int
-	escapeDigit(int v, int radix)
+	parseDigit(int v, int radix)
 	{
 		int d = v >= '0' && v <= '9' ? v - '0'
 			: v >= 'a' && v <= 'f' ? v - 'a' + 10
@@ -523,7 +523,7 @@ implements
 		int value = 0;
 		int count = 0;
 		for (;;) {
-			int digit = escapeDigit(v, radix);
+			int digit = parseDigit(v, radix);
 			if (digit < 0) {
 				if (braced && v != '}') {
 					throw new DataLoadingException(
