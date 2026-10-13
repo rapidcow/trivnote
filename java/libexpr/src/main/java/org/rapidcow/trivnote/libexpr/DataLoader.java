@@ -526,7 +526,9 @@ implements
 			int digit = escapeDigit(v, radix);
 			if (digit < 0) {
 				if (braced && v != '}') {
-					throw new DataLoadingException("Expected digit or closing brace in escape", row, col);
+					throw new DataLoadingException(
+						"Expected base-" + radix + " digit or "
+						+ "closing brace in escape", row, col);
 				}
 				if (!braced && v != -1) {
 					unreadChar(v);
@@ -582,14 +584,18 @@ implements
 			case 'c':
 				w = readChar();
 				if (w < 0 || w > 127) {
-					throw new DataLoadingException("Expected ASCII character after control escape", row, col);
+					throw new DataLoadingException(
+						"Expected ASCII character after "
+						+ "control escape", row, col);
 				}
 				sb.append((char) (w ^ '@'));
 				break;
 			case 'x': case 'o':  /* queso... 😋 */
 				w = readChar();
 				if (v == 'o' && w != '{') {
-					throw new DataLoadingException("Expected opening brace after octal escape", row, col);
+					throw new DataLoadingException(
+						"Expected opening brace after "
+						+ "octal escape", row, col);
 				}
 				boolean braced = (w == '{');
 				appendEscapeCodePoint(sb, readEscapeNumber(v == 'x' ? 16 : 8,
@@ -600,11 +606,14 @@ implements
 				appendEscapeCodePoint(sb, readEscapeNumber(8, 3, v, false));
 				break;
 			case ' ': case '\t': case '\r': case '\n':
+				/* XXX: I don't know what this case means? */
 				while (v == ' ' || v == '\t') {
 					v = readChar();
 				}
 				if (v != '\r' && v != '\n') {
-					throw new DataLoadingException("Expected line ending in escape", row, col);
+					throw new DataLoadingException(
+						"Expected line ending in escape",
+						row, col);
 				}
 				if (v == '\r') {
 					v = readChar();
