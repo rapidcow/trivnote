@@ -299,9 +299,6 @@ implements
 
 	/**
 	 * {@return a new exception carrying the current cursor position}
-	 * The exception is returned, not thrown, so the caller writes
-	 * "throw loadingException(...)" and the compiler sees that
-	 * control does not continue past it.
 	 *
 	 * @param message  the detail message
 	 */
