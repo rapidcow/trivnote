@@ -1,8 +1,15 @@
 package org.rapidcow.trivnote.libexpr;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -81,5 +88,56 @@ class SymbolCacheTest
 			.useSymbolCache(cache).next();
 		assertEquals(Symbol.of("zzz"), d);
 		assertEquals(1, cache.size());
+	}
+
+	/*
+	 * Many threads, each with its own loader, read the same many symbols
+	 * through one shared concurrent map.  Whichever thread loses the race
+	 * to cache a symbol must adopt the winner, so every thread has to end
+	 * up with the same instance for each value.  The loss is only sometimes
+	 * hit, but the assertion holds on every run if the code is correct.
+	 */
+	@Test void testConcurrentLoadersAgree()
+	throws Exception
+	{
+		final int nthreads = 8;
+		final int nsyms = 2000;
+		StringBuilder src = new StringBuilder();
+		for (int i = 0; i < nsyms; i++) {
+			src.append("s").append(i).append(' ');
+		}
+		String text = src.toString();
+
+		Map<String,Symbol> cache = new ConcurrentHashMap<>();
+		CountDownLatch go = new CountDownLatch(1);
+		ExecutorService pool = Executors.newFixedThreadPool(nthreads);
+		try {
+			List<Future<List<Datum>>> results = new ArrayList<>();
+			for (int t = 0; t < nthreads; t++) {
+				results.add(pool.submit(() -> {
+					DataLoader l = new DataLoader(new StringReader(text))
+						.useSymbolCache(cache);
+					go.await();
+					List<Datum> out = new ArrayList<>();
+					l.forEachRemaining(out::add);
+					return out;
+				}));
+			}
+			go.countDown();
+
+			List<List<Datum>> all = new ArrayList<>();
+			for (Future<List<Datum>> f : results) {
+				all.add(f.get());
+			}
+			assertEquals(nsyms, cache.size());
+			for (int i = 0; i < nsyms; i++) {
+				Symbol expected = cache.get("s" + i);
+				for (List<Datum> one : all) {
+					assertSame(expected, one.get(i));
+				}
+			}
+		} finally {
+			pool.shutdownNow();
+		}
 	}
 }

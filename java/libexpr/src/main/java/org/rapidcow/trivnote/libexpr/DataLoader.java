@@ -87,6 +87,18 @@ implements
 	 * Use a map for symbol lookup upon construction.
 	 * If {@code null}, remove the cache.
 	 *
+	 * <p>
+	 * Symbols not yet in the map are added to it, so the map grows
+	 * as new vocabulary is read.  If the map is read-only (such as
+	 * one made by {@link Map#of}), known symbols still resolve to the
+	 * instances it holds, and unknown symbols are created without
+	 * being remembered.
+	 *
+	 * <p>
+	 * The loader does not synchronize on the map.  If it is shared
+	 * between loaders running on different threads, it must be safe
+	 * for concurrent use, such as a {@link java.util.concurrent.ConcurrentHashMap}.
+	 *
 	 * @param sym  map of symbols, optionally
 	 *    writable if the map is allowed to grow
 	 * @return this
