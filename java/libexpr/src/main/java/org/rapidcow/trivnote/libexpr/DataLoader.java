@@ -229,6 +229,12 @@ implements
 		return Scalar.of(value);
 	}
 
+	protected final DataLoadingException
+	loadingException(String message)
+	{
+		return new DataLoadingException(message, row, col);
+	}
+
 	/**
 	 * Reads and returns the next datum.
 	 *
@@ -245,7 +251,7 @@ implements
 			return null;
 		}
 		if (tk.dot) {
-			throw new DataLoadingException("Unexpected `.'", row, col);
+			throw loadingException("Unexpected `.'");
 		}
 		return tk.value;
 	}
@@ -332,9 +338,8 @@ implements
 					}
 					if (w == ';') {
 						if (readDatum(-1) == null) {
-							throw new DataLoadingException(
-								"Expected datum following `#;'",
-								row, col
+							throw loadingException(
+								"Expected datum following `#;'"
 							);
 						}
 						continue;
@@ -350,9 +355,8 @@ implements
 					if (sg == 0) {
 						if (tk.dot) {
 							if (q.isEmpty()) {
-								throw new DataLoadingException(
-									"Unexpected `.'",
-									row, col
+								throw loadingException(
+									"Unexpected `.'"
 								);
 							}
 							sg++;
@@ -362,27 +366,24 @@ implements
 					}
 					else if (sg == 1) {
 						if (tk.dot) {
-							throw new DataLoadingException(
-								"Unexpected `.'",
-								row, col
+							throw loadingException(
+								"Unexpected `.'"
 							);
 						}
 						q.push(tk.value);
 						sg++;
 					}
 					else {
-						throw new DataLoadingException(
-							"Excess datum following `.'",
-							row, col
+						throw loadingException(
+							"Excess datum following `.'"
 						);
 					}
 				}
 				if (sg == 0) {
 					q.push(Nil.INSTANCE);
 				} else if (sg == 1) {
-					throw new DataLoadingException(
-						"Missing datum following `.'",
-						row, col
+					throw loadingException(
+						"Missing datum following `.'"
 					);
 				}
 				s = q.pop();
@@ -393,9 +394,8 @@ implements
 			}
 
 			if (v == ')' || v == ']' || v == '}') {
-				throw new DataLoadingException(
-					"Mismatched `" + v + "'",
-					row, col
+				throw loadingException(
+					"Mismatched `" + v + "'"
 				);
 			}
 
@@ -459,7 +459,7 @@ implements
 		if (bg == -1) {
 			return null;
 		} else {
-			throw new DataLoadingException("Unterminated `" + (char) bg + "' list", row, col);
+			throw loadingException("Unterminated `" + (char) bg + "' list");
 		}
 	}
 
@@ -544,9 +544,9 @@ implements
 			int digit = parseDigit(v, radix);
 			if (digit < 0) {
 				if (curly && v != '}') {
-					throw new DataLoadingException(
-						"Expected base-" + radix + " digit or "
-						+ "closing brace in escape", row, col);
+					throw loadingException(
+						"Expected base-" + radix + " digit "
+						+ "or closing brace in escape");
 				}
 				if (!curly && v != -1) {
 					unreadChar(v);
@@ -554,7 +554,7 @@ implements
 				return value;
 			}
 			if (value > (Integer.MAX_VALUE - digit) / radix) {
-				throw new DataLoadingException("Code point overflow", row, col);
+				throw loadingException("Code point overflow");
 			}
 			value = value * radix + digit;
 			if (++count == limit) {
@@ -568,7 +568,7 @@ implements
 	strictAppendCodePoint(StringBuilder sb, int value)
 	{
 		if (!Character.isValidCodePoint(value)) {
-			throw new DataLoadingException("Invalid code point", row, col);
+			throw loadingException("Invalid code point");
 		}
 		sb.appendCodePoint(value);
 	}
@@ -590,7 +590,7 @@ implements
 			v = readChar();
 			switch (v) {
 			case -1:
-				throw new DataLoadingException("Unterminated quote", row, col);
+				throw loadingException("Unterminated quote");
 			case 'a': sb.append('\007'); break;  /* BEL */
 			case 'b': sb.append('\010'); break;  /* BS (backspace) */
 			case 't': sb.append('\011'); break;  /* HT (h-tab) */
@@ -602,18 +602,18 @@ implements
 			case 'c':
 				w = readChar();
 				if (w < 0 || w > 127) {
-					throw new DataLoadingException(
-						"Expected ASCII character after "
-						+ "control escape", row, col);
+					throw loadingException(
+						"Expected ASCII character "
+						+ "after control escape");
 				}
 				sb.append((char) (w ^ '@'));
 				break;
 			case 'x': case 'o':  /* queso... 😋 */
 				w = readChar();
 				if (v == 'o' && w != '{') {
-					throw new DataLoadingException(
-						"Expected opening brace after "
-						+ "octal escape", row, col);
+					throw loadingException(
+						"Expected opening brace "
+						+ "after octal escape");
 				}
 				boolean curly = (w == '{');
 				strictAppendCodePoint(sb, readEscapeNumber(v == 'x' ? 16 : 8,
@@ -629,9 +629,9 @@ implements
 					v = readChar();
 				}
 				if (v != '\r' && v != '\n') {
-					throw new DataLoadingException(
-						"Expected line ending in escape",
-						row, col);
+					throw loadingException(
+						"Expected line ending in escape"
+					);
 				}
 				if (v == '\r') {
 					v = readChar();
@@ -650,7 +650,7 @@ implements
 				sb.append((char) v);
 			}
 		}
-		throw new DataLoadingException("Unterminated quote \"...\"", row, col);
+		throw loadingException("Unterminated quote \"...\"");
 	}
 
 	private int
@@ -693,7 +693,7 @@ implements
 		}
 
 		if (bar) {
-			throw new DataLoadingException("Unterminated quote |...|", row, col);
+			throw loadingException("Unterminated quote |...|");
 		}
 
 		return v;
