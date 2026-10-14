@@ -280,11 +280,17 @@ implements
 		 * However we cannot assume the symbol table
 		 * is growable. :(
 		 */
-		try {
-			return sym.computeIfAbsent(value, Symbol::of);
-		} catch (UnsupportedOperationException e) {
-			return Symbol.of(value);
+		Symbol sv = sym.get(value);
+		if (sv != null) {
+			return sv;
 		}
+		sv = Symbol.of(value);
+		try {
+			sym.put(value, sv);
+		} catch (UnsupportedOperationException e) {
+			/* pass */
+		}
+		return sv;
 	}
 
 	/**
