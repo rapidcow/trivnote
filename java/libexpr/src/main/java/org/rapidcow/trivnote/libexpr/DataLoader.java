@@ -115,6 +115,13 @@ implements
 		return '0' <= v && v <= '9';
 	}
 
+	/**
+	 * Reads one character from the underlying reader and
+	 * advances the cursor position used by loadingException.
+	 *
+	 * @return the character read, or -1 on EOF
+	 * @throws IOException on I/O error
+	 */
 	protected final int
 	readChar()
 	throws
@@ -134,6 +141,16 @@ implements
 		return v;
 	}
 
+	/**
+	 * Pushes back a character and restores the cursor position
+	 * to where it was before that character was read.
+	 * Only the most recent call to readChar can be undone this
+	 * way, and only once; the position is not restored correctly
+	 * if this is called twice in a row.
+	 *
+	 * @param v  the character most recently returned by readChar
+	 * @throws IOException on I/O error
+	 */
 	protected final void
 	unreadChar(int v)
 	throws
@@ -211,24 +228,58 @@ implements
 		return eieio;
 	}
 
+	/**
+	 * Hook called when a symbol token has been read.
+	 * Subclasses may override this to validate or transform
+	 * symbols; throw the result of loadingException to reject one.
+	 *
+	 * @param value  the text of the symbol
+	 * @return the interned symbol for value by default
+	 */
 	protected Symbol
 	makeSymbol(String value)
 	{
 		return Symbol.of(value);
 	}
 
+	/**
+	 * Hook called when a quoted string token has been read.
+	 * The cursor is already past the closing quote, so a position
+	 * reported from here points just after the token.
+	 *
+	 * @param value  the text of the string, with escapes processed
+	 * @return a string scalar by default
+	 */
 	protected Scalar
 	makeString(String value)
 	{
 		return Scalar.ofString(value);
 	}
 
+	/**
+	 * Hook called when a number-like token has been read.
+	 * The loader only recognizes the shape of a number and does
+	 * not convert it, so value is the token text as written.
+	 * The cursor is already past the token, so a position
+	 * reported from here points just after it.
+	 *
+	 * @param value  the text of the number
+	 * @return a plain scalar by default
+	 */
 	protected Scalar
 	makeNumber(String value)
 	{
 		return Scalar.of(value);
 	}
 
+	/**
+	 * {@return a new exception carrying the current cursor position}
+	 * The exception is returned, not thrown, so the caller writes
+	 * "throw loadingException(...)" and the compiler sees that
+	 * control does not continue past it.
+	 *
+	 * @param message  the detail message
+	 */
 	protected final DataLoadingException
 	loadingException(String message)
 	{
