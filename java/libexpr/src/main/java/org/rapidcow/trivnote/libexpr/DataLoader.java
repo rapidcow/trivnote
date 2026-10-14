@@ -13,6 +13,7 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.Map;
@@ -305,7 +306,12 @@ implements
 	protected final DataLoadingException
 	loadingException(String message)
 	{
-		return new DataLoadingException(message, row, col);
+		DataLoadingException e
+			= new DataLoadingException(message, row, col);
+		StackTraceElement[] f = e.getStackTrace();
+		/* Skip this frame */
+		e.setStackTrace(Arrays.copyOfRange(f, 1, f.length));
+		return e;
 	}
 
 	/**
