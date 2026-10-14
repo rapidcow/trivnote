@@ -22,9 +22,9 @@ class DatumTest
 		/*
 		 * N.B. JUnit puts "expect" before "actual"
 		 */
-		assertEquals(true, (car = Scalar.of("hi")).isAtom());
-		assertEquals(true, (cdr = Nil.INSTANCE).isAtom());
-		assertEquals(false, (list = new Cons(car, cdr)).isAtom());
+		assertEquals(true, Datum.isAtom(car = Scalar.of("hi")));
+		assertEquals(true, Datum.isAtom(cdr = Nil.INSTANCE));
+		assertEquals(false, Datum.isAtom(list = new Cons(car, cdr)));
 
 		assertEquals("Scalar[value=hi]", car.toString());
 
