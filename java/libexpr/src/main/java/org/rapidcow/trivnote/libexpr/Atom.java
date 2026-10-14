@@ -66,4 +66,39 @@ permits
 		String className = getClass().getSimpleName();
 		return className + "[value=" + value + "]";
 	}
+
+	/**
+	 * Returns whether this equals {@code o}.
+	 * Two symbols are considered equal if their values equal.
+	 *
+	 * @param o  object to compare
+	 * @return whether this equals {@code o}
+	 */
+	public boolean
+	equals(Object o)
+	{
+		if (this == o) {
+			return true;
+		}
+		/*
+		 * A scalar is not equal to a symbol, so
+		 * we must check strict class equality.
+		 */
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		Atom atom = (Atom) o;
+		return value.equals(atom.value);
+	}
+
+	/**
+	 * {@return hash code for this}
+	 * Equal atoms hash to the same code.
+	 */
+	@Override
+	public int
+	hashCode()
+	{
+		return value.hashCode();
+	}
 }

@@ -17,6 +17,8 @@ class
 	Symbol
 extends
 	Atom
+implements
+	Comparable<Symbol>
 {
 	/**
 	 * Global symbol pool.
@@ -50,5 +52,20 @@ extends
 			throw new NullPointerException("value of a Symbol must not be null");
 		}
 		return pool.computeIfAbsent(value, Symbol::new);
+	}
+
+	/**
+	 * Return the comparison result of this against {@code o}.
+	 * Scalars do not equal symbols or any other subtype of
+	 * {@link Atom}, even if their values agree.
+	 *
+	 * @param o  symbol to compare
+	 * @return the comparison result
+	 */
+	@Override
+	public int
+	compareTo(Symbol o)
+	{
+		return value.compareTo(o.value);
 	}
 }
