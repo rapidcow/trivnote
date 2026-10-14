@@ -177,11 +177,11 @@ implements
 	throws
 		IOException
 	{
+		in.unread(v);
 		if (v == '\n') {
 			row--;
 		}
 		col = ocl;
-		in.unread(v);
 	}
 
 	/**
