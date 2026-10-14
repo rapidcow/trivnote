@@ -20,12 +20,6 @@ extends
 implements
 	Comparable<Symbol>
 {
-	/**
-	 * Global symbol pool.
-	 */
-	private static final Map<String, Symbol> pool
-		= new ConcurrentHashMap<>();
-
 	private
 	Symbol(String value)
 	{
@@ -43,15 +37,7 @@ implements
 	public static Symbol
 	of(String value)
 	{
-		/*
-		 * Even if Symbol::new (which calls Atom::new) already
-		 * checks for null, HashMap would be totally uncool with
-		 * looking up a null key, so we must catch it early here.
-		 */
-		if (value == null) {
-			throw new NullPointerException("value of a Symbol must not be null");
-		}
-		return pool.computeIfAbsent(value, Symbol::new);
+		return new Symbol(value);
 	}
 
 	/**
