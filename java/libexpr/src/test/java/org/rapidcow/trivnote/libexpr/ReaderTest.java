@@ -43,7 +43,7 @@ class ReaderTest
 				Symbol.of("baz")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testReadScalar()
@@ -65,7 +65,7 @@ class ReaderTest
 				Scalar.of("abc")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testLineComment()
@@ -83,7 +83,7 @@ class ReaderTest
 				Symbol.of("def")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDatumComment()
@@ -100,7 +100,7 @@ class ReaderTest
 				Scalar.of("42")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDatumCommentComment()
@@ -118,7 +118,7 @@ class ReaderTest
 				Scalar.of("c")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDottedPair()
@@ -136,7 +136,7 @@ class ReaderTest
 				Symbol.of("b")
 			), list);
 		assertEquals(Symbol.of("c"), walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDottedPairNested()
@@ -156,7 +156,7 @@ class ReaderTest
 				Symbol.of("c")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDottedPairNoSpaceBeforeBracket()
@@ -180,7 +180,7 @@ class ReaderTest
 				Symbol.of("c")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDotGluedToAtomIsOrdinarySymbol()
@@ -204,7 +204,7 @@ class ReaderTest
 				Symbol.of(".c")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDotAsOrdinarySymbolChar()
@@ -223,7 +223,7 @@ class ReaderTest
 				Symbol.of("a.b")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	/*
@@ -252,7 +252,7 @@ class ReaderTest
 				Symbol.of("+.=")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDottedPairLeadingDotFails()
@@ -260,7 +260,7 @@ class ReaderTest
 		input = new StringReader("(. a)");
 		loader = new DataLoader(input);
 		assertThrows(DataLoadingException.class, () -> loader.next());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDottedPairDoubleDotFails()
@@ -268,7 +268,7 @@ class ReaderTest
 		input = new StringReader("(a . . b)");
 		loader = new DataLoader(input);
 		assertThrows(DataLoadingException.class, () -> loader.next());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDottedPairExcessDatumFails()
@@ -276,7 +276,7 @@ class ReaderTest
 		input = new StringReader("(a . b c)");
 		loader = new DataLoader(input);
 		assertThrows(DataLoadingException.class, () -> loader.next());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDottedPairMissingDatumFails()
@@ -284,7 +284,7 @@ class ReaderTest
 		input = new StringReader("(a . )");
 		loader = new DataLoader(input);
 		assertThrows(DataLoadingException.class, () -> loader.next());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testTopLevelDotIsIllegal()
@@ -292,7 +292,7 @@ class ReaderTest
 		input = new StringReader(". a");
 		loader = new DataLoader(input);
 		assertThrows(DataLoadingException.class, () -> loader.next());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testTopLevelDotAtEofIsIllegal()
@@ -301,7 +301,7 @@ class ReaderTest
 		input = new StringReader(".");
 		loader = new DataLoader(input);
 		assertThrows(DataLoadingException.class, () -> loader.next());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDottedPairDotAtEofFails()
@@ -309,7 +309,7 @@ class ReaderTest
 		input = new StringReader("(a .");
 		loader = new DataLoader(input);
 		assertThrows(DataLoadingException.class, () -> loader.next());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDottedPairNoSpaceBeforeQuote()
@@ -324,7 +324,7 @@ class ReaderTest
 		walk.forEachRemaining(list::add);
 		assertIterableEquals(List.of(Symbol.of("a")), list);
 		assertEquals(Scalar.of("b"), walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDottedPairNoSpaceBeforeBar()
@@ -338,7 +338,7 @@ class ReaderTest
 		walk.forEachRemaining(list::add);
 		assertIterableEquals(List.of(Symbol.of("a")), list);
 		assertEquals(Symbol.of("b c"), walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testDottedPairDotBeforeLineComment()
@@ -352,7 +352,7 @@ class ReaderTest
 		walk.forEachRemaining(list::add);
 		assertIterableEquals(List.of(Symbol.of("a")), list);
 		assertEquals(Symbol.of("b"), walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testSymbolQuote()
@@ -371,7 +371,7 @@ class ReaderTest
 				Symbol.of("alternation")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	@Test void testStringQuote()
@@ -392,14 +392,14 @@ class ReaderTest
 				Scalar.of("line1\nline2")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.tail());
-		assertNull(loader.eio());
+		assertNull(loader.lastIOException());
 	}
 
 	private void assertStringEscape(String source, String expected)
 	{
 		DataLoader reader = new DataLoader(new StringReader("\"" + source + "\""));
 		assertEquals(Scalar.of(expected), reader.next(), source);
-		assertNull(reader.eio());
+		assertNull(reader.lastIOException());
 		assertEquals(false, reader.hasNext());
 	}
 

@@ -68,7 +68,7 @@ public class PreviewAppleNotesDrawing
 			DataLoader loader = new DataLoader(in);
 			root = loader.readDatum();
 			if (loader.hasNext()) { throw up( "trailing garbage" ); }
-			if (loader.eio() != null) { throw up( "I/O error", loader.eio() ); }
+			if (loader.lastIOException() != null) { throw up( "I/O error", loader.fileException() ); }
 		}
 
 		Datum rK, rV;

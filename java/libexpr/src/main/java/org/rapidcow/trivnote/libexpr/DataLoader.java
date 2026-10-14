@@ -158,8 +158,8 @@ implements
 
 	/**
 	 * {@return whether no I/O error occurred, and any datum remains}
-	 * If false, caller should check {@link #eio()} to distinguish
-	 * I/O error and EOF.
+	 * If false, caller should check {@link #lastIOException()} to
+	 * tell I/O exceptions from EOF.
 	 */
 	@Override
 	public boolean
@@ -181,8 +181,8 @@ implements
 
 	/**
 	 * {@return the next datum in the stream}
-	 * Caller should check {@link #eio()} to check for
-	 * I/O error and EOF.
+	 * Caller should check {@link #lastIOException()}
+	 * to tell I/O exceptions apart from EOF.
 	 *
 	 * @throws NoSuchElementException on I/O error, or EOF
 	 * @throws ParseException on syntax error
@@ -206,7 +206,7 @@ implements
 	 * tell EOF from I/O error.
 	 */
 	public IOException
-	eio()
+	lastIOException()
 	{
 		return eieio;
 	}
