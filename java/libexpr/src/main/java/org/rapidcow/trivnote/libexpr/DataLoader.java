@@ -292,26 +292,15 @@ implements
 		 * However we cannot assume the symbol table
 		 * is growable. :(
 		 */
-		Symbol nv = sym.get(value);
-		if (nv != null) {
-			return nv;
+		Symbol v = sym.get(value);
+		if (v != null) {
+			return v;
 		}
-		nv = Symbol.of(value);
 		try {
-			Symbol ov = sym.putIfAbsent(value, nv);
-			/*
-			 * In the event of a race condition, ov holds
-			 * the symbol cached by another thread; we
-			 * can carry forward and discard nv if this
-			 * is the case.
-			 */
-			if (ov != null) {
-				return ov;
-			}
+			return sym.computeIfAbsent(value, Symbol::of);
 		} catch (UnsupportedOperationException e) {
-			/* pass */
+			return Symbol.of(value);
 		}
-		return nv;
 	}
 
 	/**
