@@ -211,6 +211,24 @@ implements
 		return eieio;
 	}
 
+	protected Symbol
+	makeSymbol(String value)
+	{
+		return Symbol.of(value);
+	}
+
+	protected Scalar
+	makeString(String value)
+	{
+		return Scalar.of(value);
+	}
+
+	protected Scalar
+	makeNumber(String value)
+	{
+		return Scalar.of(value);
+	}
+
 	/**
 	 * Reads and returns the next datum.
 	 *
@@ -291,7 +309,7 @@ implements
 						if (( w = readPlain(sb) ) != -1) {
 							unreadChar(w);
 						}
-						return new Token(new Scalar(sb.toString()));
+						return new Token(makeNumber(sb.toString()));
 					}
 					unreadChar(w);
 				}
@@ -384,14 +402,14 @@ implements
 			sb = new StringBuilder();
 			if (v == '"') {
 				readQuote(sb);
-				return new Token(new Scalar(sb.toString()));
+				return new Token(makeString(sb.toString()));
 			}
 
 			if (v == '|') {
 				if (( v = readWord(sb, v) ) != -1) {
 					unreadChar(v);
 				}
-				return new Token(Symbol.of(sb.toString()));
+				return new Token(makeSymbol(sb.toString()));
 			}
 
 			if (isPOSIXdigit(v)) {
@@ -399,7 +417,7 @@ implements
 				if (( v = readPlain(sb) ) != -1) {
 					unreadChar(v);
 				}
-				return new Token(new Scalar(sb.toString()));
+				return new Token(makeNumber(sb.toString()));
 			}
 			else if (v == '-' || v == '+') {
 				if (( w = readChar() ) != -1) {
@@ -409,7 +427,7 @@ implements
 						if (( v = readPlain(sb) ) != -1) {
 							unreadChar(v);
 						}
-						return new Token(new Scalar(sb.toString()));
+						return new Token(makeNumber(sb.toString()));
 					}
 					if (w == '.') {
 						sb.append((char) v);
@@ -421,7 +439,7 @@ implements
 								if (( v = readPlain(sb) ) != -1) {
 									unreadChar(v);
 								}
-								return new Token(new Scalar(sb.toString()));
+								return new Token(makeNumber(sb.toString()));
 							}
 							unreadChar(w);
 						}
@@ -435,7 +453,7 @@ implements
 			if (( v = readWord(sb, v) ) != -1) {
 				unreadChar(v);
 			}
-			return new Token(Symbol.of(sb.toString()));
+			return new Token(makeSymbol(sb.toString()));
 		}
 
 		if (bg == -1) {
