@@ -15,6 +15,8 @@ class
 	Scalar
 extends
 	Atom
+implements
+	Comparable<Scalar>
 {
 	/**
 	 * Creates an immutable scalar atom.
@@ -29,10 +31,13 @@ extends
 	}
 
 	/**
-	 * {@return whether this equals {@code o}}
+	 * Returns whether this equals {@code o}.
 	 * Two scalars are considered equal if their values equal.
+	 * Scalars do not equal symbols or any other subtype of
+	 * {@link Atom}, even if their values agree.
 	 *
-	 * @param o  object to be compared against
+	 * @param o  object to compare
+	 * @return whether this equals {@code o}
 	 */
 	@Override
 	public boolean
@@ -48,13 +53,17 @@ extends
 	}
 
 	/**
-	 * {@return hash code for this}
-	 * Equal scalars hash to the same code.
+	 * Return the comparison result of this against {@code o}.
+	 * Scalars do not equal symbols or any other subtype of
+	 * {@link Atom}, even if their values agree.
+	 *
+	 * @param o  symbol to compare
+	 * @return the comparison result
 	 */
 	@Override
 	public int
-	hashCode()
+	compareTo(Scalar o)
 	{
-		return value.hashCode();
+		return value.compareTo(o.value);
 	}
 }
