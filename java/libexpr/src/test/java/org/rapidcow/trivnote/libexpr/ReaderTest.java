@@ -103,6 +103,24 @@ class ReaderTest
 		assertNull(loader.eio());
 	}
 
+	@Test void testDatumCommentComment()
+	{
+		input = new StringReader("(display #; #;\"a\" \"b\" \"c\")");
+		loader = new DataLoader(input);
+		token = loader.next();
+		walk = new Walk(token);
+
+		list = new ArrayList<>();
+		walk.forEachRemaining(list::add);
+		assertIterableEquals(
+			List.of(
+				Symbol.of("display"),
+				new Scalar("c")
+			), list);
+		assertEquals(Nil.INSTANCE, walk.tail());
+		assertNull(loader.eio());
+	}
+
 	@Test void testDottedPair()
 	{
 		input = new StringReader("(a b . c)");
