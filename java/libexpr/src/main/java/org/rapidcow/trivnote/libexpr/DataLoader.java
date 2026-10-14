@@ -185,7 +185,7 @@ implements
 	 * to tell I/O exceptions apart from EOF.
 	 *
 	 * @throws NoSuchElementException on I/O error, or EOF
-	 * @throws ParseException on syntax error
+	 * @throws DataLoadingException on syntax error
 	 */
 	@Override
 	public Datum
