@@ -24,10 +24,22 @@ implements
 	 * @param value  value
 	 * @throws NullPointerException on null {@code value}
 	 */
-	public
+	private
 	Scalar(String value)
 	{
 		super(value);
+	}
+
+	/**
+	 * {@return an immutable scalar atom}
+	 *
+	 * @param value  the given value
+	 * @throws NullPointerException on null {@code value}
+	 */
+	public static Scalar
+	of(String value)
+	{
+		return new Scalar(value);
 	}
 
 	/**
