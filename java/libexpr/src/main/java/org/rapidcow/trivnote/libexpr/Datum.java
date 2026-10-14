@@ -24,24 +24,45 @@ permits
 	Nil
 {
 	/**
-	 * {@return whether this is an atom}  An atom
-	 * is any datum that is not a cons cell.
+	 * {@return whether the datum is an atom}
+	 *
+	 * @param node  the datum
 	 */
-	default boolean
-	isAtom()
+	public static boolean
+	isAtom(Datum node)
 	{
-		return !(this instanceof Cons);
+		return !(node instanceof Cons);
 	}
 
 	/**
-	 * {@return whether this is a list}  A list
+	 * {@return whether datum is a list}  A list
 	 * is either a cons cell or nil.  A list is
 	 * iterable, though you must cast it to the
 	 * specific class to please the compiler.
+	 *
+	 * @param node  the datum
 	 */
-	default boolean
-	isList()
+	public static boolean
+	isList(Datum node)
 	{
-		return !(this instanceof Atom);
+		return !(node instanceof Atom);
+	}
+
+	public static Datum
+	car(Datum node)
+	{
+		return ((Cons) node).car();
+	}
+
+	public static Datum
+	cdr(Datum node)
+	{
+		return ((Cons) node).cdr();
+	}
+
+	public static String
+	value(Datum node)
+	{
+		return ((Atom) node).value();
 	}
 }

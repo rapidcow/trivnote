@@ -8,24 +8,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.rapidcow.trivnote.libexpr.Datum.car;
+import static org.rapidcow.trivnote.libexpr.Datum.cdr;
 
 /**
  * Tests {@link DataLoader#useSymbolCache}.
  */
 class SymbolCacheTest
 {
-	private static Datum
-	car(Datum d)
-	{
-		return ((Cons) d).car();
-	}
-
-	private static Datum
-	cdr(Datum d)
-	{
-		return ((Cons) d).cdr();
-	}
-
 	@Test void testSharedWithinOneLoader()
 	{
 		Map<String,Symbol> cache = new HashMap<>();
