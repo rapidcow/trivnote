@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -31,6 +32,11 @@ implements
 	 * Input character stream.
 	 */
 	private final PushbackReader in;
+
+	/**
+	 * Symbol cache.
+	 */
+	protected Map<String,Symbol> sym;
 
 	private boolean fini = false;
 	private IOException eieio = null;
@@ -73,6 +79,20 @@ implements
 	DataLoader(InputStream file)
 	{
 		this(file, StandardCharsets.UTF_8);
+	}
+
+	/**
+	 * Use a map for symbol lookup upon construction.
+	 * If {@code null}, remove the cache.
+	 *
+	 * @param sym  map of known symbols
+	 * @return this
+	 */
+	public DataLoader
+	useSymbolCache(Map<String,Symbol> sym)
+	{
+		this.sym = sym;
+		return this;
 	}
 
 	private
@@ -239,7 +259,11 @@ implements
 	protected Symbol
 	makeSymbol(String value)
 	{
-		return Symbol.of(value);
+		if (sym == null) {
+			return Symbol.of(value);
+		}
+		/* We can trust that value is not null! */
+		return sym.computeIfAbsent(value, Symbol::of);
 	}
 
 	/**
