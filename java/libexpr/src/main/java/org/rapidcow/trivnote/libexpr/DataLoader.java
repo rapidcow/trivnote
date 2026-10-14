@@ -288,9 +288,13 @@ implements
 			return Symbol.of(value);
 		}
 		/*
-		 * We can trust that value is not null!
-		 * However we cannot assume the symbol table
-		 * is growable. :(
+		 * Make Map::get (cache hit) the fast route:
+		 * we antipicate that we will encounter more
+		 * recurring symbols than we come across new
+		 * ones.  It is also free of side effects,
+		 * which means maps like ConcurrentMap don't
+		 * even need to acquire a lock!  In any case,
+		 * it's worth trying....
 		 */
 		Symbol v = sym.get(value);
 		if (v != null) {
