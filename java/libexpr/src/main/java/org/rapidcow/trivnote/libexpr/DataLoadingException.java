@@ -94,7 +94,7 @@ extends
 	}
 
 	/**
-	 * {@return the column number (1-based) of this exception}
+	 * {@return the column number (0-based) of this exception}
 	 */
 	public long
 	getCharOffset()
