@@ -220,7 +220,7 @@ implements
 	protected Scalar
 	makeString(String value)
 	{
-		return Scalar.of(value);
+		return Scalar.ofString(value);
 	}
 
 	protected Scalar

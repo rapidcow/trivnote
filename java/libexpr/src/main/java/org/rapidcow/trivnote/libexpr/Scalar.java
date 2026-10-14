@@ -18,16 +18,29 @@ extends
 implements
 	Comparable<Scalar>
 {
+	private boolean quot;
+
 	/**
 	 * Creates an immutable scalar atom.
 	 *
 	 * @param value  value
+	 * @param isStr  whether this should be a quoted string
 	 * @throws NullPointerException on null {@code value}
 	 */
 	private
-	Scalar(String value)
+	Scalar(String value, boolean isStr)
 	{
 		super(value);
+		quot = isStr;
+	}
+
+	/**
+	 * {@return whether this should be a quoted string}
+	 */
+	public final boolean
+	isString()
+	{
+		return quot;
 	}
 
 	/**
@@ -39,7 +52,21 @@ implements
 	public static Scalar
 	of(String value)
 	{
-		return new Scalar(value);
+		return new Scalar(value, false);
+	}
+
+	/**
+	 * {@return an immutable scalar atom}
+	 * This variant of {@link Scalar#of} hints to
+	 * {@link DataDumper} that it must always be quoted.
+	 *
+	 * @param value  the given value
+	 * @throws NullPointerException on null {@code value}
+	 */
+	public static Scalar
+	ofString(String value)
+	{
+		return new Scalar(value, true);
 	}
 
 	/**
