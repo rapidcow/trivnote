@@ -64,4 +64,22 @@ class SymbolCacheTest
 			.useSymbolCache(cache).next();
 		assertEquals(0, cache.size());
 	}
+
+	@Test void testImmutableMapKnownSymbolResolves()
+	{
+		Symbol known = Symbol.of("a");
+		Map<String,Symbol> cache = Map.of("a", known);
+		Datum d = new DataLoader(new StringReader("a"))
+			.useSymbolCache(cache).next();
+		assertSame(known, d);
+	}
+
+	@Test void testImmutableMapUnknownSymbolStillLoads()
+	{
+		Map<String,Symbol> cache = Map.of("a", Symbol.of("a"));
+		Datum d = new DataLoader(new StringReader("zzz"))
+			.useSymbolCache(cache).next();
+		assertEquals(Symbol.of("zzz"), d);
+		assertEquals(1, cache.size());
+	}
 }
