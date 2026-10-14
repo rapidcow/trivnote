@@ -18,6 +18,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * R7RS-ish S-expression reader.
@@ -37,7 +38,7 @@ implements
 	/**
 	 * Symbol cache.
 	 */
-	protected Map<String,Symbol> sym;
+	private Map<String,Symbol> sym;
 
 	private boolean fini = false;
 	private IOException eieio = null;
@@ -86,14 +87,24 @@ implements
 	 * Use a map for symbol lookup upon construction.
 	 * If {@code null}, remove the cache.
 	 *
-	 * @param sym  map of known symbols
+	 * @param sym  map of symbols, optionally
+	 *    writable if the map is allowed to grow
 	 * @return this
 	 */
-	public DataLoader
+	public final DataLoader
 	useSymbolCache(Map<String,Symbol> sym)
 	{
 		this.sym = sym;
 		return this;
+	}
+
+	/**
+	 * {@return the current symbol cache}
+	 */
+	public final Optional<Map<String,Symbol>>
+	getSymbolCache()
+	{
+		return Optional.ofNullable(sym);
 	}
 
 	private
@@ -264,8 +275,16 @@ implements
 		if (sym == null) {
 			return Symbol.of(value);
 		}
-		/* We can trust that value is not null! */
-		return sym.computeIfAbsent(value, Symbol::of);
+		/*
+		 * We can trust that value is not null!
+		 * However we cannot assume the symbol table
+		 * is growable. :(
+		 */
+		try {
+			return sym.computeIfAbsent(value, Symbol::of);
+		} catch (UnsupportedOperationException e) {
+			return Symbol.of(value);
+		}
 	}
 
 	/**
