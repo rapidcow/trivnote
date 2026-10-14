@@ -30,7 +30,7 @@ implements
 	/**
 	 * Input character stream.
 	 */
-	protected final PushbackReader in;
+	private final PushbackReader in;
 
 	private boolean fini = false;
 	private IOException eieio = null;
@@ -115,7 +115,7 @@ implements
 		return '0' <= v && v <= '9';
 	}
 
-	private int
+	protected final int
 	readChar()
 	throws
 		IOException
@@ -134,7 +134,7 @@ implements
 		return v;
 	}
 
-	private void
+	protected final void
 	unreadChar(int v)
 	throws
 		IOException
@@ -150,7 +150,7 @@ implements
 	 * {@return this}
 	 */
 	@Override
-	public Iterator<Datum>
+	public final Iterator<Datum>
 	iterator()
 	{
 		return this;
@@ -205,7 +205,7 @@ implements
 	 * Caller is responsible to check this to
 	 * tell EOF from I/O error.
 	 */
-	public IOException
+	public final IOException
 	lastIOException()
 	{
 		return eieio;
