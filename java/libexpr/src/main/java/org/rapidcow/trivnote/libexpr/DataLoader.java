@@ -136,8 +136,8 @@ implements
 	}
 
 	/**
-	 * Reads one character from the underlying reader
-	 * and advances the cursor position used by
+	 * Reads one character from the underlying reader.
+	 * This advances the cursor position used by
 	 * {@link #loadingException(String)}.
 	 *
 	 * @return the character read, or -1 on EOF
@@ -163,8 +163,8 @@ implements
 	}
 
 	/**
-	 * Pushes back a character and restores the cursor position
-	 * to where it was before that character was read.
+	 * Pushes back a character.  This also restores the cursor
+	 * position to where it was before that character was read.
 	 * Only the most recent call to {@link #readChar()} can be
 	 * undone this way, and only once; the position is not restored
 	 * correctly if this is called twice in a row.
