@@ -27,6 +27,6 @@ implements
 	public Iterator<Datum>
 	iterator()
 	{
-		return new Walk(this);
+		return new DatumWalk(this);
 	}
 }

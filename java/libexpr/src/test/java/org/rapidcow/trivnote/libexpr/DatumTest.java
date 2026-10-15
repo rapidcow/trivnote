@@ -16,7 +16,7 @@ class DatumTest
 		Datum cdr;
 		Cons list;
 
-		Walk here;
+		DatumWalk here;
 		int runit;
 
 		/*
@@ -28,11 +28,11 @@ class DatumTest
 
 		assertEquals("Scalar[value=hi]", car.toString());
 
-		here = new Walk(list);
+		here = new DatumWalk(list);
 		assertEquals(true, here.hasNext());
 		assertEquals(car, here.next());
 		assertEquals(false, here.hasNext());
-		assertEquals(cdr, here.tail());
+		assertEquals(cdr, here.rest());
 
 		runit = 0;
 		for (Datum fat : list) {
