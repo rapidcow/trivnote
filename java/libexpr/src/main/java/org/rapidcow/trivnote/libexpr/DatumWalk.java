@@ -119,7 +119,7 @@ implements
 	 *
 	 * @param off  offset relative to the current position
 	 * @return sub-list starting at given position
-	 * @throws NoSuchElementException  if you went too far
+	 * @throws IndexOutOfBoundsException  if you went too far
 	 * @since %v
 	 */
 	public Datum
@@ -137,7 +137,9 @@ implements
 		if (off < 0) {
 			index = cur + off;
 			if (index < 0) {
-				throw new NoSuchElementException();
+				throw new IndexOutOfBoundsException(
+					"Effective index " + index + " out of bounds"
+				);
 			}
 			/* RESET */
 			node = head;
@@ -151,8 +153,9 @@ implements
 				node = cell.cdr();
 				++pos;
 			} else {
-				throw new ArrayIndexOutOfBoundsException(
-					"Effective index " + index + " out of bounds"
+				/* Objects.checkIndex(index, pos); */
+				throw new IndexOutOfBoundsException(
+					"Effective index " + index + " out of bounds for length " + pos
 				);
 			}
 		}
@@ -176,7 +179,11 @@ implements
 	public Datum
 	previous()
 	{
-		return Datum.car(seek(-1));
+		try {
+			return Datum.car(seek(-1));
+		} catch (IndexOutOfBoundsException e) {
+			throw new NoSuchElementException();
+		}
 	}
 
 	/**
