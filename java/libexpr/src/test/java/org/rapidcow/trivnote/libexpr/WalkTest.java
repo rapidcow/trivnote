@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WalkTest
 {
@@ -156,6 +157,26 @@ class WalkTest
 		assertThrows(IndexOutOfBoundsException.class, () -> walk.seek(5));
 		assertCursor(1, walk);
 		assertEquals(B, walk.next());
+	}
+
+	/* the message reports the absolute index, not the relative offset */
+	@Test void testSeekPastEndMessage()
+	{
+		DatumWalk walk = new DatumWalk(proper());
+		walk.next();
+		String msg = assertThrows(IndexOutOfBoundsException.class,
+			() -> walk.seek(5)).getMessage();
+		assertTrue(msg.contains("index 6"), msg);
+	}
+
+	/* cur + off must not wrap around to a negative index */
+	@Test void testSeekOverflow()
+	{
+		DatumWalk walk = new DatumWalk(proper());
+		walk.next();
+		assertThrows(IndexOutOfBoundsException.class,
+			() -> walk.seek(Integer.MAX_VALUE));
+		assertCursor(1, walk);
 	}
 
 	@Test void testSeekBeforeStart()
