@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
- * R7RS-ish S-expression reader.
+ * S-expression reader.
  */
 public
 class
