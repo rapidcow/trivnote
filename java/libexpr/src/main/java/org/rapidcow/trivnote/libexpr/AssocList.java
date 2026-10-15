@@ -1,6 +1,7 @@
 package org.rapidcow.trivnote.libexpr;
 
 import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
@@ -57,14 +58,7 @@ extends
 	public Set< Map.Entry<String,Datum> >
 	entrySet() {
 		/* TODO still stub!  This is inefficient. */
-		Set< Map.Entry<String,Datum> > foo
-			= new java.util.HashSet<>();
-		hash.forEach((hK, hV) -> {
-			Map.Entry<String,Datum> row
-				= new AbstractMap.SimpleImmutableEntry<>(hK, hV);
-			foo.add(row);
-		});
-		return foo;
+		return Collections.unmodifiableMap(hash).entrySet();
 	}
 
 }
