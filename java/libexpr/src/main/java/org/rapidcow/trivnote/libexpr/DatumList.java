@@ -65,6 +65,15 @@ implements
 		tail = iter.rest();
 	}
 
+	public DatumList
+	requireProperTail()
+	{
+		if (tail() != Nil.INSTANCE) {
+			throw new IllegalArgumentException("Improper tail");
+		}
+		return this;
+	}
+
 	@Override
 	public ListIterator<Datum>
 	listIterator(int index)

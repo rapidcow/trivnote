@@ -5,6 +5,8 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
+import java.util.List;
+
 /**
  * Basic unit of an S-expression.
  * A datum is either an {@link Atom}, a {@link Cons},
@@ -46,6 +48,20 @@ permits
 	isList(Datum node)
 	{
 		return !(node instanceof Atom);
+	}
+
+	/**
+	 * {@return the datum as a proper list}
+	 *
+	 * @param node  datum
+	 * @throws IllegalArgumentException if the list
+	 *    terminator is not nil; i.e. improper list
+	 * @since %v
+	 */
+	public static List<Datum>
+	asList(Datum node)
+	{
+		return new DatumList(node).requireProperTail();
 	}
 
 	/**
