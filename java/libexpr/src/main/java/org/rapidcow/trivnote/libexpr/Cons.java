@@ -46,7 +46,7 @@ implements
 	/**
 	 * {@return the former half}
 	 */
-	public Datum
+	public final Datum
 	car()
 	{
 		return car;
@@ -55,7 +55,7 @@ implements
 	/**
 	 * {@return the latter half}
 	 */
-	public Datum
+	public final Datum
 	cdr()
 	{
 		return cdr;
