@@ -44,7 +44,6 @@ implements
 		if (tail == null) {
 			DatumWalk iter = new DatumWalk(head);
 			finish(iter);
-			size = iter.nextIndex();
 		}
 		return tail;
 	}
@@ -63,6 +62,7 @@ implements
 			}
 		}
 		tail = iter.rest();
+		size = iter.nextIndex();
 	}
 
 	public DatumList
