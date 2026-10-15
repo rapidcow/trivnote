@@ -36,6 +36,7 @@ implements
 
 	/**
 	 * {@return whether this should be a quoted string}
+	 * @since %v
 	 */
 	public final boolean
 	isString()
@@ -48,6 +49,7 @@ implements
 	 *
 	 * @param value  the given value
 	 * @throws NullPointerException on null {@code value}
+	 * @since %v
 	 */
 	public static Scalar
 	of(String value)
@@ -62,6 +64,7 @@ implements
 	 *
 	 * @param value  the given value
 	 * @throws NullPointerException on null {@code value}
+	 * @since %v
 	 */
 	public static Scalar
 	ofString(String value)
@@ -76,6 +79,7 @@ implements
 	 *
 	 * @param o  symbol to compare
 	 * @return the comparison result
+	 * @since %v
 	 */
 	@Override
 	public int

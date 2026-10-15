@@ -48,18 +48,27 @@ permits
 		return !(node instanceof Atom);
 	}
 
+	/**
+	 * @since %v
+	 */
 	public static Datum
 	car(Datum node)
 	{
 		return ((Cons) node).car();
 	}
 
+	/**
+	 * @since %v
+	 */
 	public static Datum
 	cdr(Datum node)
 	{
 		return ((Cons) node).cdr();
 	}
 
+	/**
+	 * @since %v
+	 */
 	public static String
 	value(Datum node)
 	{

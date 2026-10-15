@@ -102,6 +102,7 @@ implements
 	 * @param sym  map of symbols, optionally
 	 *    writable if the map is allowed to grow
 	 * @return this
+	 * @since %v
 	 */
 	public final DataLoader
 	useSymbolCache(Map<String,Symbol> sym)
@@ -112,6 +113,7 @@ implements
 
 	/**
 	 * {@return the current symbol cache}
+	 * @since %v
 	 */
 	public final Optional<Map<String,Symbol>>
 	getSymbolCache()
@@ -280,6 +282,7 @@ implements
 	 *
 	 * @param value  the text of the symbol
 	 * @return a symbol for value, from the symbol cache if any
+	 * @since %v
 	 */
 	protected Symbol
 	makeSymbol(String value)
@@ -314,6 +317,7 @@ implements
 	 *
 	 * @param value  the text of the string, with escapes processed
 	 * @return a string scalar by default
+	 * @since %v
 	 */
 	protected Scalar
 	makeString(String value)
@@ -330,6 +334,7 @@ implements
 	 *
 	 * @param value  the text of the number
 	 * @return a plain scalar by default
+	 * @since %v
 	 */
 	protected Scalar
 	makeNumber(String value)
@@ -341,6 +346,7 @@ implements
 	 * {@return a new exception carrying the current cursor position}
 	 *
 	 * @param message  the detail message
+	 * @since %v
 	 */
 	protected final DataLoadingException
 	loadingException(String message)
