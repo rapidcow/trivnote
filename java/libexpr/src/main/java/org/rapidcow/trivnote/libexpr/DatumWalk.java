@@ -125,6 +125,14 @@ implements
 	public Datum
 	seek(int off)
 	{
+		/*
+		 * Fork iterator states (cur, rest) => (pos, node),
+		 * so an out-of-bounds seek would not leave us in a
+		 * weird place.
+		 */
+		int pos = cur;
+		Datum node = rest;
+
 		int index;
 		if (off < 0) {
 			index = cur + off;
@@ -132,21 +140,28 @@ implements
 				throw new NoSuchElementException();
 			}
 			/* RESET */
-			rest = head;
-			cur = 0;
+			node = head;
+			pos = 0;
 		} else {
 			index = off;
 		}
-		for (int pos = 0; pos < index; ++pos) {
-			if (rest instanceof Cons cell) {
-				rest = cell.cdr();
-				++cur;
+
+		for (int i = 0; i < index; ++i) {
+			if (node instanceof Cons cell) {
+				node = cell.cdr();
+				++pos;
 			} else {
-				throw new NoSuchElementException();
+				throw new ArrayIndexOutOfBoundsException(
+					"Effective index " + index + " out of bounds"
+				);
 			}
 		}
+
 		/* assert(index == pos); */
-		return rest;
+
+		this.cur = pos;
+		this.rest = node;
+		return node;
 	}
 
 	/**
