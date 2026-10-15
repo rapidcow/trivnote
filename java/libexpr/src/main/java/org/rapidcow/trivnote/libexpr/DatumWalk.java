@@ -118,7 +118,7 @@ implements
 	 * Seek to an arbitrary relative position by offset.
 	 *
 	 * @param off  offset relative to the current position
-	 * @return datum at given position
+	 * @return sub-list starting at given position
 	 * @throws NoSuchElementException  if you went too far
 	 * @since %v
 	 */
@@ -161,7 +161,7 @@ implements
 	public Datum
 	previous()
 	{
-		return seek(-1);
+		return Datum.car(seek(-1));
 	}
 
 	/**
