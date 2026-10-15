@@ -279,7 +279,7 @@ implements
 	 * symbols; throw the result of loadingException to reject one.
 	 *
 	 * @param value  the text of the symbol
-	 * @return the interned symbol for value by default
+	 * @return a symbol for value, from the symbol cache if any
 	 */
 	protected Symbol
 	makeSymbol(String value)
@@ -289,10 +289,10 @@ implements
 		}
 		/*
 		 * Make Map::get (cache hit) the fast route:
-		 * we antipicate that we will encounter more
+		 * we anticipate that we will encounter more
 		 * recurring symbols than we come across new
 		 * ones.  It is also free of side effects,
-		 * which means maps like ConcurrentMap don't
+		 * which means maps like ConcurrentHashMap don't
 		 * even need to acquire a lock!  In any case,
 		 * it's worth trying....
 		 */

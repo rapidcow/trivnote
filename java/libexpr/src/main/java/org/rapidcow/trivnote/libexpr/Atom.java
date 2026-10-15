@@ -11,8 +11,8 @@ package org.rapidcow.trivnote.libexpr;
  *
  * <ul>
  *   <li> The {@link Scalar}, which holds an arbitrary value. </li>
- *   <li> The {@link Symbol}, which holds a unique, interned
- *        value from a (hopefully) fixed pool of vocabulary. </li>
+ *   <li> The {@link Symbol}, which holds a value from a
+ *        (hopefully) fixed pool of vocabulary. </li>
  * </ul>
  *
  * <p>
@@ -69,11 +69,13 @@ permits
 
 	/**
 	 * Returns whether this equals {@code o}.
-	 * Two symbols are considered equal if their values equal.
+	 * Two atoms are considered equal if they are of the same
+	 * class and their values equal.
 	 *
 	 * @param o  object to compare
 	 * @return whether this equals {@code o}
 	 */
+	@Override
 	public boolean
 	equals(Object o)
 	{

@@ -27,9 +27,7 @@ implements
 	}
 
 	/**
-	 * {@return the unique symbol for the given value}
-	 * This function has the possible side-effect of
-	 * creating a new entry in the symbol table.
+	 * {@return a new symbol for the given value}
 	 *
 	 * @param value  the given value
 	 * @throws NullPointerException on null {@code value}
