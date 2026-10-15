@@ -26,7 +26,7 @@ implements
 	private       Datum tail;
 	private  int  size =  -1;
 
-	private
+	public
 	DatumList(Datum list)
 	{
 		head = list;
