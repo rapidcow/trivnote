@@ -11,6 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class WalkTest
 {
 	@Test void testNullOrigin() {
-		assertThrows(NullPointerException.class, () -> new Walk(null));
+		assertThrows(NullPointerException.class, () -> new DatumWalk(null));
 	}
 }

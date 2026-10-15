@@ -25,14 +25,14 @@ class ReaderTest
 	private Datum token;
 	private DataLoader loader;
 	private List<Datum> list;
-	private Walk walk;
+	private DatumWalk walk;
 
 	@Test void testReadSymbol()
 	{
 		input = new StringReader("(foo bar baz)");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
@@ -42,7 +42,7 @@ class ReaderTest
 				Symbol.of("bar"),
 				Symbol.of("baz")
 			), list);
-		assertEquals(Nil.INSTANCE, walk.tail());
+		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -51,7 +51,7 @@ class ReaderTest
 		input = new StringReader("(2.719 -0.898 .67 -.1 \"1024\" \"abc\")");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
@@ -64,7 +64,7 @@ class ReaderTest
 				Scalar.of("1024"),
 				Scalar.of("abc")
 			), list);
-		assertEquals(Nil.INSTANCE, walk.tail());
+		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -73,7 +73,7 @@ class ReaderTest
 		input = new StringReader("(abc;comment\ndef)");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
@@ -82,7 +82,7 @@ class ReaderTest
 				Symbol.of("abc"),
 				Symbol.of("def")
 			), list);
-		assertEquals(Nil.INSTANCE, walk.tail());
+		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -91,7 +91,7 @@ class ReaderTest
 		input = new StringReader("(#;A #;(OA deg 30) 42)");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
@@ -99,7 +99,7 @@ class ReaderTest
 			List.of(
 				Scalar.of("42")
 			), list);
-		assertEquals(Nil.INSTANCE, walk.tail());
+		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -108,7 +108,7 @@ class ReaderTest
 		input = new StringReader("(display #; #;\"a\" \"b\" \"c\")");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
@@ -117,7 +117,7 @@ class ReaderTest
 				Symbol.of("display"),
 				Scalar.of("c")
 			), list);
-		assertEquals(Nil.INSTANCE, walk.tail());
+		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -126,7 +126,7 @@ class ReaderTest
 		input = new StringReader("(a b . c)");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
@@ -135,7 +135,7 @@ class ReaderTest
 				Symbol.of("a"),
 				Symbol.of("b")
 			), list);
-		assertEquals(Symbol.of("c"), walk.tail());
+		assertEquals(Symbol.of("c"), walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -145,7 +145,7 @@ class ReaderTest
 		input = new StringReader("(a . (b c))");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
@@ -155,7 +155,7 @@ class ReaderTest
 				Symbol.of("b"),
 				Symbol.of("c")
 			), list);
-		assertEquals(Nil.INSTANCE, walk.tail());
+		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -169,7 +169,7 @@ class ReaderTest
 		input = new StringReader("(a b .(c))");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
@@ -179,7 +179,7 @@ class ReaderTest
 				Symbol.of("b"),
 				Symbol.of("c")
 			), list);
-		assertEquals(Nil.INSTANCE, walk.tail());
+		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -193,7 +193,7 @@ class ReaderTest
 		input = new StringReader("(a b .c)");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
@@ -203,7 +203,7 @@ class ReaderTest
 				Symbol.of("b"),
 				Symbol.of(".c")
 			), list);
-		assertEquals(Nil.INSTANCE, walk.tail());
+		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -213,7 +213,7 @@ class ReaderTest
 		input = new StringReader("(... a.b)");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
@@ -222,7 +222,7 @@ class ReaderTest
 				Symbol.of("..."),
 				Symbol.of("a.b")
 			), list);
-		assertEquals(Nil.INSTANCE, walk.tail());
+		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -238,7 +238,7 @@ class ReaderTest
 		input = new StringReader("(+ - +. -. -.o +.=)");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
@@ -251,7 +251,7 @@ class ReaderTest
 				Symbol.of("-.o"),
 				Symbol.of("+.=")
 			), list);
-		assertEquals(Nil.INSTANCE, walk.tail());
+		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -318,12 +318,12 @@ class ReaderTest
 		input = new StringReader("(a .\"b\")");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
 		assertIterableEquals(List.of(Symbol.of("a")), list);
-		assertEquals(Scalar.of("b"), walk.tail());
+		assertEquals(Scalar.of("b"), walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -332,12 +332,12 @@ class ReaderTest
 		input = new StringReader("(a .|b c|)");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
 		assertIterableEquals(List.of(Symbol.of("a")), list);
-		assertEquals(Symbol.of("b c"), walk.tail());
+		assertEquals(Symbol.of("b c"), walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -346,12 +346,12 @@ class ReaderTest
 		input = new StringReader("(a .;comment\nb)");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
 		assertIterableEquals(List.of(Symbol.of("a")), list);
-		assertEquals(Symbol.of("b"), walk.tail());
+		assertEquals(Symbol.of("b"), walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -360,7 +360,7 @@ class ReaderTest
 		input = new StringReader("(|foo bar| baz al|ter|na|tion|)");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
@@ -370,7 +370,7 @@ class ReaderTest
 				Symbol.of("baz"),
 				Symbol.of("alternation")
 			), list);
-		assertEquals(Nil.INSTANCE, walk.tail());
+		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -381,7 +381,7 @@ class ReaderTest
 			"(\"say \\\"hi\\\"\" \"back\\\\slash\" \"line1\\nline2\")");
 		loader = new DataLoader(input);
 		token = loader.next();
-		walk = new Walk(token);
+		walk = new DatumWalk(token);
 
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
@@ -391,7 +391,7 @@ class ReaderTest
 				Scalar.of("back\\slash"),
 				Scalar.of("line1\nline2")
 			), list);
-		assertEquals(Nil.INSTANCE, walk.tail());
+		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
