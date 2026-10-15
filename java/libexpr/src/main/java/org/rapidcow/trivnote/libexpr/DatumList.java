@@ -78,7 +78,9 @@ implements
 	public ListIterator<Datum>
 	listIterator(int index)
 	{
-		return new DatumWalk(head);
+		DatumWalk walk = new DatumWalk(head);
+		walk.seek(index);
+		return walk;
 	}
 
 	@Override
