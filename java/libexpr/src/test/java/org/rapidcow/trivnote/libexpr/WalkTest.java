@@ -15,10 +15,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WalkTest
 {
-	static final Datum A = Scalar.of("a");
-	static final Datum B = Scalar.of("b");
-	static final Datum C = Scalar.of("c");
-	static final Datum Z = Scalar.of("z");
+	static final Datum A = Symbol.of("a");
+	static final Datum B = Symbol.of("b");
+	static final Datum C = Symbol.of("c");
+	static final Datum Z = Symbol.of("z");
 
 	/* (a b c) */
 	static Datum proper()
