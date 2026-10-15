@@ -25,14 +25,9 @@ import static org.rapidcow.trivnote.libexpr.Datum.cdr;
 
 /**
  * Tests {@link DataLoader#useSymbolCache}.
- *
- * <p>Tests contributed not by me credited below.
  */
 class SymbolCacheTest
 {
-	/**
-	 * @author Claude Sonnet 5.5
-	 */
 	@Test void testSharedWithinOneLoader()
 	{
 		Map<String,Symbol> cache = new HashMap<>();
@@ -47,9 +42,6 @@ class SymbolCacheTest
 		assertEquals(2, cache.size());
 	}
 
-	/**
-	 * @author Claude Sonnet 5.5
-	 */
 	@Test void testSharedAcrossLoaders()
 	{
 		Map<String,Symbol> cache = new HashMap<>();
@@ -60,9 +52,6 @@ class SymbolCacheTest
 		assertSame(x, y);
 	}
 
-	/**
-	 * @author Claude Sonnet 5.5
-	 */
 	@Test void testNoCacheNotIdentical()
 	{
 		Datum x = new DataLoader(new StringReader("a")).next();
@@ -71,9 +60,6 @@ class SymbolCacheTest
 		assertEquals(x, y);
 	}
 
-	/**
-	 * @author Claude Sonnet 5.5
-	 */
 	@Test void testNullRemovesCache()
 	{
 		Map<String,Symbol> cache = new HashMap<>();
@@ -83,9 +69,6 @@ class SymbolCacheTest
 		assertEquals(0, cache.size());
 	}
 
-	/**
-	 * @author Claude Sonnet 5.5
-	 */
 	@Test void testScalarsNotCached()
 	{
 		Map<String,Symbol> cache = new HashMap<>();
@@ -94,9 +77,6 @@ class SymbolCacheTest
 		assertEquals(0, cache.size());
 	}
 
-	/**
-	 * @author Claude Sonnet 5.5
-	 */
 	@Test void testImmutableMapKnownSymbolResolves()
 	{
 		Symbol known = Symbol.of("a");
@@ -106,9 +86,6 @@ class SymbolCacheTest
 		assertSame(known, d);
 	}
 
-	/**
-	 * @author Claude Sonnet 5.5
-	 */
 	@Test void testImmutableMapUnknownSymbolStillLoads()
 	{
 		Map<String,Symbol> cache = Map.of("a", Symbol.of("a"));
@@ -124,10 +101,6 @@ class SymbolCacheTest
 	 * to cache a symbol must adopt the winner, so every thread has to end
 	 * up with the same instance for each value.  The loss is only sometimes
 	 * hit, but the assertion holds on every run if the code is correct.
-	 */
-
-	/**
-	 * @author Claude Sonnet 5.5
 	 */
 	@Test void testConcurrentLoadersAgree()
 	throws
