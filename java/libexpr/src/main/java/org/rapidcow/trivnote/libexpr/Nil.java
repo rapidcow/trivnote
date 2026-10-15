@@ -23,7 +23,9 @@ implements
 	/**
 	 * {@return a list iterator for this}
 	 */
-	@Override public Iterator<Datum> iterator()
+	@Override
+	public Iterator<Datum>
+	iterator()
 	{
 		return new Walk(this);
 	}
