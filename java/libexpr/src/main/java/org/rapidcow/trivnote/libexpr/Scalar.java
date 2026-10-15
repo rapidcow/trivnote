@@ -6,9 +6,9 @@
 package org.rapidcow.trivnote.libexpr;
 
 /**
- * Regular {@link Atom}.  A scalar is
- * represented by its string representation
- * stored in {@link #value()}.
+ * Regular {@link Atom} meant to represent a diverse
+ * range of values.  A scalar is represented by its
+ * string representation stored in {@link #value()}.
  */
 public final
 class

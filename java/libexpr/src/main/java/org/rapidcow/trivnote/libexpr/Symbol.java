@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Interned {@link Atom}.
- * It is unquoted in wire S-expression representation.
+ * Special {@link Atom} that tends to repeat itself in many
+ * places.  It is unquoted in wire S-expression representation.
  */
 public final
 class
