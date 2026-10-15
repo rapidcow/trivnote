@@ -133,9 +133,13 @@ implements
 		int pos = cur;
 		Datum node = rest;
 
+		/*
+		 * Now compute an index, relative to either the head
+		 * (if offset is negative) or to here (if positive).
+		 */
 		int index;
 		if (off < 0) {
-			index = cur + off;
+			index = pos + off;
 			if (index < 0) {
 				throw new IndexOutOfBoundsException(
 					"Effective index " + index + " out of bounds"
@@ -153,9 +157,11 @@ implements
 				node = cell.cdr();
 				++pos;
 			} else {
-				/* Objects.checkIndex(index, pos); */
+				/* Compute what the absolute index would have been. */
+				long effIndex = (long) (pos - i) + off;
 				throw new IndexOutOfBoundsException(
-					"Effective index " + index + " out of bounds for length " + pos
+					"Effective index " + effIndex + " out of "
+					+ "bounds for length " + pos
 				);
 			}
 		}
