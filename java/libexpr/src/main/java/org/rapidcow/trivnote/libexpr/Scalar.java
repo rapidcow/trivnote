@@ -70,28 +70,6 @@ implements
 	}
 
 	/**
-	 * Returns whether this equals {@code o}.
-	 * Two scalars are considered equal if their values equal.
-	 * Scalars do not equal symbols or any other subtype of
-	 * {@link Atom}, even if their values agree.
-	 *
-	 * @param o  object to compare
-	 * @return whether this equals {@code o}
-	 */
-	@Override
-	public boolean
-	equals(Object o)
-	{
-		if (this == o) {
-			return true;
-		}
-		if (o instanceof Scalar atom) {
-			return value.equals(atom.value);
-		}
-		return false;
-	}
-
-	/**
 	 * Return the comparison result of this against {@code o}.
 	 * Scalars do not equal symbols or any other subtype of
 	 * {@link Atom}, even if their values agree.
