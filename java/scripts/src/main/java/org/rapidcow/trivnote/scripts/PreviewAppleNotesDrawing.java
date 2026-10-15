@@ -24,9 +24,9 @@ import org.rapidcow.trivnote.libexpr.Atom;
 import org.rapidcow.trivnote.libexpr.Cons;
 import org.rapidcow.trivnote.libexpr.DataLoader;
 import org.rapidcow.trivnote.libexpr.Datum;
+import org.rapidcow.trivnote.libexpr.DatumWalk;
 import org.rapidcow.trivnote.libexpr.Nil;
 import org.rapidcow.trivnote.libexpr.Symbol;
-import org.rapidcow.trivnote.libexpr.Walk;
 
 public class PreviewAppleNotesDrawing
 {
@@ -68,7 +68,7 @@ public class PreviewAppleNotesDrawing
 			DataLoader loader = new DataLoader(in);
 			root = loader.readDatum();
 			if (loader.hasNext()) { throw up( "trailing garbage" ); }
-			if (loader.lastIOException() != null) { throw up( "I/O error", loader.fileException() ); }
+			if (loader.lastIOException() != null) { throw up( "I/O error", loader.lastIOException() ); }
 		}
 
 		Datum rK, rV;
@@ -139,7 +139,7 @@ public class PreviewAppleNotesDrawing
 	private static List<Point> loadPoints(Datum pointsNode)
 	{
 		List<Point> points = new ArrayList<>();
-		Walk it = new Walk(pointsNode);
+		DatumWalk it = new DatumWalk(pointsNode);
 		while (it.hasNext()) {
 			Map<String,Datum> fields = toAlist(it.next());
 			Cons xy = (Cons) fields.get("point");
@@ -149,8 +149,8 @@ public class PreviewAppleNotesDrawing
 			double radius = fields.containsKey("radius") ? num(fields.get("radius")) : 0.0;
 			points.add(new Point(x, y, radius));
 		}
-		if (it.tail() != Nil.INSTANCE) {
-			throw up( "improper list (tail is: " + it.tail() + ")" );
+		if (it.rest() != Nil.INSTANCE) {
+			throw up( "improper list (tail is: " + it.rest() + ")" );
 		}
 		return points;
 	}
@@ -164,7 +164,7 @@ public class PreviewAppleNotesDrawing
 	{
 		List<Datum> rest = new ArrayList<>();
 		Symbol wantTag = Symbol.of(tag);
-		Walk it = new Walk(node);
+		DatumWalk it = new DatumWalk(node);
 		while (it.hasNext()) {
 			Datum elt = it.next();
 			if (!(elt instanceof Cons cp) || !wantTag.equals(cp.car())) {
@@ -172,8 +172,8 @@ public class PreviewAppleNotesDrawing
 			}
 			rest.add(cp.cdr());
 		}
-		if (it.tail() != Nil.INSTANCE) {
-			throw up( "improper list (tail is: " + it.tail() + ")" );
+		if (it.rest() != Nil.INSTANCE) {
+			throw up( "improper list (tail is: " + it.rest() + ")" );
 		}
 		return rest;
 	}
@@ -199,15 +199,15 @@ public class PreviewAppleNotesDrawing
 
 	private static Map<String,Datum> toAlist(Datum node)
 	{
-		Walk it;
+		DatumWalk it;
 		Map<String,Datum> jc;
 
-		if (!( node.isList() )) { throw up( "not a list" ); }
+		if (!( Datum.isList(node) )) { throw up( "not a list" ); }
 		if (node == Nil.INSTANCE) {
 			return Collections.emptyMap();
 		}
 
-		it = new Walk(node);
+		it = new DatumWalk(node);
 		jc = new HashMap<>();
 
 		while (it.hasNext()) {
@@ -232,8 +232,8 @@ public class PreviewAppleNotesDrawing
 			}
 		}
 
-		if (it.tail() != Nil.INSTANCE) {
-			throw up( "improper list (tail is: " + it.tail() + ")" );
+		if (it.rest() != Nil.INSTANCE) {
+			throw up( "improper list (tail is: " + it.rest() + ")" );
 		}
 		return jc;
 	}
@@ -246,7 +246,7 @@ public class PreviewAppleNotesDrawing
 			Datum colorNode = props.get("color");
 			float[] chan = new float[4];
 			Color color;
-			Walk colorIt = new Walk(colorNode);
+			DatumWalk colorIt = new DatumWalk(colorNode);
 			int i = 0;
 			while (colorIt.hasNext()) {
 				if (i >= 4) {
@@ -255,8 +255,8 @@ public class PreviewAppleNotesDrawing
 				String value = ((Atom) colorIt.next()).value();
 				chan[i++] = Float.parseFloat(value);
 			}
-			if (colorIt.tail() != Nil.INSTANCE) {
-				throw up( "improper list (tail is: " + colorIt.tail() + ")" );
+			if (colorIt.rest() != Nil.INSTANCE) {
+				throw up( "improper list (tail is: " + colorIt.rest() + ")" );
 			}
 			color = new Color(chan[0], chan[1], chan[2], chan[3]);
 			brushKit.add(new Ink(color));
@@ -266,7 +266,7 @@ public class PreviewAppleNotesDrawing
 
 	private static Clock loadClock(Datum node)
 	{
-		Walk it = new Walk(node);
+		DatumWalk it = new DatumWalk(node);
 		int[] args = new int[3];
 		int i = 0;
 		while (it.hasNext()) {
@@ -276,8 +276,8 @@ public class PreviewAppleNotesDrawing
 			String value = ((Atom) it.next()).value();
 			args[i++] = Integer.parseInt(value);
 		}
-		if (it.tail() != Nil.INSTANCE) {
-			throw up( "improper list (tail is: " + it.tail() + ")" );
+		if (it.rest() != Nil.INSTANCE) {
+			throw up( "improper list (tail is: " + it.rest() + ")" );
 		}
 		return new Clock(args[0], args[1], args[2]);
 	}
@@ -309,7 +309,7 @@ public class PreviewAppleNotesDrawing
 
 	private static AffineTransform loadTransform(Datum node)
 	{
-		Walk it = new Walk(node);
+		DatumWalk it = new DatumWalk(node);
 		float[] args = new float[6];
 		int i = 0;
 		while (it.hasNext()) {
@@ -322,8 +322,8 @@ public class PreviewAppleNotesDrawing
 		if (i != 6) {
 			throw up( "wrong arity" );
 		}
-		if (it.tail() != Nil.INSTANCE) {
-			throw up( "improper list (tail is: " + it.tail() + ")" );
+		if (it.rest() != Nil.INSTANCE) {
+			throw up( "improper list (tail is: " + it.rest() + ")" );
 		}
 		return new AffineTransform(args);
 	}
