@@ -98,7 +98,7 @@ implements
 	public int
 	nextIndex()
 	{
-		return 1 + cur;
+		return cur;
 	}
 
 	/*
