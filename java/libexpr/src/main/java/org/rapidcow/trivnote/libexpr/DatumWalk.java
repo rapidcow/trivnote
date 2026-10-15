@@ -105,10 +105,11 @@ implements
 	 * Now this bit is the ugly, inefficient bit.
 	 *
 	 * We don't really need backward iteration (we can't, for that
-	 * matter, as Lisp lists are singly lists); AbstractSequentialList
-	 * does not even call previous().  But because we are not allowed
-	 * to throw UnsupportedOperationException, I guess we're gonna
-	 * do it.  Be warned though: previous() is almost always O(n).
+	 * matter, as Lisp lists are singly-linked lists); Abstract-
+	 * SequentialList does not even call previous().  But because
+	 * we are not allowed to throw UnsupportedOperationException,
+	 * I guess we're gonna do it anyway....  >_>
+	 * Be warned though: previous() is almost always O(n).
 	 *
 	 * So DON'T DO IT!  Convert it into a real doubly linked list
 	 * if you want bidirectional iteration!
