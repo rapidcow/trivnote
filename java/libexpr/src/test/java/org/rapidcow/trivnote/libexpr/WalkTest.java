@@ -153,7 +153,7 @@ class WalkTest
 	{
 		DatumWalk walk = new DatumWalk(proper());
 		walk.next();
-		assertThrows(NoSuchElementException.class, () -> walk.seek(5));
+		assertThrows(IndexOutOfBoundsException.class, () -> walk.seek(5));
 		assertCursor(1, walk);
 		assertEquals(B, walk.next());
 	}
@@ -162,7 +162,7 @@ class WalkTest
 	{
 		DatumWalk walk = new DatumWalk(proper());
 		walk.next();
-		assertThrows(NoSuchElementException.class, () -> walk.seek(-2));
+		assertThrows(IndexOutOfBoundsException.class, () -> walk.seek(-2));
 		assertCursor(1, walk);
 		assertEquals(B, walk.next());
 	}
