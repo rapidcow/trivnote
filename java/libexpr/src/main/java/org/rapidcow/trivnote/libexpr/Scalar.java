@@ -6,7 +6,7 @@
 package org.rapidcow.trivnote.libexpr;
 
 /**
- * Non-interned {@link Atom}.  A scalar is
+ * Regular {@link Atom}.  A scalar is
  * represented by its string representation
  * stored in {@link #value()}.
  */
