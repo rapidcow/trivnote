@@ -57,7 +57,7 @@ tasks.javadoc {
         workingDir = projectDir
         commandLine("git", "rev-parse", "--show-prefix")
     }.standardOutput.asText.map { it.trim() }
-    val gitTag = "${project.name}/${project.version}"
+    val gitTag = "${project.name}/v${project.version}"
 
     (options as StandardJavadocDocletOptions).apply {
         // Enable all documentation checks
