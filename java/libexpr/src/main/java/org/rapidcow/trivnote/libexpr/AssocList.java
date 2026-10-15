@@ -13,7 +13,7 @@ extends
 	AbstractMap<String,Datum>
 {
 	/* Hash of atom value to its first occurrence */
-	private HashMap<String,Datum> hash;
+	private final HashMap<String,Datum> hash;
 
 	public AssocList(Datum list)
 	{
@@ -56,9 +56,32 @@ extends
 
 	@Override
 	public Set< Map.Entry<String,Datum> >
-	entrySet() {
-		/* TODO still stub!  This is inefficient. */
+	entrySet()
+	{
+		/* TODO still a stub!  (Or is it...?) */
 		return Collections.unmodifiableMap(hash).entrySet();
 	}
 
+	/* pass-thru */
+
+	@Override
+	public Datum
+	get(Object key)
+	{
+		return hash.get(key);
+	}
+
+	@Override
+	public boolean
+	containsKey(Object key)
+	{
+		return hash.containsKey(key);
+	}
+
+	@Override
+	public int
+	size()
+	{
+		return hash.size();
+	}
 }
