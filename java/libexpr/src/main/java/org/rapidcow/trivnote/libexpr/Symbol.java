@@ -45,6 +45,7 @@ implements
 	 *
 	 * @param o  symbol to compare
 	 * @return the comparison result
+	 * @since %v
 	 */
 	@Override
 	public int
