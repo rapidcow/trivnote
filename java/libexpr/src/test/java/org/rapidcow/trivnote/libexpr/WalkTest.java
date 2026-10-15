@@ -13,25 +13,15 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import static org.rapidcow.trivnote.libexpr.ListTest.A;
+import static org.rapidcow.trivnote.libexpr.ListTest.B;
+import static org.rapidcow.trivnote.libexpr.ListTest.C;
+import static org.rapidcow.trivnote.libexpr.ListTest.Z;
+import static org.rapidcow.trivnote.libexpr.ListTest.proper;
+import static org.rapidcow.trivnote.libexpr.ListTest.improper;
+
 class WalkTest
 {
-	static final Datum A = Symbol.of("a");
-	static final Datum B = Symbol.of("b");
-	static final Datum C = Symbol.of("c");
-	static final Datum Z = Symbol.of("z");
-
-	/* (a b c) */
-	static Datum proper()
-	{
-		return new Cons(A, new Cons(B, new Cons(C, Nil.INSTANCE)));
-	}
-
-	/* (a b . z) */
-	static Datum improper()
-	{
-		return new Cons(A, new Cons(B, Z));
-	}
-
 	/*
 	 * ListIterator contract: nextIndex() is the index of the element
 	 * next() would return, previousIndex() is nextIndex() - 1.

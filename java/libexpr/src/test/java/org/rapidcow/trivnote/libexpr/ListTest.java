@@ -13,15 +13,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.rapidcow.trivnote.libexpr.WalkTest.A;
-import static org.rapidcow.trivnote.libexpr.WalkTest.B;
-import static org.rapidcow.trivnote.libexpr.WalkTest.C;
-import static org.rapidcow.trivnote.libexpr.WalkTest.Z;
-import static org.rapidcow.trivnote.libexpr.WalkTest.proper;
-import static org.rapidcow.trivnote.libexpr.WalkTest.improper;
-
 class ListTest
 {
+	static final Datum A = Symbol.of("a");
+	static final Datum B = Symbol.of("b");
+	static final Datum C = Symbol.of("c");
+	static final Datum Z = Symbol.of("z");
+
+	/* (a b c) */
+	static Datum proper()
+	{
+		return new Cons(A, new Cons(B, new Cons(C, Nil.INSTANCE)));
+	}
+
+	/* (a b . z) */
+	static Datum improper()
+	{
+		return new Cons(A, new Cons(B, Z));
+	}
+
 	@Test void testSize()
 	{
 		assertEquals(3, new DatumList(proper()).size());
