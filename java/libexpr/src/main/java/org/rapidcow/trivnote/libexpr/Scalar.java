@@ -9,41 +9,17 @@ package org.rapidcow.trivnote.libexpr;
  * Regular {@link Atom} meant to represent a diverse
  * range of values.  A scalar is represented by its
  * string representation stored in {@link #value()}.
+ *
+ * @see SimpleScalar
+ * @see StringScalar
  */
-public final
-class
+public non-sealed
+abstract class
 	Scalar
-extends
-	Atom
 implements
+	Atom,
 	Comparable<Scalar>
 {
-	private boolean quot;
-
-	/**
-	 * Creates an immutable scalar atom.
-	 *
-	 * @param value  value
-	 * @param isStr  whether this should be a quoted string
-	 * @throws NullPointerException on null {@code value}
-	 */
-	private
-	Scalar(String value, boolean isStr)
-	{
-		super(value);
-		quot = isStr;
-	}
-
-	/**
-	 * {@return whether this should be a quoted string}
-	 * @since %v
-	 */
-	public final boolean
-	isString()
-	{
-		return quot;
-	}
-
 	/**
 	 * {@return an immutable scalar atom}
 	 *
@@ -54,7 +30,7 @@ implements
 	public static Scalar
 	of(String value)
 	{
-		return new Scalar(value, false);
+		return new SimpleScalar(value);
 	}
 
 	/**
@@ -69,22 +45,33 @@ implements
 	public static Scalar
 	ofString(String value)
 	{
-		return new Scalar(value, true);
+		return new StringScalar(value);
 	}
 
-	/**
-	 * Return the comparison result of this against {@code o}.
-	 * Scalars do not equal symbols or any other subtype of
-	 * {@link Atom}, even if their values agree.
-	 *
-	 * @param o  symbol to compare
-	 * @return the comparison result
-	 * @since %v
-	 */
+	@Override
+	public boolean
+	equals(Object o)
+	{
+		if (this == o) {
+			return true;
+		}
+		if (o instanceof Scalar atom) {
+			return value().equals(atom.value());
+		}
+		return false;
+	}
+
+	@Override
+	public int
+	hashCode()
+	{
+		return value().hashCode();
+	}
+
 	@Override
 	public int
 	compareTo(Scalar o)
 	{
-		return value.compareTo(o.value);
+		return value().compareTo(o.value());
 	}
 }

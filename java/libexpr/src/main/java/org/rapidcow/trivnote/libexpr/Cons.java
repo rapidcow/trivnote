@@ -19,55 +19,45 @@ import java.util.Objects;
  * It is otherwise considered <em>improper</em>.
  * Cons cells are {@link Iterable} as a list.
  */
-public final
-class
+public non-sealed
+abstract class
 	Cons
 implements
 	Datum,
 	Iterable<Datum>
 {
-	private final Datum car;
-	private final Datum cdr;
+	public abstract Datum car();
+	public abstract Datum cdr();
 
-	/**
-	 * Creates an immutable cons cell.
-	 *
-	 * @param car  the former half
-	 * @param cdr  the latter half
-	 * @throws NullPointerException on null {@code car} or {@code cdr}
-	 */
-	public
-	Cons(Datum car, Datum cdr)
+	public static Cons
+	of(Datum car, Datum cdr)
 	{
-		this.car = Objects.requireNonNull(car, "car must not be null");
-		this.cdr = Objects.requireNonNull(cdr, "cdr must not be null");
+		return new ConsCell(car, cdr);
 	}
 
-	/**
-	 * {@return the former half}
-	 */
-	public final Datum
-	car()
-	{
-		return car;
-	}
+	private int myHash;
 
-	/**
-	 * {@return the latter half}
-	 */
-	public final Datum
-	cdr()
-	{
-		return cdr;
-	}
-
-	/**
-	 * {@return a list iterator for this}
-	 */
 	@Override
-	public Iterator<Datum>
-	iterator()
+	public boolean
+	equals(Object o)
 	{
-		return new DatumWalk(this);
+		if (this == o) {
+			return true;
+		}
+		if (o instanceof Cons cell) {
+			return this.car().equals(cell.car())
+				&& this.cdr().equals(cell.cdr());
+		}
+		return false;
+	}
+
+	@Override
+	public int
+	hashCode()
+	{
+		if (myHash == 0) {
+			myHash = Objects.hash(car(), cdr());
+		}
+		return myHash;
 	}
 }

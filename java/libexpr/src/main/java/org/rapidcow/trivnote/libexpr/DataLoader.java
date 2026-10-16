@@ -343,6 +343,22 @@ implements
 	}
 
 	/**
+	 * Hook called to create a list.
+	 *
+	 * @param q  list contents
+	 * @param e  list terminator
+	 * @return a list
+	 */
+	protected Datum
+	makeList(Deque<Datum> q, Datum e)
+	{
+		while (!q.isEmpty()) {
+			e = Cons.of(q.pop(), e);
+		}
+		return e;
+	}
+
+	/**
 	 * {@return a new exception carrying the current cursor position}
 	 *
 	 * @param message  the detail message
@@ -386,8 +402,7 @@ implements
 		IOException
 	{
 		int v, w, eg, sg;
-		Datum s;
-		Token tk;
+		Datum e;
 		StringBuilder sb;
 
 		switch (bg) {
@@ -474,10 +489,11 @@ implements
 
 			if (v == '(' || v == '[' || v == '{') {
 				Deque<Datum> q = new ArrayDeque<>();
+				Token o;
 				sg = 0;  /* stage */
-				while (( tk = readDatum(v) ) != null) {
+				while (( o = readDatum(v) ) != null) {
 					if (sg == 0) {
-						if (tk.dot) {
+						if (o == Token.DOT) {
 							if (q.isEmpty()) {
 								throw loadingException(
 									"Unexpected `.'"
@@ -485,16 +501,16 @@ implements
 							}
 							sg++;
 						} else {
-							q.push(tk.value);
+							q.push(o.value);
 						}
 					}
 					else if (sg == 1) {
-						if (tk.dot) {
+						if (o == Token.DOT) {
 							throw loadingException(
 								"Unexpected `.'"
 							);
 						}
-						q.push(tk.value);
+						q.push(o.value);
 						sg++;
 					}
 					else {
@@ -504,17 +520,15 @@ implements
 					}
 				}
 				if (sg == 0) {
-					q.push(Nil.INSTANCE);
-				} else if (sg == 1) {
+					e = Nil.INSTANCE;
+				} else if (sg == 2) {
+					e = q.pop();
+				} else {
 					throw loadingException(
 						"Missing datum following `.'"
 					);
 				}
-				s = q.pop();
-				while (!q.isEmpty()) {
-					s = new Cons(q.pop(), s);
-				}
-				return new Token(s);
+				return new Token(makeList(q, e));
 			}
 
 			if (v == ')' || v == ']' || v == '}') {
