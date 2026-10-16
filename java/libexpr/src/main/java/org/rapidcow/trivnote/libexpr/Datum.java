@@ -65,29 +65,50 @@ permits
 	}
 
 	/**
+	 * Return the car of given datum.
+	 *
+	 * @param node  datum
+	 * @throws IllegalArgumentException if not a cons
 	 * @since %v
 	 */
 	public static Datum
 	car(Datum node)
 	{
-		return ((Cons) node).car();
+		if (node instanceof Cons cell) {
+			return cell.car();
+		}
+		throw new IllegalArgumentException("not a cons");
 	}
 
 	/**
+	 * Return the cdr of given datum.
+	 *
+	 * @param node  datum
+	 * @throws IllegalArgumentException if not a cons
 	 * @since %v
 	 */
 	public static Datum
 	cdr(Datum node)
 	{
-		return ((Cons) node).cdr();
+		if (node instanceof Cons cell) {
+			return cell.cdr();
+		}
+		throw new IllegalArgumentException("not a cons");
 	}
 
 	/**
+	 * Return the value of given datum.
+	 *
+	 * @param node  datum
+	 * @throws IllegalArgumentException not an atom
 	 * @since %v
 	 */
 	public static String
 	value(Datum node)
 	{
-		return ((Atom) node).value();
+		if (node instanceof Atom atom) {
+			return atom.value();
+		}
+		throw new IllegalArgumentException("not an atom");
 	}
 }
