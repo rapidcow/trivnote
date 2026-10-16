@@ -24,7 +24,7 @@ class DatumTest
 		 */
 		assertEquals(true, Datum.isAtom(car = Scalar.of("hi")));
 		assertEquals(true, Datum.isAtom(cdr = Nil.INSTANCE));
-		assertEquals(false, Datum.isAtom(list = new Cons(car, cdr)));
+		assertEquals(false, Datum.isAtom(list = Cons.of(car, cdr)));
 
 		assertEquals("Scalar[value=hi]", car.toString());
 

@@ -186,7 +186,7 @@ class ReaderTest
 	@Test void testDotGluedToAtomIsOrdinarySymbol()
 	{
 		/*
-		 * A `.' immediately followed by a non-delimwalk character
+		 * A `.' immediately followed by a non-delimiter character
 		 * is not the pair marker -- it is just the first character
 		 * of a symbol.
 		 */
@@ -209,7 +209,7 @@ class ReaderTest
 
 	@Test void testDotAsOrdinarySymbolChar()
 	{
-		/* a dot not delimwalk-bounded is just a symbol character */
+		/* A dot with friends is just an ordinary symbol. */
 		input = new StringReader("(... a.b)");
 		loader = new DataLoader(input);
 		token = loader.next();

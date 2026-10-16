@@ -23,13 +23,13 @@ class ListTest
 	/* (a b c) */
 	static Datum proper()
 	{
-		return new Cons(A, new Cons(B, new Cons(C, Nil.INSTANCE)));
+		return Cons.of(A, Cons.of(B, Cons.of(C, Nil.INSTANCE)));
 	}
 
 	/* (a b . z) */
 	static Datum improper()
 	{
-		return new Cons(A, new Cons(B, Z));
+		return Cons.of(A, Cons.of(B, Z));
 	}
 
 	@Test void testSize()

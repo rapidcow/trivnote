@@ -19,88 +19,18 @@ package org.rapidcow.trivnote.libexpr;
  * Presently, an atom’s value is a freeform Unicode
  * string, represented by {@link #value()}.
  */
-public abstract sealed
-class
+public sealed
+interface
 	Atom
-implements
+extends
 	Datum
 permits
 	Scalar,
 	Symbol
 {
 	/**
-	 * Value of this datum.  May not be null.
+	 * {@return the value of this atom}
+	 * The value may not be null.
 	 */
-	protected final String value;
-
-	/**
-	 * Create a new atom with the given value.
-	 *
-	 * @param value  value
-	 * @throws NullPointerException on null {@code value}
-	 */
-	protected
-	Atom(String value)
-	{
-		if (value == null) {
-			String className = getClass().getSimpleName();
-			throw new NullPointerException("value of a " + className + " must not be null");
-		}
-		this.value = value;
-	}
-
-	/**
-	 * {@return the value of this datum}
-	 */
-	public String
-	value()
-	{
-		return value;
-	}
-
-	/* This mimics a record's toString() override. */
-	@Override
-	public String
-	toString()
-	{
-		String className = getClass().getSimpleName();
-		return className + "[value=" + value + "]";
-	}
-
-	/**
-	 * Returns whether this equals {@code o}.
-	 * Two atoms are considered equal if they are of the same
-	 * class and their values equal.
-	 *
-	 * @param o  object to compare
-	 * @return whether this equals {@code o}
-	 */
-	@Override
-	public boolean
-	equals(Object o)
-	{
-		if (this == o) {
-			return true;
-		}
-		/*
-		 * A scalar is not equal to a symbol, so
-		 * we must check strict class equality.
-		 */
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		Atom atom = (Atom) o;
-		return value.equals(atom.value);
-	}
-
-	/**
-	 * {@return hash code for this}
-	 * Equal atoms hash to the same code.
-	 */
-	@Override
-	public int
-	hashCode()
-	{
-		return value.hashCode();
-	}
+	public abstract String value();
 }

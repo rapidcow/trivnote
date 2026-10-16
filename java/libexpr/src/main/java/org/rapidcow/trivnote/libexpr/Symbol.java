@@ -5,8 +5,7 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Objects;
 
 /**
  * Special {@link Atom} that tends to repeat itself in many
@@ -15,15 +14,22 @@ import java.util.concurrent.ConcurrentHashMap;
 public final
 class
 	Symbol
-extends
-	Atom
 implements
+	Atom,
 	Comparable<Symbol>
 {
-	private
+	private final String value;
+
+	public
 	Symbol(String value)
 	{
-		super(value);
+		this.value = Objects.requireNonNull(value);
+	}
+
+	public String
+	value()
+	{
+		return value;
 	}
 
 	/**
@@ -36,6 +42,19 @@ implements
 	of(String value)
 	{
 		return new Symbol(value);
+	}
+
+	@Override
+	public boolean
+	equals(Object o)
+	{
+		if (this == o) {
+			return true;
+		}
+		if (o instanceof Symbol name) {
+			return value().equals(name.value());
+		}
+		return false;
 	}
 
 	/**
