@@ -57,6 +57,13 @@ implements
 		return false;
 	}
 
+	@Override
+	public int
+	hashCode()
+	{
+		return value().hashCode();
+	}
+
 	/**
 	 * Return the comparison result of this against {@code o}.
 	 * Scalars do not equal symbols, even if their values agree.
