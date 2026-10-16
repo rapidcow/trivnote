@@ -346,13 +346,14 @@ implements
 	 * Hook called to create a non-empty list.
 	 *
 	 * @param q  list contents
+	 * @param s  final list datum
 	 * @param e  list terminator
 	 * @return a list
 	 */
 	protected Cons
-	makeList(Deque<Datum> q, Datum e)
+	makeList(Deque<Datum> q, Datum s, Datum e)
 	{
-		return new ConsList(q, e);
+		return new ConsList(q, s, e);
 	}
 
 	/**
@@ -525,7 +526,7 @@ implements
 						"Missing datum following `.'"
 					);
 				}
-				return new Token(makeList(q, e));
+				return new Token(makeList(q, q.pop(), e));
 			}
 
 			if (v == ')' || v == ']' || v == '}') {
