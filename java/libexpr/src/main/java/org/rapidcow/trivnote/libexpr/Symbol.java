@@ -32,6 +32,13 @@ implements
 		return value;
 	}
 
+	@Override
+	public String
+	toString()
+	{
+		return "Symbol[value=" + value + "]";
+	}
+
 	/**
 	 * {@return a new symbol for the given value}
 	 *
