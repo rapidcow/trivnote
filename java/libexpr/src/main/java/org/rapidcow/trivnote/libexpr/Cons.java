@@ -23,8 +23,7 @@ public non-sealed
 abstract class
 	Cons
 implements
-	Datum,
-	Iterable<Datum>
+	Datum
 {
 	public abstract Datum car();
 	public abstract Datum cdr();
