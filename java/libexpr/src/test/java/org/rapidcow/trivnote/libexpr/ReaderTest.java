@@ -467,6 +467,61 @@ class ReaderTest
 		}
 	}
 
+	@Test void testMaxDepth()
+	{
+		loader = new DataLoader(new StringReader("a (a) ((a)) [{(a)}]"))
+			.useMaxDepth(2);
+		assertEquals(2, loader.getMaxDepth());
+		assertSame(Symbol.class, loader.next().getClass());
+		loader.next();
+		loader.next();
+		assertThrows(DataLoadingException.class, loader::next);
+
+		/* Zero allows atoms only, including the empty list */
+		loader = new DataLoader(new StringReader("a ()")).useMaxDepth(0);
+		loader.next();
+		assertThrows(DataLoadingException.class, loader::next);
+
+		/* Datum comments count too */
+		loader = new DataLoader(new StringReader("(#;((a)) b)"))
+			.useMaxDepth(2);
+		assertThrows(DataLoadingException.class, loader::next);
+
+		/* Deep input is refused instead of overflowing the stack */
+		String deep = "(".repeat(1_000_000);
+		loader = new DataLoader(new StringReader(deep)).useMaxDepth(1000);
+		assertThrows(DataLoadingException.class, loader::next);
+
+		assertEquals(Long.MAX_VALUE, new DataLoader(new StringReader("")).getMaxDepth());
+		assertThrows(IllegalArgumentException.class,
+			() -> new DataLoader(new StringReader("")).useMaxDepth(-1));
+	}
+
+	@Test void testMaxLength()
+	{
+		loader = new DataLoader(new StringReader("(a b) (a b . c) (a b c)"))
+			.useMaxLength(2);
+		assertEquals(2, loader.getMaxLength());
+		assertEquals(2, Datum.asList(loader.next()).size());
+		/* The dotted tail is not an element */
+		assertEquals(2, new DatumList(loader.next()).size());
+		assertThrows(DataLoadingException.class, loader::next);
+
+		/* Applies to nested lists one at a time */
+		loader = new DataLoader(new StringReader("((a b) (c d))"))
+			.useMaxLength(2);
+		loader.next();
+
+		/* Zero allows only the empty list */
+		loader = new DataLoader(new StringReader("() (a)")).useMaxLength(0);
+		assertSame(Nil.INSTANCE, loader.next());
+		assertThrows(DataLoadingException.class, loader::next);
+
+		assertEquals(Long.MAX_VALUE, new DataLoader(new StringReader("")).getMaxLength());
+		assertThrows(IllegalArgumentException.class,
+			() -> new DataLoader(new StringReader("")).useMaxLength(-1));
+	}
+
 	/*
 	 * The empty list is the only instance where
 	 * makeList() is called with an empty queue.
