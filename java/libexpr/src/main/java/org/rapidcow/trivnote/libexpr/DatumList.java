@@ -30,6 +30,10 @@ implements
 	DatumList(Datum list)
 	{
 		head = list;
+		if (list instanceof ConsList cell) {
+			tail = cell.tail();
+			size = cell.size();
+		}
 	}
 
 	public final Datum
