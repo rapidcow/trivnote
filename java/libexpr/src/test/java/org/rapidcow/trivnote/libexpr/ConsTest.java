@@ -121,6 +121,15 @@ class ConsTest
 		checkSpine(Datum.fromList(input), Nil.INSTANCE, A, B, C);
 	}
 
+	/* A list view only promises its elements, never its tail */
+	@Test void testFromImproperDatumList()
+	{
+		List<Datum> input = new DatumList(Cons.of(A, B, C, Z));
+		checkList(new ConsList(input), Nil.INSTANCE, A, B, C);
+		checkSpine(Cons.fromList(input), Nil.INSTANCE, A, B, C);
+		checkSpine(Datum.fromList(input), Nil.INSTANCE, A, B, C);
+	}
+
 	@Test void testEmptyList()
 	{
 		assertSame(Nil.INSTANCE, Datum.fromList(List.of()));
