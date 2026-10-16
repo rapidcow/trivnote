@@ -111,4 +111,13 @@ permits
 		}
 		throw new IllegalArgumentException("not an atom");
 	}
+
+	public static Datum
+	fromList(List<? extends Datum> list)
+	{
+		if (list.isEmpty()) {
+			return Nil.INSTANCE;
+		}
+		return Cons.fromList(list);
+	}
 }
