@@ -456,7 +456,8 @@ class ReaderTest
 			"\\x{g}", "\\o{8}", "\\o1", "\\x{41", "\\o{101",
 			"\\x{80000000}", "\\o{20000000000}", "\\x{7fffffff}",
 			"\\o{17777777777}", "\\x{110000}", "\\o{4200000}",
-			"\\c\u0080", "\\ space")) {
+			"\\c\u0080", "\\ space")
+		) {
 			DataLoader reader = new DataLoader(new StringReader("\"" + source + "\""));
 			assertThrows(DataLoadingException.class, reader::next, source);
 		}
