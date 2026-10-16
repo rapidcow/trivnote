@@ -6,6 +6,8 @@
 package org.rapidcow.trivnote.libexpr;
 
 import java.util.AbstractSequentialList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
@@ -76,6 +78,31 @@ implements
 			throw new IllegalArgumentException("Improper tail");
 		}
 		return this;
+	}
+
+	/**
+	 * {@return a view of the same elements, terminated by nil}
+	 * If this list is already proper, this is returned as is;
+	 * otherwise the elements are copied into a new chain.
+	 *
+	 * @since %v
+	 */
+	public DatumList
+	toProperList()
+	{
+		if (tail() == Nil.INSTANCE) {
+			return this;
+		}
+		if (size() == 0) {
+			return new DatumList(Nil.INSTANCE);
+		}
+		/* ConsList pops q from the front, so push in order. */
+		Deque<Datum> q = new ArrayDeque<>(size());
+		for (Datum node : this) {
+			q.push(node);
+		}
+		Datum s = q.pop();
+		return new DatumList(new ConsList(q, s, Nil.INSTANCE));
 	}
 
 	@Override

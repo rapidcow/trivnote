@@ -110,4 +110,36 @@ class ListTest
 	{
 		assertEquals(3, new DatumList(proper()).toArray().length);
 	}
+
+	@Test void testToProperListKeepsProper()
+	{
+		DatumList list = new DatumList(proper());
+		assertSame(list, list.toProperList());
+		DatumList empty = new DatumList(Nil.INSTANCE);
+		assertSame(empty, empty.toProperList());
+	}
+
+	@Test void testToProperListRebuildsImproper()
+	{
+		Datum head = improper();
+		DatumList proper = new DatumList(head).toProperList();
+		assertSame(Nil.INSTANCE, proper.tail());
+		assertEquals(List.of(A, B), proper);
+		/* Walk the chain itself, not the cached tail */
+		DatumWalk walk = new DatumWalk(proper.head());
+		assertSame(A, walk.next());
+		assertSame(B, walk.next());
+		assertSame(Nil.INSTANCE, walk.rest());
+		/* Idempotent once proper */
+		assertSame(proper, proper.toProperList());
+		/* The original is left alone */
+		assertSame(Z, Datum.cdr(Datum.cdr(head)));
+	}
+
+	@Test void testToProperListOfBareAtom()
+	{
+		DatumList proper = new DatumList(Z).toProperList();
+		assertSame(Nil.INSTANCE, proper.head());
+		assertEquals(0, proper.size());
+	}
 }

@@ -118,16 +118,11 @@ extends
 		end = Nil.INSTANCE;
 		if (list instanceof DatumList sList) {
 			/*
-			 * Technically we can set the terminator to
-			 * the actual guy of the (possibly improper)
-			 * list, but that I think is... breaking
-			 * encapsulation :/
-			 *
-			 * Maybe we could do it in a different method
-			 * where we *explicitly* want to preserve a
-			 * private method?  Dunno...
+			 * Reuse the chain when it is already proper;
+			 * an improper one is rebuilt with a nil tail,
+			 * as the List contract only covers elements.
 			 */
-			c = (Cons) sList.head();
+			c = (Cons) sList.toProperList().head();
 			car = c.car();
 			cdr = c.cdr();
 			return;
