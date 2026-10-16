@@ -31,7 +31,7 @@ class ConsTest
 	static final Datum Z = Symbol.of("z");
 
 	/* Walk car/cdr directly so list-view caches cannot hide a wrong spine. */
-	static void assertSpine(Datum actual, Datum tail, Datum... elements)
+	static void checkSpine(Datum actual, Datum tail, Datum... elements)
 	{
 		for (Datum element : elements) {
 			Cons cell = assertInstanceOf(Cons.class, actual);
@@ -41,9 +41,9 @@ class ConsTest
 		assertSame(tail, actual);
 	}
 
-	static void assertList(ConsList actual, Datum tail, Datum... elements)
+	static void checkList(ConsList actual, Datum tail, Datum... elements)
 	{
-		assertSpine(actual, tail, elements);
+		checkSpine(actual, tail, elements);
 		assertEquals(elements.length, actual.size());
 		assertSame(tail, actual.tail());
 	}
@@ -51,64 +51,64 @@ class ConsTest
 	@Test void testConsOfVarargs()
 	{
 		for (Datum tail : List.of(Nil.INSTANCE, Z)) {
-			assertSpine(Cons.of(A, tail), tail, A);
-			assertSpine(Cons.of(A, B, tail), tail, A, B);
-			assertSpine(Cons.of(A, B, C, tail), tail, A, B, C);
-			assertSpine(Cons.of(A, B, C, A, tail), tail, A, B, C, A);
+			checkSpine(Cons.of(A, tail), tail, A);
+			checkSpine(Cons.of(A, B, tail), tail, A, B);
+			checkSpine(Cons.of(A, B, C, tail), tail, A, B, C);
+			checkSpine(Cons.of(A, B, C, A, tail), tail, A, B, C, A);
 		}
 	}
 
 	@Test void testConsOfArrayAndTail()
 	{
 		for (Datum tail : List.of(Nil.INSTANCE, Z)) {
-			assertSpine(Cons.of(A, new Datum[0], tail), tail, A);
-			assertSpine(Cons.of(A, new Datum[] { B }, tail), tail, A, B);
-			assertSpine(Cons.of(A, new Datum[] { B, C }, tail), tail, A, B, C);
+			checkSpine(Cons.of(A, new Datum[0], tail), tail, A);
+			checkSpine(Cons.of(A, new Datum[] { B }, tail), tail, A, B);
+			checkSpine(Cons.of(A, new Datum[] { B, C }, tail), tail, A, B, C);
 		}
 	}
 
 	@Test void testConsListVarargs()
 	{
 		for (Datum tail : List.of(Nil.INSTANCE, Z)) {
-			assertList(new ConsList(A, tail), tail, A);
-			assertList(new ConsList(A, B, tail), tail, A, B);
-			assertList(new ConsList(A, B, C, tail), tail, A, B, C);
-			assertList(new ConsList(A, B, C, A, tail), tail, A, B, C, A);
+			checkList(new ConsList(A, tail), tail, A);
+			checkList(new ConsList(A, B, tail), tail, A, B);
+			checkList(new ConsList(A, B, C, tail), tail, A, B, C);
+			checkList(new ConsList(A, B, C, A, tail), tail, A, B, C, A);
 		}
 	}
 
 	@Test void testConsListArrayAndTail()
 	{
 		for (Datum tail : List.of(Nil.INSTANCE, Z)) {
-			assertList(new ConsList(A, new Datum[0], tail), tail, A);
-			assertList(new ConsList(A, new Datum[] { B }, tail), tail, A, B);
-			assertList(new ConsList(A, new Datum[] { B, C }, tail), tail, A, B, C);
+			checkList(new ConsList(A, new Datum[0], tail), tail, A);
+			checkList(new ConsList(A, new Datum[] { B }, tail), tail, A, B);
+			checkList(new ConsList(A, new Datum[] { B, C }, tail), tail, A, B, C);
 		}
 	}
 
 	@Test void testConsTailIsPreserved()
 	{
 		Cons tail = Cons.ofList(B, C);
-		assertSpine(Cons.of(A, tail), tail, A);
-		assertSpine(Cons.of(A, B, tail), tail, A, B);
-		assertSpine(Cons.of(A, new Datum[] { B }, tail), tail, A, B);
+		checkSpine(Cons.of(A, tail), tail, A);
+		checkSpine(Cons.of(A, B, tail), tail, A, B);
+		checkSpine(Cons.of(A, new Datum[] { B }, tail), tail, A, B);
 	}
 
 	@Test void testOfListTreatsEveryArgumentAsAnElement()
 	{
-		assertSpine(Cons.ofList(A), Nil.INSTANCE, A);
-		assertSpine(Cons.ofList(A, B, C), Nil.INSTANCE, A, B, C);
+		checkSpine(Cons.ofList(A), Nil.INSTANCE, A);
+		checkSpine(Cons.ofList(A, B, C), Nil.INSTANCE, A, B, C);
 		Cons nested = Cons.ofList(B, C);
-		assertSpine(Cons.ofList(Nil.INSTANCE, nested), Nil.INSTANCE, Nil.INSTANCE, nested);
+		checkSpine(Cons.ofList(Nil.INSTANCE, nested), Nil.INSTANCE, Nil.INSTANCE, nested);
 	}
 
 	@Test void testFromList()
 	{
 		for (List<Datum> input : List.of(List.of(A), List.of(A, B), List.of(A, B, C))) {
 			Datum[] elements = input.toArray(Datum[]::new);
-			assertList(new ConsList(input), Nil.INSTANCE, elements);
-			assertSpine(Cons.fromList(input), Nil.INSTANCE, elements);
-			assertSpine(Datum.fromList(input), Nil.INSTANCE, elements);
+			checkList(new ConsList(input), Nil.INSTANCE, elements);
+			checkSpine(Cons.fromList(input), Nil.INSTANCE, elements);
+			checkSpine(Datum.fromList(input), Nil.INSTANCE, elements);
 			assertEquals(input, Datum.asList(Datum.fromList(input)));
 		}
 	}
@@ -116,9 +116,9 @@ class ConsTest
 	@Test void testFromDatumList()
 	{
 		List<Datum> input = Datum.asList(Cons.ofList(A, B, C));
-		assertList(new ConsList(input), Nil.INSTANCE, A, B, C);
-		assertSpine(Cons.fromList(input), Nil.INSTANCE, A, B, C);
-		assertSpine(Datum.fromList(input), Nil.INSTANCE, A, B, C);
+		checkList(new ConsList(input), Nil.INSTANCE, A, B, C);
+		checkSpine(Cons.fromList(input), Nil.INSTANCE, A, B, C);
+		checkSpine(Datum.fromList(input), Nil.INSTANCE, A, B, C);
 	}
 
 	@Test void testEmptyList()
@@ -137,11 +137,11 @@ class ConsTest
 			Cons.of(A, input, Z), new ConsList(A, input, Z),
 			Cons.ofList(A, input));
 		Arrays.fill(input, Z);
-		assertSpine(results.get(0), C, A, Z, B);
-		assertSpine(results.get(1), C, A, Z, B);
-		assertSpine(results.get(2), Z, A, B, C);
-		assertSpine(results.get(3), Z, A, B, C);
-		assertSpine(results.get(4), Nil.INSTANCE, A, B, C);
+		checkSpine(results.get(0), C, A, Z, B);
+		checkSpine(results.get(1), C, A, Z, B);
+		checkSpine(results.get(2), Z, A, B, C);
+		checkSpine(results.get(3), Z, A, B, C);
+		checkSpine(results.get(4), Nil.INSTANCE, A, B, C);
 	}
 
 	@Test void testInputListsAreNotRetained()
@@ -152,9 +152,9 @@ class ConsTest
 		Datum datum = Datum.fromList(input);
 		input.set(0, Z);
 		input.clear();
-		assertList(direct, Nil.INSTANCE, A, B, C);
-		assertSpine(cons, Nil.INSTANCE, A, B, C);
-		assertSpine(datum, Nil.INSTANCE, A, B, C);
+		checkList(direct, Nil.INSTANCE, A, B, C);
+		checkSpine(cons, Nil.INSTANCE, A, B, C);
+		checkSpine(datum, Nil.INSTANCE, A, B, C);
 	}
 
 	@Test void testStructuralEqualityAndHashCode()
