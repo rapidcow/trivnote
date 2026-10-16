@@ -343,19 +343,16 @@ implements
 	}
 
 	/**
-	 * Hook called to create a list.
+	 * Hook called to create a non-empty list.
 	 *
 	 * @param q  list contents
 	 * @param e  list terminator
 	 * @return a list
 	 */
-	protected Datum
+	protected Cons
 	makeList(Deque<Datum> q, Datum e)
 	{
-		while (!q.isEmpty()) {
-			e = Cons.of(q.pop(), e);
-		}
-		return e;
+		return new ConsList(q, e);
 	}
 
 	/**
