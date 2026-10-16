@@ -59,8 +59,7 @@ implements
 
 	/**
 	 * Return the comparison result of this against {@code o}.
-	 * Scalars do not equal symbols or any other subtype of
-	 * {@link Atom}, even if their values agree.
+	 * Scalars do not equal symbols, even if their values agree.
 	 *
 	 * @param o  symbol to compare
 	 * @return the comparison result
