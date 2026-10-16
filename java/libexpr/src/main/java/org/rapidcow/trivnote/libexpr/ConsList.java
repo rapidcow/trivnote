@@ -36,6 +36,11 @@ extends
 		cdr = c.cdr();
 	}
 
+	/**
+	 * Creates a nonempty chain with the last datum as its tail.
+	 *
+	 * @throws NullPointerException if any argument or array element is null
+	 */
 	public
 	ConsList(Datum first, Datum second, Datum... etc)
 	{
@@ -67,6 +72,11 @@ extends
 		end = etc[etc.length - 1];
 	}
 
+	/**
+	 * Creates a nonempty chain with the given tail; {@code etc} may be empty.
+	 *
+	 * @throws NullPointerException if any argument or array element is null
+	 */
 	public
 	ConsList(Datum first, Datum[] etc, Datum tail)
 	{
@@ -90,6 +100,12 @@ extends
 		cdr = c;
 	}
 
+	/**
+	 * Creates a cons from a nonempty list.
+	 *
+	 * @throws IllegalArgumentException if {@code list} is empty
+	 * @throws NullPointerException if {@code list} or any element is null
+	 */
 	public
 	ConsList(List<? extends Datum> list)
 	{

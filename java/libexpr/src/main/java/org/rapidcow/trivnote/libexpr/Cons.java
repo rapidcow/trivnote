@@ -29,6 +29,11 @@ implements
 	public abstract Datum car();
 	public abstract Datum cdr();
 
+	/**
+	 * Creates a nonempty chain with the last datum as its tail.
+	 *
+	 * @throws NullPointerException if any argument or array element is null
+	 */
 	public static Cons
 	of(Datum car, Datum cdr, Datum... etc)
 	{
@@ -38,6 +43,11 @@ implements
 		return new ConsList(car, cdr, etc);
 	}
 
+	/**
+	 * Creates a nonempty chain with the given tail; {@code etc} may be empty.
+	 *
+	 * @throws NullPointerException if any argument or array element is null
+	 */
 	public static Cons
 	of(Datum car, Datum[] etc, Datum tail)
 	{
@@ -47,6 +57,11 @@ implements
 		return new ConsList(car, etc, tail);
 	}
 
+	/**
+	 * Creates a nonempty proper list; {@code etc} may be empty.
+	 *
+	 * @throws NullPointerException if any argument or array element is null
+	 */
 	public static Cons
 	ofList(Datum car, Datum... etc)
 	{
@@ -56,6 +71,12 @@ implements
 		return new ConsList(car, etc, Nil.INSTANCE);
 	}
 
+	/**
+	 * Creates a cons from a nonempty list.
+	 *
+	 * @throws IllegalArgumentException if {@code list} is empty
+	 * @throws NullPointerException if {@code list} or any element is null
+	 */
 	public static Cons
 	fromList(List<? extends Datum> list)
 	{
