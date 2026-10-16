@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -463,5 +464,22 @@ class ReaderTest
 			DataLoader reader = new DataLoader(new StringReader(source));
 			assertThrows(DataLoadingException.class, reader::next, source);
 		}
+	}
+
+	/*
+	 * The empty list is the only instance where
+	 * makeList() is called with an empty queue.
+	 */
+	@Test void testEmptyList()
+	{
+		loader = new DataLoader(new StringReader("()"));
+		token = loader.next();
+		assertSame(Nil.INSTANCE, token);
+		assertNull(loader.lastIOException());
+
+		loader = new DataLoader(new StringReader("[]"));
+		token = loader.next();
+		assertSame(Nil.INSTANCE, token);
+		assertNull(loader.lastIOException());
 	}
 }

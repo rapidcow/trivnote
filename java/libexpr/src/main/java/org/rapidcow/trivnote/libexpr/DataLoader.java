@@ -526,7 +526,11 @@ implements
 						"Missing datum following `.'"
 					);
 				}
-				return new Token(makeList(q, q.pop(), e));
+				if (q.isEmpty()) {
+					return new Token(e);
+				} else {
+					return new Token(makeList(q, q.pop(), e));
+				}
 			}
 
 			if (v == ')' || v == ']' || v == '}') {
