@@ -72,6 +72,9 @@ tasks.javadoc {
         // pointed at a local HTML mirror of the source (rewritten to
         // point at gitweb instead, below).
         addBooleanOption("linksource", true)
+        // Custom block tag: @implNote (a = all places) rendered under
+        // an "Implementation Note:" heading.
+        tags("implNote:a:Implementation Note:")
     }
 
     doLast {
