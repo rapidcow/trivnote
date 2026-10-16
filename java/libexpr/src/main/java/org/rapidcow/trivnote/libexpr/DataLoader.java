@@ -40,6 +40,12 @@ implements
 	 */
 	private Map<String,Symbol> sym;
 
+	/**
+	 * Most levels of list nesting, and most elements per list.
+	 */
+	private long maxDepth = Long.MAX_VALUE;
+	private long maxLength = Long.MAX_VALUE;
+
 	private boolean fini = false;
 	private IOException eieio = null;
 	private Datum st = null;
@@ -119,6 +125,73 @@ implements
 	getSymbolCache()
 	{
 		return Optional.ofNullable(sym);
+	}
+
+	/**
+	 * Limit how deeply lists may nest.  A top-level atom has depth
+	 * 0, and each enclosing list adds 1, so {@code (a (b))} needs a
+	 * limit of at least 2.  A limit of 0 allows no lists at all.
+	 * Exceeding the limit is a {@link DataLoadingException}.
+	 *
+	 * <p>
+	 * The loader recurses once per level, so a deep enough input
+	 * can still exhaust the call stack below a high limit; set one
+	 * when the input is not trusted.  There is no limit by default.
+	 *
+	 * @param depth  the most levels of nesting allowed
+	 * @return this
+	 * @throws IllegalArgumentException if {@code depth} is negative
+	 * @since %v
+	 */
+	public final DataLoader
+	useMaxDepth(long depth)
+	{
+		if (depth < 0) {
+			throw new IllegalArgumentException("Negative depth");
+		}
+		this.maxDepth = depth;
+		return this;
+	}
+
+	/**
+	 * {@return the most levels of list nesting allowed}
+	 * @since %v
+	 */
+	public final long
+	getMaxDepth()
+	{
+		return maxDepth;
+	}
+
+	/**
+	 * Limit how many elements a single list may have.  The tail
+	 * after a dot is not an element, so {@code (a b . c)} has two.
+	 * Exceeding the limit is a {@link DataLoadingException}.
+	 * There is no limit by default.
+	 *
+	 * @param length  the most elements per list allowed
+	 * @return this
+	 * @throws IllegalArgumentException if {@code length} is negative
+	 * @since %v
+	 */
+	public final DataLoader
+	useMaxLength(long length)
+	{
+		if (length < 0) {
+			throw new IllegalArgumentException("Negative length");
+		}
+		this.maxLength = length;
+		return this;
+	}
+
+	/**
+	 * {@return the most elements per list allowed}
+	 * @since %v
+	 */
+	public final long
+	getMaxLength()
+	{
+		return maxLength;
 	}
 
 	private
@@ -384,7 +457,7 @@ implements
 	throws
 		IOException
 	{
-		Token tk = readDatum(-1);
+		Token tk = readDatum(-1, 0);
 		if (tk == null) {
 			return null;
 		}
@@ -394,8 +467,12 @@ implements
 		return tk.value;
 	}
 
+	/*
+	 * bg is the opening bracket of the list being read (-1 if none),
+	 * and depth is how many lists enclose the datum being read.
+	 */
 	private Token
-	readDatum(int bg)
+	readDatum(int bg, long depth)
 	throws
 		IOException
 	{
@@ -474,7 +551,7 @@ implements
 						continue;
 					}
 					if (w == ';') {
-						if (readDatum(-1) == null) {
+						if (readDatum(-1, depth) == null) {
 							throw loadingException(
 								"Expected datum following `#;'"
 							);
@@ -486,10 +563,15 @@ implements
 			}
 
 			if (v == '(' || v == '[' || v == '{') {
+				if (depth >= maxDepth) {
+					throw loadingException(
+						"Lists nested deeper than " + maxDepth
+					);
+				}
 				Deque<Datum> q = new ArrayDeque<>();
 				Token o;
 				sg = 0;  /* stage */
-				while (( o = readDatum(v) ) != null) {
+				while (( o = readDatum(v, depth + 1) ) != null) {
 					if (sg == 0) {
 						if (o == Token.DOT) {
 							if (q.isEmpty()) {
@@ -499,6 +581,11 @@ implements
 							}
 							sg++;
 						} else {
+							if (q.size() >= maxLength) {
+								throw loadingException(
+									"List longer than " + maxLength
+								);
+							}
 							q.push(o.value);
 						}
 					}

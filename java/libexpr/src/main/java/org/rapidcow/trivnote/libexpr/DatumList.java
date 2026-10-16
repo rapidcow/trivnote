@@ -60,15 +60,19 @@ implements
 		if (iter.head() != head) {
 			throw new IllegalArgumentException("not my kid");
 		}
+		/* Count in a long; DatumWalk's own index is an int */
+		long n = iter.nextIndex();
 		for (;;) {
 			try {
 				iter.next();
 			} catch (NoSuchElementException e) {
 				break;
 			}
+			++n;
 		}
 		tail = iter.rest();
-		size = iter.nextIndex();
+		/* Per Collection.size(), saturate rather than overflow */
+		size = (int) Math.min(n, Integer.MAX_VALUE);
 	}
 
 	public DatumList
