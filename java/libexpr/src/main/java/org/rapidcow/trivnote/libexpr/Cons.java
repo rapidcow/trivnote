@@ -29,6 +29,8 @@ implements
 	public abstract Datum car();
 	public abstract Datum cdr();
 
+	private int myHash;
+
 	/**
 	 * Creates a nonempty chain with the last datum as its tail.
 	 *
@@ -85,8 +87,6 @@ implements
 		}
 		return new ConsList(list);
 	}
-
-	private int myHash;
 
 	@Override
 	public boolean
