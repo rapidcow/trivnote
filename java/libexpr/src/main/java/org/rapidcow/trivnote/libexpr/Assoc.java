@@ -5,6 +5,8 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
+import java.util.Objects;
+
 public final
 class
 	Assoc
@@ -17,8 +19,8 @@ extends
 	public
 	Assoc(Symbol key, Datum value)
 	{
-		car = key;
-		cdr = value;
+		car = Objects.requireNonNull(key, "key");
+		cdr = Objects.requireNonNull(value, "value");
 	}
 
 	@Override
