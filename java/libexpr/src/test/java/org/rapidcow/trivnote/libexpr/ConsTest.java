@@ -170,6 +170,77 @@ class ConsTest
 		assertNotEquals(A, list);
 	}
 
+	/* Fresh scalars each time, so equality cannot lean on identity. */
+	static Datum longList(int n, Datum tail)
+	{
+		Datum list = tail;
+		for (int i = n - 1; i >= 0; --i) {
+			list = new ConsCell(Scalar.of(Integer.toString(i)), list);
+		}
+		return list;
+	}
+
+	static Datum deepNest(int n, Datum core)
+	{
+		Datum nest = core;
+		for (int i = 0; i < n; ++i) {
+			nest = new ConsCell(nest, Nil.INSTANCE);
+		}
+		return nest;
+	}
+
+	@Test void testLongListEqualityAndHashCode()
+	{
+		Datum x = longList(200_000, Nil.INSTANCE);
+		Datum y = longList(200_000, Nil.INSTANCE);
+		assertEquals(x, y);
+		assertEquals(x.hashCode(), y.hashCode());
+		assertNotEquals(x, longList(200_000, Z));
+		assertNotEquals(x, longList(199_999, Nil.INSTANCE));
+	}
+
+	@Test void testDeepNestingEqualityAndHashCode()
+	{
+		Datum x = deepNest(200_000, A);
+		Datum y = deepNest(200_000, A);
+		assertEquals(x, y);
+		assertEquals(x.hashCode(), y.hashCode());
+		assertNotEquals(x, deepNest(200_000, B));
+	}
+
+	@Test void testHashCodeMatchesObjectsHash()
+	{
+		Cons cell = new ConsCell(A, new ConsCell(B, Nil.INSTANCE));
+		int inner = java.util.Objects.hash(B, Nil.INSTANCE);
+		assertEquals(java.util.Objects.hash(A, inner), cell.hashCode());
+	}
+
+	@Test void testCachedHashesStillCompareCorrectly()
+	{
+		/* Equal trees whose hashes were both cached first */
+		Datum x = longList(1000, Z);
+		Datum y = longList(1000, Z);
+		x.hashCode();
+		y.hashCode();
+		assertEquals(x, y);
+		/* Unequal trees with cached hashes are told apart */
+		Datum w = longList(1000, C);
+		w.hashCode();
+		assertNotEquals(x, w);
+		assertNotEquals(w, x);
+	}
+
+	@Test void testEqualityAcrossConsKinds()
+	{
+		Symbol k = Symbol.of("k");
+		Datum v = Scalar.of("v");
+		Cons assoc = new Assoc(k, v);
+		Cons cell = new ConsCell(k, Scalar.of("v"));
+		assertEquals(assoc, cell);
+		assertEquals(cell, assoc);
+		assertEquals(assoc.hashCode(), cell.hashCode());
+	}
+
 	@Test void testNullArgumentsAreRejected()
 	{
 		assertThrows(NullPointerException.class, () -> Cons.of(null, Z));
