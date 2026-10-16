@@ -6,6 +6,7 @@
 package org.rapidcow.trivnote.libexpr;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -29,9 +30,39 @@ implements
 	public abstract Datum cdr();
 
 	public static Cons
-	of(Datum car, Datum cdr)
+	of(Datum car, Datum cdr, Datum... etc)
 	{
-		return new ConsCell(car, cdr);
+		if (etc.length == 0) {
+			return new ConsCell(car, cdr);
+		}
+		return new ConsList(car, cdr, etc);
+	}
+
+	public static Cons
+	of(Datum car, Datum[] etc, Datum tail)
+	{
+		if (etc.length == 0) {
+			return new ConsCell(car, tail);
+		}
+		return new ConsList(car, etc, tail);
+	}
+
+	public static Cons
+	ofList(Datum car, Datum... etc)
+	{
+		if (etc.length == 0) {
+			return new ConsCell(car, Nil.INSTANCE);
+		}
+		return new ConsList(car, etc, Nil.INSTANCE);
+	}
+
+	public static Cons
+	fromList(List<? extends Datum> list)
+	{
+		if (list.isEmpty()) {
+			throw new IllegalArgumentException("Empty list");
+		}
+		return new ConsList(list);
 	}
 
 	private int myHash;
