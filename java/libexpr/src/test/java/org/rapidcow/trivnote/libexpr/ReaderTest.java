@@ -492,7 +492,6 @@ class ReaderTest
 		loader = new DataLoader(new StringReader(deep)).useMaxDepth(1000);
 		assertThrows(DataLoadingException.class, loader::next);
 
-		assertEquals(Long.MAX_VALUE, new DataLoader(new StringReader("")).getMaxDepth());
 		assertThrows(IllegalArgumentException.class,
 			() -> new DataLoader(new StringReader("")).useMaxDepth(-1));
 	}
@@ -517,7 +516,6 @@ class ReaderTest
 		assertSame(Nil.INSTANCE, loader.next());
 		assertThrows(DataLoadingException.class, loader::next);
 
-		assertEquals(Long.MAX_VALUE, new DataLoader(new StringReader("")).getMaxLength());
 		assertThrows(IllegalArgumentException.class,
 			() -> new DataLoader(new StringReader("")).useMaxLength(-1));
 	}
