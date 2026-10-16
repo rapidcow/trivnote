@@ -35,7 +35,7 @@ class DatumTest
 		assertEquals(cdr, here.rest());
 
 		runit = 0;
-		for (Datum fat : list) {
+		for (Datum fat : Datum.asList(list)) {
 			assertEquals(car, fat);
 			runit++;
 		}

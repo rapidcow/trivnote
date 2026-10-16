@@ -48,15 +48,4 @@ extends
 	{
 		return cdr;
 	}
-
-	/**
-	 * {@return a list iterator for this}
-	 * @deprecated! use {@link DatumList#iterator}.
-	 */
-	@Override
-	public Iterator<Datum>
-	iterator()
-	{
-		return new DatumWalk(this);
-	}
 }

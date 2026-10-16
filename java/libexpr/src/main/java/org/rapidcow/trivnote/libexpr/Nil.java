@@ -14,19 +14,8 @@ public
 enum
 	Nil
 implements
-	Datum,
-	Iterable<Datum>
+	Datum
 {
 	/** The singleton that represents {@code nil}. */
 	INSTANCE;
-
-	/**
-	 * {@return a list iterator for this}
-	 */
-	@Override
-	public Iterator<Datum>
-	iterator()
-	{
-		return new DatumWalk(this);
-	}
 }
