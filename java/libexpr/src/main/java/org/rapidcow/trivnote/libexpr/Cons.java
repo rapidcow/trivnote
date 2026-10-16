@@ -31,6 +31,30 @@ implements
 
 	private int myHash;
 
+	@Override
+	public boolean
+	equals(Object o)
+	{
+		if (this == o) {
+			return true;
+		}
+		if (o instanceof Cons cell) {
+			return this.car().equals(cell.car())
+				&& this.cdr().equals(cell.cdr());
+		}
+		return false;
+	}
+
+	@Override
+	public int
+	hashCode()
+	{
+		if (myHash == 0) {
+			myHash = Objects.hash(car(), cdr());
+		}
+		return myHash;
+	}
+
 	/**
 	 * Creates a nonempty chain with the last datum as its tail.
 	 *
@@ -86,29 +110,5 @@ implements
 			throw new IllegalArgumentException("Empty list");
 		}
 		return new ConsList(list);
-	}
-
-	@Override
-	public boolean
-	equals(Object o)
-	{
-		if (this == o) {
-			return true;
-		}
-		if (o instanceof Cons cell) {
-			return this.car().equals(cell.car())
-				&& this.cdr().equals(cell.cdr());
-		}
-		return false;
-	}
-
-	@Override
-	public int
-	hashCode()
-	{
-		if (myHash == 0) {
-			myHash = Objects.hash(car(), cdr());
-		}
-		return myHash;
 	}
 }
