@@ -488,7 +488,7 @@ class ReaderTest
 		assertThrows(DataLoadingException.class, loader::next);
 
 		/* Deep input is refused instead of overflowing the stack */
-		String deep = "(".repeat(1_000_000);
+		String deep = "(".repeat(1001) + ")".repeat(1001);
 		loader = new DataLoader(new StringReader(deep)).useMaxDepth(1000);
 		assertThrows(DataLoadingException.class, loader::next);
 
