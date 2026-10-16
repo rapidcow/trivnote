@@ -8,6 +8,10 @@ Revision history of trivnote-libexpr
     * Racket/Perl-ish "..." escapes!
     * DatumList as a real List<Datum>!
     *** Cons, Nil are no longer iterable; use Datum.asList.
+    *** Cons is split into to two concrete types: the pairs
+      (ConsCell) and the longer ones (ConsList as a singly
+      linked list); use Cons.of instead of new Cons!  (Use
+      Cons.ofList if you want an implicit Nil-terminator :)
 
 0.0.0  2026-09-24  RC
     This was "done" a few days ago, but pinning this as a
