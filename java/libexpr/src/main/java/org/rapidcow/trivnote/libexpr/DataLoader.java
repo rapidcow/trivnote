@@ -149,7 +149,7 @@ implements
 		if (depth < 0) {
 			throw new IllegalArgumentException("Negative depth");
 		}
-		this.maxDepth = depth;
+		maxDepth = depth;
 		return this;
 	}
 
@@ -180,7 +180,7 @@ implements
 		if (length < 0) {
 			throw new IllegalArgumentException("Negative length");
 		}
-		this.maxLength = length;
+		maxLength = length;
 		return this;
 	}
 
