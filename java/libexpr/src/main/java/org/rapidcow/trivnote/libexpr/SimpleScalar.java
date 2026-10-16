@@ -30,7 +30,8 @@ extends
 
 	@Override
 	public String
-	toString() {
+	toString()
+	{
 		return "Scalar[value=" + value + "]";
 	}
 }
