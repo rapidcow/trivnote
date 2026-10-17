@@ -45,7 +45,7 @@ implements
 	 * cons cell, so that we can publish the cache for future
 	 * hashCode() and equals() calls.  `a' stores the accumulated
 	 * hash, and `n' counts how many of the two halves have been
-	 * folded in (n == 1 means car only, n == 2 means both).
+	 * folded in (n == 1 means car-only, n == 2 means both).
 	 */
 	private static final
 	class
