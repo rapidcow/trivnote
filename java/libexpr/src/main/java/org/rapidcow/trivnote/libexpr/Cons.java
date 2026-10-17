@@ -35,8 +35,31 @@ implements
 	 * that happens to work out to 0 is stored as 1 instead, so the
 	 * cache never misses forever.  Racy but benign, like String's:
 	 * every thread computes the same value for an immutable cell.
+	 *
+	 * Note: If we implement serializable, this field is transient.
 	 */
 	private int myHash;
+
+	/*
+	 * As Cons we don't own the storage of car and cdr; but
+	 * since implementors ensure they are immutable, we can
+	 * cache them externally.
+	 */
+	private static final
+	class
+		HashFrame
+	{
+		final Cons cell;
+		final Datum car;
+		final Datum cdr;
+
+		HashFrame(Cons c)
+		{
+			cell = c;
+			car = c.car();
+			cdr = c.cdr();
+		}
+	}
 
 	/**
 	 * Returns whether this equals {@code o}.  Two conses are equal
@@ -59,6 +82,7 @@ implements
 		if (this == o) {
 			return true;
 		}
+
 		if (!(o instanceof Cons that)) {
 			return false;
 		}
@@ -143,24 +167,8 @@ implements
 		return myHash;
 	}
 
-	private static final
-	class
-		HashFrame
-	{
-		final Cons cell;
-		final Datum car;
-		final Datum cdr;
-
-		HashFrame(Cons c)
-		{
-			cell = c;
-			car = c.car();
-			cdr = c.cdr();
-		}
-	}
-
 	/**
-	 * Creates a nonempty chain with the last datum as its tail.
+	 * Creates a non-empty chain with the last datum as its tail.
 	 *
 	 * @throws NullPointerException if any argument or array element is null
 	 */
@@ -174,7 +182,7 @@ implements
 	}
 
 	/**
-	 * Creates a nonempty chain with the given tail; {@code etc} may be empty.
+	 * Creates a non-empty chain with the given tail.
 	 *
 	 * @throws NullPointerException if any argument or array element is null
 	 */
@@ -188,7 +196,7 @@ implements
 	}
 
 	/**
-	 * Creates a nonempty proper list; {@code etc} may be empty.
+	 * Creates a non-empty proper list.
 	 *
 	 * @throws NullPointerException if any argument or array element is null
 	 */
@@ -202,7 +210,8 @@ implements
 	}
 
 	/**
-	 * Creates a cons from a nonempty list.
+	 * Creates a cons from a non-empty list.  If list is
+	 * possibly empty, use {@link Datum#fromList(List)}.
 	 *
 	 * @throws IllegalArgumentException if {@code list} is empty
 	 * @throws NullPointerException if {@code list} or any element is null

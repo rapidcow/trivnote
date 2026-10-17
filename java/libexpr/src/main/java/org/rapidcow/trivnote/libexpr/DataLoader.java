@@ -410,7 +410,7 @@ implements
 	 * @since %v
 	 */
 	protected Scalar
-	makeNumber(String value)
+	makeSimple(String value)
 	{
 		return Scalar.of(value);
 	}
@@ -529,7 +529,7 @@ implements
 						if (( w = readPlain(sb) ) != -1) {
 							unreadChar(w);
 						}
-						return new Token(makeNumber(sb.toString()));
+						return new Token(makeSimple(sb.toString()));
 					}
 					unreadChar(w);
 				}
@@ -644,7 +644,7 @@ implements
 				if (( v = readPlain(sb) ) != -1) {
 					unreadChar(v);
 				}
-				return new Token(makeNumber(sb.toString()));
+				return new Token(makeSimple(sb.toString()));
 			}
 			else if (v == '-' || v == '+') {
 				if (( w = readChar() ) != -1) {
@@ -654,7 +654,7 @@ implements
 						if (( v = readPlain(sb) ) != -1) {
 							unreadChar(v);
 						}
-						return new Token(makeNumber(sb.toString()));
+						return new Token(makeSimple(sb.toString()));
 					}
 					if (w == '.') {
 						sb.append((char) v);
@@ -666,7 +666,7 @@ implements
 								if (( v = readPlain(sb) ) != -1) {
 									unreadChar(v);
 								}
-								return new Token(makeNumber(sb.toString()));
+								return new Token(makeSimple(sb.toString()));
 							}
 							unreadChar(w);
 						}
