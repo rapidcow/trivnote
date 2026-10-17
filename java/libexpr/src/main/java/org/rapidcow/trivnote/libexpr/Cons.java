@@ -10,7 +10,7 @@ import java.util.Deque;
 import java.util.List;
 
 /**
- * A pair of {@link Datum}s.
+ * An immutable pair of {@link Datum}s.
  * A chain of cons cells created by recursively
  * appending to cdr forms a list.
  *
@@ -26,7 +26,18 @@ abstract class
 implements
 	Datum
 {
+	/**
+	 * {@return the car of this cons cell}  The return
+	 * value may not be an identical datum object, but its
+	 * hash code should be identical.  car may not be null.
+	 */
 	public abstract Datum car();
+
+	/**
+	 * {@return the car of this cons cell}  The return
+	 * value may not be an identical datum object, but its
+	 * hash code should be identical.  cdr may not be null.
+	 */
 	public abstract Datum cdr();
 
 	/*
@@ -104,7 +115,7 @@ implements
 	 * @return whether this equals {@code o}
 	 */
 	@Override
-	public boolean
+	public final boolean
 	equals(Object o)
 	{
 		if (this == o) {
@@ -157,7 +168,7 @@ implements
 	 *    way, using an explicit stack rather than recursion.
 	 */
 	@Override
-	public int
+	public final int
 	hashCode()
 	{
 		/* Race guard */
