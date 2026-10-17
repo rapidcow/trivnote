@@ -20,7 +20,7 @@ extends
 	private final Datum car;
 	private final Datum cdr;
 	private final Datum end;
-	private final int size;
+	private final long size;
 
 	/* Used by DataLoader makeList */
 	ConsList(Deque<Datum> q, Datum s, Datum e)
@@ -37,7 +37,7 @@ extends
 	}
 
 	/**
-	 * Creates a nonempty chain with the last datum as its tail.
+	 * Creates a non-empty chain with the last datum as its tail.
 	 *
 	 * @throws NullPointerException if any argument or array element is null
 	 */
@@ -73,7 +73,7 @@ extends
 	}
 
 	/**
-	 * Creates a nonempty chain with the given tail; {@code etc} may be empty.
+	 * Creates a non-empty chain with the given tail; {@code etc} may be empty.
 	 *
 	 * @throws NullPointerException if any argument or array element is null
 	 */
@@ -101,7 +101,7 @@ extends
 	}
 
 	/**
-	 * Creates a cons from a nonempty list.
+	 * Creates a cons from a non-empty list.
 	 *
 	 * @throws IllegalArgumentException if {@code list} is empty
 	 * @throws NullPointerException if {@code list} or any element is null
@@ -114,7 +114,8 @@ extends
 		}
 
 		Cons c;
-		size = list.size();
+		int sz = list.size();
+		size = sz;
 		end = Nil.INSTANCE;
 		if (list instanceof DatumList sList) {
 			/*
@@ -133,12 +134,12 @@ extends
 		 * backwards.  So I'll just do that...
 		 */
 		ListIterator<? extends Datum> iter
-			= list.listIterator(size);
+			= list.listIterator(sz);
 		Datum p = Objects.requireNonNull(
 			iter.previous(),
 			() -> "list[" + (size - 1) + "]"
 		);
-		int i = size - 1;
+		int i = sz - 1;
 		c = new ConsCell(p, Nil.INSTANCE);
 		while (iter.hasPrevious()) {
 			final int I = i;
@@ -175,6 +176,12 @@ extends
 
 	public int
 	size()
+	{
+		return (int) Math.min(size, Integer.MAX_VALUE);
+	}
+
+	public long
+	count()
 	{
 		return size;
 	}

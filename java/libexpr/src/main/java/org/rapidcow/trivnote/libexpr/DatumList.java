@@ -26,7 +26,7 @@ implements
 {
 	private final Datum head;
 	private       Datum tail;
-	private  int  size =  -1;
+	private long  size =  -1;
 
 	public
 	DatumList(Datum list)
@@ -34,7 +34,7 @@ implements
 		head = list;
 		if (list instanceof ConsList cell) {
 			tail = cell.tail();
-			size = cell.size();
+			size = cell.count();
 		}
 	}
 
@@ -60,19 +60,15 @@ implements
 		if (iter.head() != head) {
 			throw new IllegalArgumentException("not my kid");
 		}
-		/* Count in a long; DatumWalk's own index is an int */
-		long n = iter.nextIndex();
 		for (;;) {
 			try {
 				iter.next();
 			} catch (NoSuchElementException e) {
 				break;
 			}
-			++n;
 		}
 		tail = iter.rest();
-		/* Per Collection.size(), saturate rather than overflow */
-		size = (int) Math.min(n, Integer.MAX_VALUE);
+		size = iter.position();
 	}
 
 	public DatumList
@@ -97,11 +93,15 @@ implements
 		if (tail() == Nil.INSTANCE) {
 			return this;
 		}
-		if (size() == 0) {
+		if (size == 0) {
 			return new DatumList(Nil.INSTANCE);
 		}
+		if (size > Integer.MAX_VALUE) {
+			throw new UnsupportedOperationException("Very big list");
+		}
+		int sz = (int) size;
 		/* ConsList pops q from the front, so push in order. */
-		Deque<Datum> q = new ArrayDeque<>(size());
+		Deque<Datum> q = new ArrayDeque<>(sz);
 		for (Datum node : this) {
 			q.push(node);
 		}
@@ -121,6 +121,12 @@ implements
 	@Override
 	public int
 	size()
+	{
+		return (int) Math.min(count(), Integer.MAX_VALUE);
+	}
+
+	public long
+	count()
 	{
 		if (size < 0) {
 			tail();
