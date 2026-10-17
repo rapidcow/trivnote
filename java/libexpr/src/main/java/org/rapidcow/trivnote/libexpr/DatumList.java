@@ -127,13 +127,13 @@ implements
 	}
 
 	@Override
-	public int
+	public final int
 	size()
 	{
 		return (int) Math.min(count(), Integer.MAX_VALUE);
 	}
 
-	public long
+	public final long
 	count()
 	{
 		if (size < 0) {

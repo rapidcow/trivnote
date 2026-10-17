@@ -62,8 +62,8 @@ class ReaderTest
 				Scalar.of("-0.898"),
 				Scalar.of(".67"),
 				Scalar.of("-.1"),
-				Scalar.of("1024"),
-				Scalar.of("abc")
+				Scalar.ofString("1024"),
+				Scalar.ofString("abc")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
@@ -116,7 +116,7 @@ class ReaderTest
 		assertIterableEquals(
 			List.of(
 				Symbol.of("display"),
-				Scalar.of("c")
+				Scalar.ofString("c")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
@@ -324,7 +324,7 @@ class ReaderTest
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
 		assertIterableEquals(List.of(Symbol.of("a")), list);
-		assertEquals(Scalar.of("b"), walk.rest());
+		assertEquals(Scalar.ofString("b"), walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -388,9 +388,9 @@ class ReaderTest
 		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
-				Scalar.of("say \"hi\""),
-				Scalar.of("back\\slash"),
-				Scalar.of("line1\nline2")
+				Scalar.ofString("say \"hi\""),
+				Scalar.ofString("back\\slash"),
+				Scalar.ofString("line1\nline2")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
@@ -399,7 +399,7 @@ class ReaderTest
 	private void assertStringEscape(String source, String expected)
 	{
 		DataLoader reader = new DataLoader(new StringReader("\"" + source + "\""));
-		assertEquals(Scalar.of(expected), reader.next(), source);
+		assertEquals(Scalar.ofString(expected), reader.next(), source);
 		assertNull(reader.lastIOException());
 		assertEquals(false, reader.hasNext());
 	}
