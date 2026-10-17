@@ -24,14 +24,14 @@ extends
 	}
 
 	@Override
-	public Symbol
+	public final Symbol
 	car()
 	{
 		return car;
 	}
 
 	@Override
-	public Datum
+	public final Datum
 	cdr()
 	{
 		return cdr;
