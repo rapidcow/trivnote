@@ -5,7 +5,6 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
-import java.util.Iterator;
 import java.util.Objects;
 
 public final
