@@ -1,14 +1,16 @@
 GPT-6 Astra describes to me with the following
 possible scenario:
 
-    if (f.car instanceof Cons a && a.hash != 0) {
+    if (f.car instanceof Cons a && a.hash == 0) {
         /* schedule child... */
     }
 
-The child is observed from the parent to be nonzero.
-So later when we get to computing the actual hash
-(forgetting that f.car is a Cons, treating it as an
-opaque Datum object), Cons::hashCode recurses:
+The child is observed from the parent to be nonzero,
+so scheduling is skipped.
+
+Later, when we get to computing the actual hash
+(forgetting that f.car is a Cons, treating it as
+an opaque Datum object), Cons::hashCode recurses:
 
     ... + f.car.hashCode() ...
 
