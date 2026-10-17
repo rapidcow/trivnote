@@ -40,13 +40,12 @@ implements
 	private int hash;
 
 	/*
-	 * One cell whose hash is being computed.  The hash folds in
-	 * the car's hash and then the cdr's, as Objects.hash(car, cdr)
-	 * does; `n' counts how many of the two are folded in so far.
-	 * Each of car() and cdr() is called once per frame, so a Cons
-	 * that makes a fresh view on every call is still fine.
-	 * (Header, one reference and two ints: 24 bytes with compressed
-	 * pointers, so nothing is lost to padding.)
+	 * Context for the cons cell whose hash is being computed.
+	 * We keep `p' (stands for "pointer") as a reference to this
+	 * cons cell, so that we can publish the cache for future
+	 * hashCode() and equals() calls.  `a' stores the accumulated
+	 * hash, and `n' counts how many of the two halves have been
+	 * folded in (n == 1 means car only, n == 2 means both).
 	 */
 	private static final
 	class
@@ -54,7 +53,7 @@ implements
 	{
 		final Cons p;
 		int a = 1;
-		int n;
+		int n = 0;
 
 		HashFrame(Cons c)
 		{
@@ -135,13 +134,14 @@ implements
 				if (pH != 0 && qH != 0 && pH != qH) {
 					return false;
 				}
-				/* cdr goes under car, so we go car-first */
+				/* cdr goes under car, so we go car-first. */
 				work.push(q.cdr());
 				work.push(p.cdr());
 				work.push(q.car());
 				work.push(p.car());
+				continue;
 			}
-			else if (!x.equals(y)) {
+			if (!x.equals(y)) {
 				return false;
 			}
 		}
@@ -166,6 +166,10 @@ implements
 			return myHash;
 		}
 
+		HashFrame f;
+		int h;
+		Datum x;
+
 		/*
 		 * Post-order walk.  A finished frame hands its hash to the
 		 * frame below it (its parent) instead of the parent going
@@ -177,28 +181,28 @@ implements
 		Deque<HashFrame> work = new ArrayDeque<>();
 		work.push(new HashFrame(this));
 		for (;;) {
-			HashFrame f = work.peek();
-			if (f.sMore()) {
-				Datum cxr = f.next();
-				if (cxr instanceof Cons p) {
-					int h = p.hash;
-					if (h == 0) {
-						work.push(new HashFrame(p));
-					} else {
-						f.fold(h);
-					}
-				} else {
-					f.fold(cxr.hashCode());
-				}
-			} else {
-				int h = f.hash();
+			f = work.peek();
+			if (!f.sMore()) {
+				h = f.hash();
 				f.p.hash = h;
 				work.pop();
 				if (work.isEmpty()) {
 					return h;
 				}
 				work.peek().fold(h);
+				continue;
 			}
+			x = f.next();
+			if (x instanceof Cons p) {
+				h = p.hash;
+				if (h == 0) {
+					work.push(new HashFrame(p));
+				} else {
+					f.fold(h);
+				}
+				continue;
+			}
+			f.fold(x.hashCode());
 		}
 	}
 
