@@ -1,0 +1,27 @@
+GPT-6 Astra describes to me with the following
+possible scenario:
+
+    if (f.car instanceof Cons a && a.hash != 0) {
+        /* schedule child... */
+    }
+
+The child is observed from the parent to be nonzero.
+So later when we get to computing the actual hash
+(forgetting that f.car is a Cons, treating it as an
+opaque Datum object), Cons::hashCode recurses:
+
+    ... + f.car.hashCode() ...
+
+               |
+               v
+
+    int myHash = this.hash;
+    if (myHash != 0) {
+        return myHash;
+    }
+
+... and the child observes itself as to be zero.
+
+Have this happen a few more times on a long-enough
+list, and we get blown up the very StackOverflowError
+that we've been trying to avoid.
