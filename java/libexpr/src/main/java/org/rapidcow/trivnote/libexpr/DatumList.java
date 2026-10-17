@@ -85,6 +85,9 @@ implements
 	 * If this list is already proper, this is returned as is;
 	 * otherwise the elements are copied into a new chain.
 	 *
+	 * @throws IllegalStateException if you have a mega list
+	 *    with length exceeding {@link Integer#MAX_VALUE};
+	 *    I think this should be rare, but still be careful!
 	 * @since %v
 	 */
 	public DatumList
@@ -97,7 +100,12 @@ implements
 			return new DatumList(Nil.INSTANCE);
 		}
 		if (size > Integer.MAX_VALUE) {
-			throw new UnsupportedOperationException("Very big list");
+			throw new IllegalStateException(
+				"Sorry, I won't reverse lists whose "
+				+ "length exceeds Integer.MAX_VALUE. "
+				+ "Please do it yourself with a data "
+				+ "structure of your choice."
+			);
 		}
 		int sz = (int) size;
 		/* ConsList pops q from the front, so push in order. */
