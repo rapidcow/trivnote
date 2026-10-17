@@ -26,7 +26,8 @@ implements
 		this.value = Objects.requireNonNull(value);
 	}
 
-	public String
+	@Override
+	public final String
 	value()
 	{
 		return value;
