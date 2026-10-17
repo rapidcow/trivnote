@@ -1,0 +1,10 @@
+i am half-certain Claude wants to address how
+this is specifically compatible with the Range
+class it created but i honestly cannot care at
+this point.  it works FINE as long as you are
+returning something CONSISTENT; doesn't have to
+ID-identical (that's kind of like the whole
+thing we've been building up to!  so that you
+DON'T have to depend on object identity!  i am
+going to pass out if i don't eat something now.
+so end of discussion there.)
