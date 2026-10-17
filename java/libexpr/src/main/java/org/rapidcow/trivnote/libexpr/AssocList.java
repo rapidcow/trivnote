@@ -4,62 +4,38 @@ import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
-public
+public final
 class
 	AssocList
 extends
-	AbstractMap<String,Datum>
+	AbstractMap<Datum,Datum>
 {
-	/* Hash of atom value to its first occurrence */
-	private final HashMap<String,Datum> hash;
+	private final Datum head;
+	private final long size;
+	private volatile long pLen = -1;
 
-	public AssocList(Datum list)
+	public
+	AssocList(Datum list)
 	{
-		hash = new HashMap<String,Datum>();
-
 		DatumWalk iter = new DatumWalk(list);
 		while (iter.hasNext()) {
 			Datum node = iter.next();
-
-			Datum aK, aV;
-			if (node instanceof Cons pair) {
-				aK = pair.car();
-				aV = pair.cdr();
-			} else {
+			if (!(node instanceof Cons)) {
 				throw new IllegalArgumentException(
 					"alist entry is not a cons cell"
 				);
 			}
-
-			String sK;
-			if (aK instanceof Atom atom) {
-				sK = atom.value();
-			} else {
-				throw new IllegalArgumentException(
-					"alist entry car is not a non-nil atom"
-				);
-			}
-
-			if (!hash.containsKey(sK)) {
-				hash.put(sK, aV);
-			}
 		}
-
 		if (iter.rest() != Nil.INSTANCE) {
 			throw new IllegalArgumentException(
 				"alist is an improper list"
 			);
 		}
-	}
-
-	@Override
-	public Set< Map.Entry<String,Datum> >
-	entrySet()
-	{
-		/* TODO still a stub!  (Or is it...?) */
-		return Collections.unmodifiableMap(hash).entrySet();
+		head = list;
+		size = iter.position();
 	}
 
 	/* pass-thru */
@@ -68,20 +44,58 @@ extends
 	public Datum
 	get(Object key)
 	{
-		return hash.get(key);
+		if (!(key instanceof Datum dKey)) {
+			return null;
+		}
+		DatumWalk iter = new DatumWalk(head);
+		while (iter.hasNext()) {
+			Cons pair = (Cons) iter.next();
+			if (pair.car().equals(dKey)) {
+				return pair.cdr();
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public boolean
 	containsKey(Object key)
 	{
-		return hash.containsKey(key);
+		return get(key) != null;
 	}
 
 	@Override
-	public int
+	public final int
 	size()
 	{
-		return hash.size();
+		return (int) Math.min(count(), Integer.MAX_VALUE);
+	}
+
+	public final long
+	count()
+	{
+		if (pLen < 0) {
+			Set<Datum> uniq = new HashSet<Datum>();
+			DatumWalk iter = new DatumWalk(head);
+			while (iter.hasNext()) {
+				Cons pair = (Cons) iter.next();
+				uniq.add(pair.car());
+			}
+			pLen = uniq.size();
+		}
+		return pLen;
+	}
+
+	public boolean
+	hasUniqueKeys()
+	{
+		return count() == size;
+	}
+
+	@Override
+	public Set< Map.Entry<Datum,Datum> >
+	entrySet()
+	{
+		throw new UnsupportedOperationException("TODO");
 	}
 }

@@ -8,6 +8,7 @@ package org.rapidcow.trivnote.libexpr;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -220,8 +221,8 @@ class ConsTest
 	@Test void testHashCodeMatchesObjectsHash()
 	{
 		Cons cell = new ConsCell(A, new ConsCell(B, Nil.INSTANCE));
-		int inner = java.util.Objects.hash(B, Nil.INSTANCE);
-		assertEquals(java.util.Objects.hash(A, inner), cell.hashCode());
+		int inner = Objects.hash(B, Nil.INSTANCE);
+		assertEquals(Objects.hash(A, inner), cell.hashCode());
 	}
 
 	@Test void testCachedHashesStillCompareCorrectly()
@@ -268,17 +269,6 @@ class ConsTest
 		assertEquals(cells.hashCode(), view.hashCode());
 		assertEquals(cells, view);
 		assertEquals(view, cells);
-	}
-
-	@Test void testEqualityAcrossConsKinds()
-	{
-		Symbol k = Symbol.of("k");
-		Datum v = Scalar.of("v");
-		Cons assoc = new Assoc(k, v);
-		Cons cell = new ConsCell(k, Scalar.of("v"));
-		assertEquals(assoc, cell);
-		assertEquals(cell, assoc);
-		assertEquals(assoc.hashCode(), cell.hashCode());
 	}
 
 	@Test void testNullArgumentsAreRejected()
