@@ -26,8 +26,8 @@ an opaque Datum object), Cons::hashCode recurses:
 (This can happen when another thread wrote the
 child's nonzero hash, without synchronization
 establishing a happens-before relationship to
-our reads; in this situation our thread has not
-itself written the child's hash.)
+our reads (in this scenario our thread has not
+itself written the child's hash.))
 
 Have this happen a few more times on a long-enough
 list, and we get blown up the very StackOverflowError
