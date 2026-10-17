@@ -20,7 +20,7 @@ implements
 {
 	private final Datum head;
 	private       Datum rest;
-	private  int  cur;  /* "current" position */
+	private long cur;  /* "current" position */
 
 	/**
 	 * Creates a list iterator.
@@ -58,6 +58,17 @@ implements
 	}
 
 	/**
+	 * {@return the current position}
+	 *
+	 * @since %v
+	 */
+	public final long
+	position()
+	{
+		return cur;
+	}
+
+	/**
 	 * {@return the next datum}
 	 *
 	 * @throws NoSuchElementException on end of list
@@ -91,6 +102,8 @@ implements
 
 	/**
 	 * {@return index of the next datum}
+	 * This value is truncated at the 32-bit integer maximum.
+	 * For full resolution, use <code>{@linkplain #position position()}</code>.
 	 *
 	 * @since %v
 	 */
@@ -98,7 +111,7 @@ implements
 	public int
 	nextIndex()
 	{
-		return cur;
+		return (int) Math.min(cur, Integer.MAX_VALUE);
 	}
 
 	/*
@@ -124,21 +137,21 @@ implements
 	 * @since %v
 	 */
 	public Datum
-	seek(int off)
+	seek(long off)
 	{
 		/*
 		 * Fork iterator states (cur, rest) => (pos, node),
 		 * so an out-of-bounds seek would not leave us in a
 		 * weird place.
 		 */
-		int pos = cur;
+		long pos = cur;
 		Datum node = rest;
 
 		/*
 		 * Now compute an index, relative to either the head
 		 * (if offset is negative) or to here (if positive).
 		 */
-		int index;
+		long index;
 		if (off < 0) {
 			index = pos + off;
 			if (index < 0) {
@@ -153,7 +166,7 @@ implements
 			index = off;
 		}
 
-		for (int i = 0; i < index; ++i) {
+		for (long i = 0; i < index; ++i) {
 			if (node instanceof Cons cell) {
 				node = cell.cdr();
 				++pos;
@@ -180,14 +193,13 @@ implements
 	 * @throws NoSuchElementException on start of list
 	 * @implNote This operation is linear in the number
 	 *    of datums preceding this datum.
-	 * @since %v
 	 */
 	@Override
 	public Datum
 	previous()
 	{
 		try {
-			return Datum.car(seek(-1));
+			return Datum.car(seek(-1L));
 		} catch (IndexOutOfBoundsException e) {
 			throw new NoSuchElementException();
 		}
@@ -206,20 +218,20 @@ implements
 
 	/**
 	 * {@return index of the previous datum}
-	 * @since %v
+	 * This value is truncated at the 32-bit integer maximum.
+	 * For full resolution, use <code>{@linkplain #position position()} - 1L</code>.
 	 */
 	@Override
 	public int
 	previousIndex()
 	{
-		return cur - 1;
+		return (int) Math.min(cur - 1L, Integer.MAX_VALUE);
 	}
 
 	/**
 	 * Not implemented.
 	 *
 	 * @throws UnsupportedOperationException always
-	 * @since %v
 	 */
 	@Override
 	public void
@@ -233,7 +245,6 @@ implements
 	 *
 	 * @param e  unused
 	 * @throws UnsupportedOperationException always
-	 * @since %v
 	 */
 	@Override
 	public void
@@ -247,7 +258,6 @@ implements
 	 *
 	 * @param e  unused
 	 * @throws UnsupportedOperationException always
-	 * @since %v
 	 */
 	@Override
 	public void
