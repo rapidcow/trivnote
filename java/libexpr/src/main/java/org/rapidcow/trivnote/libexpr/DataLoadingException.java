@@ -8,7 +8,7 @@ package org.rapidcow.trivnote.libexpr;
 /**
  * Parsing exception.
  */
-public
+public final
 class
 	DataLoadingException
 extends
@@ -67,7 +67,7 @@ extends
 	}
 
 	@Override
-	public String
+	public final String
 	toString()
 	{
 		return ("line " + getLineNumber() +
@@ -78,7 +78,7 @@ extends
 	/**
 	 * {@return the line offset (0-based) of this exception}
 	 */
-	public long
+	public final long
 	getLineOffset()
 	{
 		return lineOffset;
@@ -87,7 +87,7 @@ extends
 	/**
 	 * {@return the line number (1-based) of this exception}
 	 */
-	public long
+	public final long
 	getLineNumber()
 	{
 		return lineOffset + 1;
@@ -96,7 +96,7 @@ extends
 	/**
 	 * {@return the column number (0-based) of this exception}
 	 */
-	public long
+	public final long
 	getCharOffset()
 	{
 		return charOffset;
@@ -105,7 +105,7 @@ extends
 	/**
 	 * {@return the column number (1-based) of this exception}
 	 */
-	public long
+	public final long
 	getCharNumber()
 	{
 		return charOffset + 1;

@@ -22,7 +22,7 @@ extends
 	}
 
 	@Override
-	public String
+	public final String
 	value()
 	{
 		return value;

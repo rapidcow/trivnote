@@ -155,32 +155,32 @@ extends
 	}
 
 	@Override
-	public Datum
+	public final Datum
 	car()
 	{
 		return car;
 	}
 
 	@Override
-	public Datum
+	public final Datum
 	cdr()
 	{
 		return cdr;
 	}
 
-	public Datum
+	public final Datum
 	tail()
 	{
 		return end;
 	}
 
-	public int
+	public final int
 	size()
 	{
 		return (int) Math.min(size, Integer.MAX_VALUE);
 	}
 
-	public long
+	public final long
 	count()
 	{
 		return size;
