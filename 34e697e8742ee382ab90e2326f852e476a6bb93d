@@ -23,6 +23,9 @@ an opaque Datum object), Cons::hashCode recurses:
     }
 
 ... and the child observes itself as to be zero.
+(This can happen when another thread computed and
+cached the child's nonzero hash; since there is
+not a happens-after guarantee cross-thread.)
 
 Have this happen a few more times on a long-enough
 list, and we get blown up the very StackOverflowError
