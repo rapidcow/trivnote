@@ -146,7 +146,9 @@ implements
 		work.push(new HashFrame(this));
 		while (!work.isEmpty()) {
 			HashFrame f = work.peek();
-			if (f.cell.hash != 0) {
+			/* Race guard (again?!) */
+			myHash = f.cell.hash;
+			if (myHash != 0) {
 				work.pop();
 				continue;
 			}
@@ -162,11 +164,12 @@ implements
 			if (ready) {
 				/* Same arithmetic as Objects.hash(car, cdr) */
 				int h = 31 * (31 + f.car.hashCode()) + f.cdr.hashCode();
-				f.cell.hash = (h != 0) ? h : 1;
+				myHash = (h != 0) ? h : 1;
+				f.cell.hash = myHash;
 				work.pop();
 			}
 		}
-		return hash;
+		return myHash;
 	}
 
 	/**
