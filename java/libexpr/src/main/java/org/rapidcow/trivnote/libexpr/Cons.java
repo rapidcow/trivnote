@@ -40,23 +40,53 @@ implements
 	private int hash;
 
 	/*
-	 * As Cons we don't own the storage of car and cdr; but
-	 * since implementors ensure they are immutable, we can
-	 * cache them externally.
+	 * One cell whose hash is being computed.  The hash folds in
+	 * the car's hash and then the cdr's, as Objects.hash(car, cdr)
+	 * does; `n' counts how many of the two are folded in so far.
+	 * Each of car() and cdr() is called once per frame, so a Cons
+	 * that makes a fresh view on every call is still fine.
+	 * (Header, one reference and two ints: 24 bytes with compressed
+	 * pointers, so nothing is lost to padding.)
 	 */
 	private static final
 	class
 		HashFrame
 	{
-		final Cons cell;
-		final Datum car;
-		final Datum cdr;
+		final Cons p;
+		int a = 1;
+		int n;
 
 		HashFrame(Cons c)
 		{
-			cell = c;
-			car = c.car();
-			cdr = c.cdr();
+			p = c;
+		}
+
+		void
+		fold(int h)
+		{
+			a = 31 * a + h;
+			n++;
+		}
+
+		int
+		hash()
+		{
+			return (a == 0) ? 1 : a;
+		}
+
+		Datum
+		next()
+		{
+			return ((n == 0)
+				? p.car()
+				: p.cdr()
+			);
+		}
+
+		boolean
+		sMore()
+		{
+			return n < 2;
 		}
 	}
 
@@ -137,39 +167,39 @@ implements
 		}
 
 		/*
-		 * Post-order walk.  Each frame remembers the car and cdr
-		 * it read, so a Cons that builds a fresh view on every
-		 * car()/cdr() call still finds the children it pushed
-		 * (and whose hashes were cached) when it comes back.
+		 * Post-order walk.  A finished frame hands its hash to the
+		 * frame below it (its parent) instead of the parent going
+		 * back to read it from the field, so every racy field is
+		 * read at most once per visit, and a stale 0 only means we
+		 * compute that cell ourselves.  Each frame folds exactly
+		 * two values in, so the walk always ends.
 		 */
 		Deque<HashFrame> work = new ArrayDeque<>();
 		work.push(new HashFrame(this));
-		while (!work.isEmpty()) {
+		for (;;) {
 			HashFrame f = work.peek();
-			/* Race guard (again?!) */
-			myHash = f.cell.hash;
-			if (myHash != 0) {
+			if (f.sMore()) {
+				Datum cxr = f.next();
+				if (cxr instanceof Cons p) {
+					int h = p.hash;
+					if (h == 0) {
+						work.push(new HashFrame(p));
+					} else {
+						f.fold(h);
+					}
+				} else {
+					f.fold(cxr.hashCode());
+				}
+			} else {
+				int h = f.hash();
+				f.p.hash = h;
 				work.pop();
-				continue;
-			}
-			boolean ready = true;
-			if (f.cdr instanceof Cons d && d.hash == 0) {
-				work.push(new HashFrame(d));
-				ready = false;
-			}
-			if (f.car instanceof Cons a && a.hash == 0) {
-				work.push(new HashFrame(a));
-				ready = false;
-			}
-			if (ready) {
-				/* Same arithmetic as Objects.hash(car, cdr) */
-				int h = 31 * (31 + f.car.hashCode()) + f.cdr.hashCode();
-				myHash = (h != 0) ? h : 1;
-				f.cell.hash = myHash;
-				work.pop();
+				if (work.isEmpty()) {
+					return h;
+				}
+				work.peek().fold(h);
 			}
 		}
-		return myHash;
 	}
 
 	/**

@@ -239,6 +239,37 @@ class ConsTest
 		assertNotEquals(w, x);
 	}
 
+	/* A lazy view: (from from+1 ... to-1), new objects on every call */
+	static final class Range extends Cons
+	{
+		final int from, to;
+
+		Range(int from, int to)
+		{
+			this.from = from;
+			this.to = to;
+		}
+
+		@Override public Datum car()
+		{
+			return Scalar.of(Integer.toString(from));
+		}
+
+		@Override public Datum cdr()
+		{
+			return (from + 1 < to) ? new Range(from + 1, to) : Nil.INSTANCE;
+		}
+	}
+
+	@Test void testHashCodeOfFreshViews()
+	{
+		Datum view = new Range(0, 100_000);
+		Datum cells = longList(100_000, Nil.INSTANCE);
+		assertEquals(cells.hashCode(), view.hashCode());
+		assertEquals(cells, view);
+		assertEquals(view, cells);
+	}
+
 	@Test void testEqualityAcrossConsKinds()
 	{
 		Symbol k = Symbol.of("k");
