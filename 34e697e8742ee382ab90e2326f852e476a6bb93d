@@ -1,3 +1,10 @@
+In the most direct and blunt way: hashCode() may
+return 0 under a JMM-compliant compiler/runtime.
+
+(Emphasis on UN-synchronized -- all of this aggressive
+optimization / re-ordering comes from lack of synchro-
+nization between threads!!!)
+
 GPT-6 Astra describes to me with the following
 possible scenario:
 
