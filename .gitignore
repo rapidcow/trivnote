@@ -10,3 +10,6 @@
 # jdtls's own compiled *.class files (orthogonal to
 # Gradle's build in build/.)
 bin/
+
+# IntelliJ Idea
+.idea/
