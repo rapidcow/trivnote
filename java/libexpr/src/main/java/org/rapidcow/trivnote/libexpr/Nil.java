@@ -5,8 +5,6 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
-import java.util.Iterator;
-
 /**
  * The atom devoid of value and the empty list.
  */
