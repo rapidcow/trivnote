@@ -37,7 +37,7 @@ implements
 	 *
 	 * Note: If we implement serializable, this field is transient.
 	 */
-	private int myHash;
+	private int hash;
 
 	/*
 	 * As Cons we don't own the storage of car and cdr; but
@@ -99,9 +99,10 @@ implements
 				if (!(y instanceof Cons q)) {
 					return false;
 				}
-				if (p.myHash != 0 && q.myHash != 0
-					&& p.myHash != q.myHash
-				) {
+				/* Race guard */
+				int pH = p.hash;
+				int qH = q.hash;
+				if (pH != 0 && qH != 0 && pH != qH) {
 					return false;
 				}
 				/* cdr goes under car, so we go car-first */
@@ -129,6 +130,8 @@ implements
 	public int
 	hashCode()
 	{
+		/* Race guard */
+		int myHash = hash;
 		if (myHash != 0) {
 			return myHash;
 		}
@@ -143,27 +146,27 @@ implements
 		work.push(new HashFrame(this));
 		while (!work.isEmpty()) {
 			HashFrame f = work.peek();
-			if (f.cell.myHash != 0) {
+			if (f.cell.hash != 0) {
 				work.pop();
 				continue;
 			}
 			boolean ready = true;
-			if (f.cdr instanceof Cons d && d.myHash == 0) {
+			if (f.cdr instanceof Cons d && d.hash == 0) {
 				work.push(new HashFrame(d));
 				ready = false;
 			}
-			if (f.car instanceof Cons a && a.myHash == 0) {
+			if (f.car instanceof Cons a && a.hash == 0) {
 				work.push(new HashFrame(a));
 				ready = false;
 			}
 			if (ready) {
 				/* Same arithmetic as Objects.hash(car, cdr) */
 				int h = 31 * (31 + f.car.hashCode()) + f.cdr.hashCode();
-				f.cell.myHash = (h != 0) ? h : 1;
+				f.cell.hash = (h != 0) ? h : 1;
 				work.pop();
 			}
 		}
-		return myHash;
+		return hash;
 	}
 
 	/**

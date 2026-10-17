@@ -25,16 +25,24 @@ implements
 	Iterable<Datum>
 {
 	private final Datum head;
-	private       Datum tail;
-	private long  size =  -1;
+	private volatile Datum tail;
+	/*
+	 * Note!  size is only meaningful once tail is computed.
+	 * tail is volatile and acts as a "ready" signal, so a
+	 * non-null tail guarantees that the size is ready too.
+	 *
+	 * For this thread lock-ish mechanism to be useful though,
+	 * modify size BEFORE a non-null tail is written.
+	 */
+	private long size = -1;
 
 	public
 	DatumList(Datum list)
 	{
 		head = list;
 		if (list instanceof ConsList cell) {
-			tail = cell.tail();
 			size = cell.count();
+			tail = cell.tail();
 		}
 	}
 
@@ -48,8 +56,7 @@ implements
 	tail()
 	{
 		if (tail == null) {
-			DatumWalk iter = new DatumWalk(head);
-			finish(iter);
+			finish(new DatumWalk(head));
 		}
 		return tail;
 	}
@@ -60,6 +67,7 @@ implements
 		if (iter.head() != head) {
 			throw new IllegalArgumentException("not my kid");
 		}
+
 		for (;;) {
 			try {
 				iter.next();
@@ -67,8 +75,13 @@ implements
 				break;
 			}
 		}
-		tail = iter.rest();
+
+		/*
+		 * size is considered "ready" by tail() and count().
+		 * as soon as we write tail; so do it last!
+		 */
 		size = iter.position();
+		tail = iter.rest();
 	}
 
 	public DatumList
@@ -93,13 +106,14 @@ implements
 		if (tail() == Nil.INSTANCE) {
 			return this;
 		}
-		if (size == 0) {
+		long mySize = size;
+		if (mySize == 0) {
 			return new DatumList(Nil.INSTANCE);
 		}
-		if (size > Integer.MAX_VALUE) {
+		if (mySize > Integer.MAX_VALUE) {
 			throw new UnsupportedOperationException("Very big list");
 		}
-		int sz = (int) size;
+		int sz = (int) mySize;
 		/* ConsList pops q from the front, so push in order. */
 		Deque<Datum> q = new ArrayDeque<>(sz);
 		for (Datum node : this) {
@@ -128,8 +142,8 @@ implements
 	public final long
 	count()
 	{
-		if (size < 0) {
-			tail();
+		if (tail == null) {
+			finish(new DatumWalk(head));
 		}
 		return size;
 	}
