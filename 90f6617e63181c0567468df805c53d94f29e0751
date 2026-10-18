@@ -1,0 +1,45 @@
+i forgot (Cloud)
+
+multiple times =n=
+
+$ ~/tree/utils/diff-range rpi/master 8 8f670b0b2c48fdb1e9a1650f1c4a3e6f7aee7290
+ORIG = ae2a0506b1c862c4c12de4928580660d1c070397 (rpi/master)
+HEAD = 8f670b0b2c48fdb1e9a1650f1c4a3e6f7aee7290
+ 0:  ae2a050 =  0:  8f670b0 Set a sane limit too
+ 1:  75caf6c =  1:  8467139 correct IllegalStateException message
+ 2:  9a7f022 =  2:  8c5c6b7 Add annot for key access of the wrong types
+ 3:  16ac3e1 =  3:  ae93b96 show the size too
+ 4:  805188e =  4:  444f98c i want to see the symbol table
+ 5:  ff10046 =  5:  a99bb9e Use new API for script test
+ 6:  ddb7ec7 =  6:  d62bb80 Expose associative list view function
+ 7:  0f3c122 !  7:  193a329 Implement AssocList entry set with duplicate keys
+--- a/0f3c12283fc00f2ddfab77ce5af6a4ff87e3c9e3	2026-10-18 02:27:19
++++ b/193a32958b8993dbc849f0dc3252c02fc82ba6bc	2026-10-18 02:27:19
+@@ -1,7 +1,7 @@
+ tree 9c3bc545e06db61bb51a3356b679725c839abf7d
+ parent 4f6e49a26ce251155b9d7a30ddd701c5274cb365
+-author Claude Haiku 5.5 <claude@anthropic.com> 1792284905 -0000
++author Claude Haiku 5.5 (Cloud) <claude@anthropic.com> 1792284905 -0000
+ committer Ethan Meng <com.termux@Pixel-9-Pro.local> 1792290439 -0500
+ 
+ Implement AssocList entry set with duplicate keys
+
+also commit notes itself had to be re-formatted.  it's
+pretty bad.  (i thought git was glitching i swear! QnQ)
+
+$ ~/tree/utils/diff-range 22f06ef 2 075ea99~1
+ORIG = 22f06efd2fad03cb81be869e5359f2c7a540c1fc
+HEAD = 7046729b778da3426647d94f0407bfcfbdaa652f (075ea99~1)
+ 0:  22f06ef !  0:  7046729 Edit HEAD                                                                    I forgot to change the +0000 author time zone to -0000.  It's good otherwise! ^^;
+--- a/22f06efd2fad03cb81be869e5359f2c7a540c1fc	2026-10-18 02:40:34
++++ b/7046729b778da3426647d94f0407bfcfbdaa652f	2026-10-18 02:40:34
+@@ -3,6 +3,7 @@
+ author Ethan Meng <com.termux@Pixel-9-Pro.local> 1792290920 -0500
+ committer Ethan Meng <com.termux@Pixel-9-Pro.local> 1792291234 -0500
+ 
+ Edit HEAD
+-                                                                   I forgot to change the +0000 author time
++
++I forgot to change the +0000 author time
+ zone to -0000.  It's good otherwise! ^^;
+ 1:  51a1c52 =  1:  51a1c52 Notes added by 'git notes add'
