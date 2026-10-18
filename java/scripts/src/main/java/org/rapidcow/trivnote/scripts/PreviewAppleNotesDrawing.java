@@ -103,7 +103,9 @@ public class PreviewAppleNotesDrawing
 			+ " stroke"
 			+ (strokes.size() == 1 ? "" : "s")
 			+ " loaded");
-		System.out.println("Symbol table: " + SYMBOLS.values());
+		System.out.println("Symbol table ("
+			+ SYMBOLS.size() + "): "
+			+ SYMBOLS.values());
 
 		SwingUtilities.invokeLater(() -> {
 			DrawingPanel panel = new DrawingPanel(strokes);
