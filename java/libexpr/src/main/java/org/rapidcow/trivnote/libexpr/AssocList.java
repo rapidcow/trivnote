@@ -2,10 +2,8 @@ package org.rapidcow.trivnote.libexpr;
 
 import java.util.AbstractMap;
 import java.util.AbstractSet;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
