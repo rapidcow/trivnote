@@ -21,10 +21,10 @@
  *     {@code car} and {@code cdr} (pronounced
  *     <em>cou-der</em>).
  * <!-- https://www.cs.drexel.edu/~popyack/Courses/AI/Fa21/extras/LISP/CADDDR.html -->
- *      Because cons is derived from the verb <q>construct</q>,
- *      and pluralizing it would leave the impression of a verb,
- *      it is customary to call it by the somewhat redundant
- *      names <q>cons cell</q> or <q>cons pair</q>.
+ *     Because cons is derived from the verb <q>construct</q>,
+ *     and pluralizing it would leave the impression of a verb,
+ *     it is customary to call it by the somewhat redundant
+ *     names <q>cons cell</q> or <q>cons pair</q>.
  *   </li>
  *   <li>
  *     In S-expressions, a <em>list</em> is a chain of
