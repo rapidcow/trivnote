@@ -213,10 +213,10 @@ class AssocListTest
 			alist.get(Scalar.of(Integer.toString(n / 2 - 1))));
 	}
 
-	static List<Map.Entry<Datum,Datum>> entriesOf(AssocList alist)
+	static List< Map.Entry<Datum,Datum> > entriesOf(AssocList alist)
 	{
-		List<Map.Entry<Datum,Datum>> out = new ArrayList<>();
-		Iterator<Map.Entry<Datum,Datum>> it = alist.entrySet().iterator();
+		List< Map.Entry<Datum,Datum> > out = new ArrayList<>();
+		Iterator< Map.Entry<Datum,Datum> > it = alist.entrySet().iterator();
 		while (it.hasNext()) {
 			out.add(it.next());
 		}
@@ -260,7 +260,7 @@ class AssocListTest
 	{
 		AssocList alist = new AssocList(Nil.INSTANCE);
 		assertEquals(List.of(), entriesOf(alist));
-		Iterator<Map.Entry<Datum,Datum>> it = alist.entrySet().iterator();
+		Iterator< Map.Entry<Datum,Datum> > it = alist.entrySet().iterator();
 		assertFalse(it.hasNext());
 		assertThrows(NoSuchElementException.class, it::next);
 	}
@@ -270,7 +270,7 @@ class AssocListTest
 	{
 		AssocList alist = new AssocList(Cons.ofList(
 			pair(A, B), pair(A, C), pair(B, C)));
-		Iterator<Map.Entry<Datum,Datum>> it = alist.entrySet().iterator();
+		Iterator< Map.Entry<Datum,Datum> > it = alist.entrySet().iterator();
 		for (int i = 0; i < 3; ++i) {
 			assertTrue(it.hasNext());
 		}

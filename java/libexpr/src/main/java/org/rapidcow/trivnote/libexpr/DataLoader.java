@@ -121,7 +121,7 @@ implements
 	 * {@return the current symbol cache}
 	 * @since %v
 	 */
-	public final Optional<Map<String,Symbol>>
+	public final Optional< Map<String,Symbol> >
 	getSymbolCache()
 	{
 		return Optional.ofNullable(sym);

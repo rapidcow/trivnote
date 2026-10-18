@@ -118,7 +118,7 @@ class SymbolCacheTest
 		CountDownLatch go = new CountDownLatch(1);
 		ExecutorService pool = Executors.newFixedThreadPool(nthreads);
 		try {
-			List<Future<List<Datum>>> results = new ArrayList<>();
+			List<Future< List<Datum> >> results = new ArrayList<>();
 			for (int t = 0; t < nthreads; t++) {
 				results.add(pool.submit(() -> {
 					DataLoader l = new DataLoader(new StringReader(text))
@@ -131,8 +131,8 @@ class SymbolCacheTest
 			}
 			go.countDown();
 
-			List<List<Datum>> all = new ArrayList<>();
-			for (Future<List<Datum>> f : results) {
+			List< List<Datum> > all = new ArrayList<>();
+			for (Future< List<Datum> > f : results) {
 				all.add(f.get());
 			}
 			assertEquals(nsyms, cache.size());
