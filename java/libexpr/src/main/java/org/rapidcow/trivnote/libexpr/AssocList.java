@@ -178,7 +178,12 @@ extends
 		while (!q.isEmpty()) {
 			p = Cons.of(q.pop(), p);
 		}
-		return new AssocList(p, len);
+		/*
+		 * If len was non-negative, its value should
+		 * agree with us.  Nevertheless, we can just
+		 * use our freshly computed value...
+		 */
+		return new AssocList(p, uniq.size());
 	}
 
 	@Override
