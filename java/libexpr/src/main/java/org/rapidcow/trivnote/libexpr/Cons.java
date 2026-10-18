@@ -266,7 +266,7 @@ implements
 	 * @throws IllegalArgumentException if {@code list} is empty
 	 * @throws NullPointerException if {@code list} or any element is null
 	 */
-	public static Cons
+	public static ConsList
 	fromList(List<? extends Datum> list)
 	{
 		if (list.isEmpty()) {
