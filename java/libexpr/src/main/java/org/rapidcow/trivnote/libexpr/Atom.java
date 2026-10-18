@@ -6,7 +6,7 @@
 package org.rapidcow.trivnote.libexpr;
 
 /**
- * A non-cons non-nil {@link Datum}.
+ * A terminal {@link Datum}.
  * Concretely, it covers two types of atoms:
  *
  * <ul>
