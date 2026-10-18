@@ -5,6 +5,11 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,8 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * API tests for AssocList lookups and counting.
- * The entry set is not implemented yet, so nothing here goes through it.
+ * API tests for AssocList lookups, counting and entry iteration.
  */
 @DisplayName("AssocList API tests")
 class AssocListTest
@@ -204,5 +208,73 @@ class AssocListTest
 		assertEquals(Scalar.of("0"), alist.get(Scalar.of("0")));
 		assertEquals(Scalar.of(Integer.toString(n / 2 - 1)),
 			alist.get(Scalar.of(Integer.toString(n / 2 - 1))));
+	}
+
+	static List<Map.Entry<Datum,Datum>> entriesOf(AssocList alist)
+	{
+		List<Map.Entry<Datum,Datum>> out = new ArrayList<>();
+		Iterator<Map.Entry<Datum,Datum>> it = alist.entrySet().iterator();
+		while (it.hasNext()) {
+			out.add(it.next());
+		}
+		return out;
+	}
+
+	@Test void testEntrySetOfUniqueKeys()
+	{
+		assertEquals(List.of(
+			Map.entry(A, Scalar.of("1")),
+			Map.entry(B, Scalar.of("2")),
+			Map.entry(C, Scalar.of("3"))),
+			entriesOf(abc()));
+	}
+
+	/* Each key yields its first occurrence, in order of first appearance. */
+	@Test void testEntrySetSkipsShadowedEntries()
+	{
+		AssocList alist = new AssocList(Cons.ofList(
+			pair(A, Scalar.of("1")),
+			pair(B, Scalar.of("2")),
+			pair(A, Scalar.of("3")),
+			pair(C, Scalar.of("4")),
+			pair(B, Scalar.of("5")),
+			pair(A, Scalar.of("6"))));
+		assertEquals(List.of(
+			Map.entry(A, Scalar.of("1")),
+			Map.entry(B, Scalar.of("2")),
+			Map.entry(C, Scalar.of("4"))),
+			entriesOf(alist));
+	}
+
+	@Test void testEntrySetOfAllDuplicates()
+	{
+		AssocList alist = new AssocList(Cons.ofList(
+			pair(A, B), pair(A, C), pair(A, Z)));
+		assertEquals(List.of(Map.entry(A, B)), entriesOf(alist));
+	}
+
+	@Test void testEntrySetOfEmptyList()
+	{
+		AssocList alist = new AssocList(Nil.INSTANCE);
+		assertEquals(List.of(), entriesOf(alist));
+		Iterator<Map.Entry<Datum,Datum>> it = alist.entrySet().iterator();
+		assertFalse(it.hasNext());
+		assertThrows(NoSuchElementException.class, it::next);
+	}
+
+	/* Repeated hasNext() calls must neither skip nor consume entries. */
+	@Test void testEntrySetHasNextIsIdempotent()
+	{
+		AssocList alist = new AssocList(Cons.ofList(
+			pair(A, B), pair(A, C), pair(B, C)));
+		Iterator<Map.Entry<Datum,Datum>> it = alist.entrySet().iterator();
+		for (int i = 0; i < 3; ++i) {
+			assertTrue(it.hasNext());
+		}
+		assertEquals(Map.entry(A, B), it.next());
+		assertEquals(Map.entry(B, C), it.next());
+		assertFalse(it.hasNext());
+		assertFalse(it.hasNext());
+		assertThrows(NoSuchElementException.class, it::next);
 	}
 }

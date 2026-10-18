@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 public final
@@ -146,7 +147,12 @@ extends
 		Iterator< Map.Entry<Datum,Datum> >
 	{
 		final DatumWalk iter;
+
+		/* Keys already yielded; null when every key is unique */
 		final Set<Datum> seen;
+
+		/* First cons of the next unique key, already read from iter */
+		Cons pushback;
 
 		private
 		EntryWalk(AssocList me)
@@ -155,22 +161,54 @@ extends
 			if (me.hasUniqueKeys()) {
 				seen = null;
 			} else {
-				throw new UnsupportedOperationException("TODO walk duplicate entries");
+				seen = new HashSet<Datum>();
 			}
+		}
+
+		/* Advances to the next cons with an unseen key, or null at EOF. */
+		private Cons
+		nextUnique()
+		{
+			while (iter.hasNext()) {
+				Cons pair = (Cons) iter.next();
+				if (seen.add(pair.car())) {
+					return pair;
+				}
+			}
+			return null;
 		}
 
 		@Override
 		public boolean
 		hasNext()
 		{
-			return iter.hasNext();
+			if (seen == null) {
+				return iter.hasNext();
+			}
+			if (pushback == null) {
+				pushback = nextUnique();
+			}
+			return pushback != null;
 		}
 
 		@Override
 		public Map.Entry<Datum,Datum>
 		next()
 		{
-			Cons p = (Cons) iter.next();
+			Cons p;
+			if (seen == null) {
+				p = (Cons) iter.next();
+			} else {
+				if (pushback == null) {
+					pushback = nextUnique();
+				}
+				if (pushback == null) {
+					throw new NoSuchElementException();
+				}
+				/* Hold p, and scan ahead to the next unique key (or EOF) */
+				p = pushback;
+				pushback = nextUnique();
+			}
 			return new AbstractMap.SimpleImmutableEntry<>( p.car(), p.cdr() );
 		}
 	}
