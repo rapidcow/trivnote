@@ -56,7 +56,7 @@ class AssocListTest
 
 	@Test void testNullListIsRejected()
 	{
-		assertThrows(NullPointerException.class, () -> new AssocList(null));
+		assertThrows(NullPointerException.class, () -> new AssocList((Datum) null));
 	}
 
 	@Test void testNonConsEntryIsRejected()

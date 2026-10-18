@@ -2,10 +2,13 @@ package org.rapidcow.trivnote.libexpr;
 
 import java.util.AbstractMap;
 import java.util.AbstractSet;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 
 public final
@@ -37,6 +40,29 @@ extends
 		}
 		head = list;
 		size = iter.position();
+	}
+
+	public
+	AssocList(Map<? extends Datum, ? extends Datum> map)
+	{
+		int sz = map.size();
+		Deque<Cons> q = new ArrayDeque<>(sz);
+		size = sz;
+		if (sz == 0) {
+			head = Nil.INSTANCE;
+			pLen = 0;
+			return;
+		}
+		for (Map.Entry<? extends Datum, ? extends Datum> e : map.entrySet()) {
+			Datum car = Objects.requireNonNull(e.getKey(), "key");
+			Datum cdr = Objects.requireNonNull(e.getValue(), "value");
+			q.push(Cons.of(car, cdr));
+		}
+		Cons p = Cons.ofList(q.pop());
+		while (!q.isEmpty()) {
+			p = Cons.of(q.pop(), p);
+		}
+		head = p;
 	}
 
 	@Override

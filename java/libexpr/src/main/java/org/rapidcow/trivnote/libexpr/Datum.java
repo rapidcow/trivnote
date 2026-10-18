@@ -6,6 +6,7 @@
 package org.rapidcow.trivnote.libexpr;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Basic unit of an S-expression.
@@ -143,5 +144,11 @@ permits
 	asAlist(Datum node)
 	{
 		return new AssocList(node);
+	}
+
+	public static AssocList
+	fromMap(Map<? extends Datum, ? extends Datum> map)
+	{
+		return new AssocList(map);
 	}
 }

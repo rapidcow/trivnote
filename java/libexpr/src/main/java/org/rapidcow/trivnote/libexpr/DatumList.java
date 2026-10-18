@@ -8,6 +8,7 @@ package org.rapidcow.trivnote.libexpr;
 import java.util.AbstractSequentialList;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
@@ -44,6 +45,15 @@ implements
 			size = cell.count();
 			tail = cell.tail();
 		}
+	}
+
+	public
+	DatumList(List<? extends Datum> list)
+	{
+		ConsList cList = Cons.fromList(list);
+		head = cList;
+		size = cList.count();
+		tail = cList.tail();
 	}
 
 	public final Datum
