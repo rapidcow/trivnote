@@ -1,7 +1,9 @@
 package org.rapidcow.trivnote.libexpr;
 
 import java.util.AbstractMap;
+import java.util.AbstractSet;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -92,10 +94,84 @@ extends
 		return count() == size;
 	}
 
+	public AssocList
+	requireUniqueKeys()
+	{
+		if (!hasUniqueKeys()) {
+			throw new IllegalArgumentException("Duplicate keys");
+		}
+		return this;
+	}
+
 	@Override
 	public Set< Map.Entry<Datum,Datum> >
 	entrySet()
 	{
-		throw new UnsupportedOperationException("TODO");
+		return new EntryView(this);
+	}
+
+	private static final
+	class
+		EntryView
+	extends
+		AbstractSet< Map.Entry<Datum,Datum> >
+	{
+		final AssocList me;
+
+		private
+		EntryView(AssocList me)
+		{
+			this.me = me;
+		}
+
+		@Override
+		public int
+		size()
+		{
+			return me.size();
+		}
+
+		@Override
+		public Iterator< Map.Entry<Datum,Datum> >
+		iterator()
+		{
+			return new EntryWalk(me);
+		}
+	}
+
+	private static final
+	class
+		EntryWalk
+	implements
+		Iterator< Map.Entry<Datum,Datum> >
+	{
+		final DatumWalk iter;
+		final Set<Datum> seen;
+
+		private
+		EntryWalk(AssocList me)
+		{
+			iter = new DatumWalk(me.head);
+			if (me.hasUniqueKeys()) {
+				seen = null;
+			} else {
+				throw new UnsupportedOperationException("TODO walk duplicate entries");
+			}
+		}
+
+		@Override
+		public boolean
+		hasNext()
+		{
+			return iter.hasNext();
+		}
+
+		@Override
+		public Map.Entry<Datum,Datum>
+		next()
+		{
+			Cons p = (Cons) iter.next();
+			return new AbstractMap.SimpleImmutableEntry<>( p.car(), p.cdr() );
+		}
 	}
 }
