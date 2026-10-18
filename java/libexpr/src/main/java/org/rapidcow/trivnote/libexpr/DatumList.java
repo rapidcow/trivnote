@@ -115,7 +115,7 @@ implements
 		}
 		if (mySize > Integer.MAX_VALUE) {
 			throw new IllegalStateException(
-				"Sorry, I won't reverse lists whose "
+				"Sorry, I won't convert lists whose "
 				+ "length exceeds Integer.MAX_VALUE. "
 				+ "Please do it yourself with a data "
 				+ "structure of your choice."
