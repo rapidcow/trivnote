@@ -134,6 +134,53 @@ extends
 		return this;
 	}
 
+	private
+	AssocList(Datum list, long uniqueSize)
+	{
+		head = list;
+		size = uniqueSize;
+		pLen = size;
+	}
+
+	public AssocList
+	withUniqueKeys()
+	{
+		long llen = pLen;
+		int len;
+		if (llen == -1) {
+			len = -1;
+		} else {
+			if (llen > Integer.MAX_VALUE) {
+				throw new IllegalStateException(
+					"Sorry, I won't compact alists whose "
+					+ "length exceeds Integer.MAX_VALUE. "
+					+ "Please do it yourself with a data "
+					+ "structure of your choice."
+				);
+			}
+			len = (int) llen;
+		}
+
+		if (len >= 0 && len == size) {
+			return this;
+		}
+
+		Set<Datum> uniq = new HashSet<>();
+		Deque<Cons> q = new ArrayDeque<>(len < 0 ? 1 : len);
+		DatumWalk iter = new DatumWalk(head);
+		while (iter.hasNext()) {
+			Cons pair = (Cons) iter.next();
+			if (uniq.add(pair.car())) {
+				q.push(pair);
+			}
+		}
+		Datum p = Nil.INSTANCE;
+		while (!q.isEmpty()) {
+			p = Cons.of(q.pop(), p);
+		}
+		return new AssocList(p, len);
+	}
+
 	@Override
 	public Set< Map.Entry<Datum,Datum> >
 	entrySet()
