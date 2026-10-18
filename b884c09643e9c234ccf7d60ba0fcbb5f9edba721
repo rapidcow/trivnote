@@ -1,0 +1,12 @@
+Claude-Session: https://claude.ai/code/session_01Ki8MLLooHLRKyjQ24o46Gh
+
+Prompt:
+
+Ok so like, I can't push to this fork on my phone. Replace the gh user with rapidcow and fetch. Update master to the fetched head if you please. But anyways, I want you to help implement iteration of duplicate keys in AssocList.java in EntrySet... The idea is basically
+
+* Add a pushback Datum.
+* In next() and hasNext(): check if seen is null, if so, returns what I have already written.
+* Else, check for pushback Datum, and return it/true if one exists. (Reset pushback to null of course.)
+* Advance iterator for the first unique key; return if no pairs exist.
+* Hold the unique key's Cons cell, and iterate until the next unique key is encountered or EOF.
+  - A basic while hasNext should do. When a unique key is encountered, simply set the pushback Datum and break. If one isn't encountered, leave it null (it's EOF from here anyways.)
