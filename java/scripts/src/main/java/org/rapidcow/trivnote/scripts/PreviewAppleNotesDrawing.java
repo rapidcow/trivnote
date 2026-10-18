@@ -75,7 +75,8 @@ public class PreviewAppleNotesDrawing
 
 		path = Path.of(args[0]);
 		try (BufferedReader in = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
-			DataLoader loader = new DataLoader(in).useSymbolCache(SYMBOLS);
+			DataLoader loader = new DataLoader(in).useSymbolCache(SYMBOLS)
+				.useLengthLimit(0xffffL).useDepthLimit(0xfL);
 			root = loader.readDatum();
 			if (loader.hasNext()) { throw up( "trailing garbage" ); }
 			if (loader.lastIOException() != null) { throw up( "I/O error", loader.lastIOException() ); }

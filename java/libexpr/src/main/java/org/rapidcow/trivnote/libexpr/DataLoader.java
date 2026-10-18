@@ -144,7 +144,7 @@ implements
 	 * @since %v
 	 */
 	public final DataLoader
-	useMaxDepth(long depth)
+	useDepthLimit(long depth)
 	{
 		if (depth < 0) {
 			throw new IllegalArgumentException("Negative depth");
@@ -158,7 +158,7 @@ implements
 	 * @since %v
 	 */
 	public final long
-	getMaxDepth()
+	getDepthLimit()
 	{
 		return maxDepth;
 	}
@@ -175,7 +175,7 @@ implements
 	 * @since %v
 	 */
 	public final DataLoader
-	useMaxLength(long length)
+	useLengthLimit(long length)
 	{
 		if (length < 0) {
 			throw new IllegalArgumentException("Negative length");
@@ -189,7 +189,7 @@ implements
 	 * @since %v
 	 */
 	public final long
-	getMaxLength()
+	getLengthLimit()
 	{
 		return maxLength;
 	}

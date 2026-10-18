@@ -467,40 +467,40 @@ class ReaderTest
 		}
 	}
 
-	@Test void testMaxDepth()
+	@Test void testDepthLimit()
 	{
 		loader = new DataLoader(new StringReader("a (a) ((a)) [{(a)}]"))
-			.useMaxDepth(2);
-		assertEquals(2, loader.getMaxDepth());
+			.useDepthLimit(2);
+		assertEquals(2, loader.getDepthLimit());
 		assertSame(Symbol.class, loader.next().getClass());
 		loader.next();
 		loader.next();
 		assertThrows(DataLoadingException.class, loader::next);
 
 		/* Zero allows atoms only, including the empty list */
-		loader = new DataLoader(new StringReader("a ()")).useMaxDepth(0);
+		loader = new DataLoader(new StringReader("a ()")).useDepthLimit(0);
 		loader.next();
 		assertThrows(DataLoadingException.class, loader::next);
 
 		/* Datum comments count too */
 		loader = new DataLoader(new StringReader("(#;((a)) b)"))
-			.useMaxDepth(2);
+			.useDepthLimit(2);
 		assertThrows(DataLoadingException.class, loader::next);
 
 		/* Deep input is refused instead of overflowing the stack */
 		String deep = "(".repeat(1001) + ")".repeat(1001);
-		loader = new DataLoader(new StringReader(deep)).useMaxDepth(1000);
+		loader = new DataLoader(new StringReader(deep)).useDepthLimit(1000);
 		assertThrows(DataLoadingException.class, loader::next);
 
 		assertThrows(IllegalArgumentException.class,
-			() -> new DataLoader(new StringReader("")).useMaxDepth(-1));
+			() -> new DataLoader(new StringReader("")).useDepthLimit(-1));
 	}
 
-	@Test void testMaxLength()
+	@Test void testLengthLimit()
 	{
 		loader = new DataLoader(new StringReader("(a b) (a b . c) (a b c)"))
-			.useMaxLength(2);
-		assertEquals(2, loader.getMaxLength());
+			.useLengthLimit(2);
+		assertEquals(2, loader.getLengthLimit());
 		assertEquals(2, Datum.asList(loader.next()).size());
 		/* The dotted tail is not an element */
 		assertEquals(2, new DatumList(loader.next()).size());
@@ -508,16 +508,16 @@ class ReaderTest
 
 		/* Applies to nested lists one at a time */
 		loader = new DataLoader(new StringReader("((a b) (c d))"))
-			.useMaxLength(2);
+			.useLengthLimit(2);
 		loader.next();
 
 		/* Zero allows only the empty list */
-		loader = new DataLoader(new StringReader("() (a)")).useMaxLength(0);
+		loader = new DataLoader(new StringReader("() (a)")).useLengthLimit(0);
 		assertSame(Nil.INSTANCE, loader.next());
 		assertThrows(DataLoadingException.class, loader::next);
 
 		assertThrows(IllegalArgumentException.class,
-			() -> new DataLoader(new StringReader("")).useMaxLength(-1));
+			() -> new DataLoader(new StringReader("")).useLengthLimit(-1));
 	}
 
 	/*
