@@ -121,6 +121,15 @@ permits
 		return Cons.fromList(list);
 	}
 
+	/* This may be a good thing to write
+	 * if your friend doesn't know Lisp */
+
+	public static Nil
+	emptyList()
+	{
+		return Nil.INSTANCE;
+	}
+
 	/**
 	 * {@return the datum as an associative list}
 	 *
