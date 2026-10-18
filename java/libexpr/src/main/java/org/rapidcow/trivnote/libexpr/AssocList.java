@@ -108,7 +108,7 @@ extends
 	count()
 	{
 		if (pLen < 0) {
-			Set<Datum> uniq = new HashSet<Datum>();
+			Set<Datum> uniq = new HashSet<>();
 			DatumWalk iter = new DatumWalk(head);
 			while (iter.hasNext()) {
 				Cons pair = (Cons) iter.next();
