@@ -395,4 +395,127 @@ class AssocListTest
 		assertThrows(NullPointerException.class, () -> new AssocList(nullValue));
 		assertThrows(NullPointerException.class, () -> Datum.fromMap(nullValue));
 	}
+
+	/* Calling count() first lets withUniqueKeys() reuse the cached count */
+	static AssocList counted(AssocList alist)
+	{
+		alist.count();
+		return alist;
+	}
+
+	/* ((a . 1) (b . 2) (a . 3) (c . 4) (b . 5) (a . 6)) */
+	static AssocList shadowed()
+	{
+		return new AssocList(Cons.ofList(
+			pair(A, Scalar.of("1")),
+			pair(B, Scalar.of("2")),
+			pair(A, Scalar.of("3")),
+			pair(C, Scalar.of("4")),
+			pair(B, Scalar.of("5")),
+			pair(A, Scalar.of("6"))));
+	}
+
+	static void checkUnique(AssocList alist, long n)
+	{
+		assertTrue(alist.hasUniqueKeys());
+		assertSame(alist, alist.requireUniqueKeys());
+		assertEquals(n, alist.count());
+		assertEquals((int) n, alist.size());
+		assertEquals(n, new DatumList(alist.head()).count());
+	}
+
+	@Test void testWithUniqueKeysDropsShadowedEntries()
+	{
+		for (AssocList alist : List.of(shadowed(), counted(shadowed()))) {
+			AssocList uniq = alist.withUniqueKeys();
+			checkUnique(uniq, 3);
+			assertEquals(List.of(
+				Map.entry(A, Scalar.of("1")),
+				Map.entry(B, Scalar.of("2")),
+				Map.entry(C, Scalar.of("4"))),
+				entriesOf(uniq));
+			assertEquals(alist, uniq);
+		}
+	}
+
+	/* The surviving entries are the very same pairs, not copies */
+	@Test void testWithUniqueKeysSharesPairs()
+	{
+		Cons a = pair(A, B);
+		Cons b = pair(B, C);
+		AssocList alist = new AssocList(Cons.ofList(a, pair(A, Z), b));
+		ConsTest.checkSpine(alist.withUniqueKeys().head(), Nil.INSTANCE, a, b);
+	}
+
+	@Test void testWithUniqueKeysLeavesOriginalAlone()
+	{
+		AssocList alist = shadowed();
+		Datum head = alist.head();
+		alist.withUniqueKeys();
+		assertSame(head, alist.head());
+		assertEquals(6L, new DatumList(head).count());
+		assertEquals(3, alist.size());
+		assertFalse(alist.hasUniqueKeys());
+	}
+
+	@Test void testWithUniqueKeysOfStructuralKeys()
+	{
+		AssocList alist = new AssocList(Cons.ofList(
+			pair(Cons.ofList(A, B), C),
+			pair(new ConsList(A, B, Nil.INSTANCE), Z),
+			pair(Scalar.of("k"), Z),
+			pair(Scalar.of("k"), A)));
+		AssocList uniq = alist.withUniqueKeys();
+		checkUnique(uniq, 2);
+		assertSame(C, uniq.get(Cons.ofList(A, B)));
+		assertSame(Z, uniq.get(Scalar.of("k")));
+	}
+
+	@Test void testWithUniqueKeysOfAllDuplicates()
+	{
+		AssocList alist = new AssocList(Cons.ofList(
+			pair(A, B), pair(A, C), pair(A, Z)));
+		AssocList uniq = alist.withUniqueKeys();
+		checkUnique(uniq, 1);
+		assertEquals(List.of(Map.entry(A, B)), entriesOf(uniq));
+	}
+
+	/* Once it is known to be unique, there is nothing to do */
+	@Test void testWithUniqueKeysKeepsUniqueAlist()
+	{
+		AssocList alist = counted(abc());
+		assertSame(alist, alist.withUniqueKeys());
+		AssocList fromMap = Datum.fromMap(abcMap());
+		assertSame(fromMap, fromMap.withUniqueKeys());
+		AssocList empty = Datum.fromMap(Map.of());
+		assertSame(empty, empty.withUniqueKeys());
+	}
+
+	/* Without a cached count, a copy is fine, but it must still be right */
+	@Test void testWithUniqueKeysOfUncountedUniqueAlist()
+	{
+		AssocList uniq = abc().withUniqueKeys();
+		checkUnique(uniq, 3);
+		assertEquals(abc(), uniq);
+		assertEquals(entriesOf(abc()), entriesOf(uniq));
+	}
+
+	@Test void testWithUniqueKeysOfEmptyList()
+	{
+		for (AssocList alist : List.of(
+				new AssocList(Nil.INSTANCE),
+				counted(new AssocList(Nil.INSTANCE)))) {
+			AssocList uniq = alist.withUniqueKeys();
+			checkUnique(uniq, 0);
+			assertSame(Nil.INSTANCE, uniq.head());
+			assertEquals(List.of(), entriesOf(uniq));
+		}
+	}
+
+	@Test void testWithUniqueKeysIsIdempotent()
+	{
+		AssocList uniq = shadowed().withUniqueKeys();
+		assertSame(uniq, uniq.withUniqueKeys());
+		assertSame(uniq, uniq.withUniqueKeys().withUniqueKeys());
+	}
 }
