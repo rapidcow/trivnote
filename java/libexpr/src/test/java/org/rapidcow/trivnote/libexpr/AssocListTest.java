@@ -7,6 +7,7 @@ package org.rapidcow.trivnote.libexpr;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -485,8 +486,6 @@ class AssocListTest
 	{
 		AssocList alist = counted(abc());
 		assertSame(alist, alist.withUniqueKeys());
-		AssocList fromMap = Datum.fromMap(abcMap());
-		assertSame(fromMap, fromMap.withUniqueKeys());
 		AssocList empty = Datum.fromMap(Map.of());
 		assertSame(empty, empty.withUniqueKeys());
 	}
@@ -517,5 +516,19 @@ class AssocListTest
 		AssocList uniq = shadowed().withUniqueKeys();
 		assertSame(uniq, uniq.withUniqueKeys());
 		assertSame(uniq, uniq.withUniqueKeys().withUniqueKeys());
+	}
+
+	/* A map's keys are only unique by its own idea of equality */
+	@Test void testFromMapDoesNotTrustMapUniqueness()
+	{
+		Map<Datum,Datum> map = new IdentityHashMap<>();
+		map.put(Cons.ofList(A, B), C);
+		map.put(Cons.ofList(A, B), Z);
+		AssocList alist = Datum.fromMap(map);
+		assertEquals(1, alist.size());
+		assertFalse(alist.hasUniqueKeys());
+		AssocList uniq = alist.withUniqueKeys();
+		checkUnique(uniq, 1);
+		assertSame(alist.get(Cons.ofList(A, B)), uniq.get(Cons.ofList(A, B)));
 	}
 }
