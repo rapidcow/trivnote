@@ -5,11 +5,14 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -141,5 +144,73 @@ class ListTest
 		DatumList proper = new DatumList(Z).toProperList();
 		assertSame(Nil.INSTANCE, proper.head());
 		assertEquals(0, proper.size());
+	}
+
+	@Test void testFromDatumJavaList()
+	{
+		Cons nested = Cons.ofList(B, C);
+		List<Datum> input = List.of(A, Scalar.of("1"), nested, Nil.INSTANCE);
+		DatumList list = new DatumList(input);
+		assertEquals(input, list);
+		assertEquals(4, list.size());
+		assertEquals(4L, list.count());
+		assertSame(Nil.INSTANCE, list.tail());
+		ConsTest.checkSpine(list.head(), Nil.INSTANCE,
+			A, input.get(1), nested, Nil.INSTANCE);
+	}
+
+	@Test void testFromSymbolJavaList()
+	{
+		List<Symbol> input = List.of(Symbol.of("x"), Symbol.of("y"), Symbol.of("z"));
+		DatumList list = new DatumList(input);
+		assertEquals(input, list);
+		assertEquals(3, list.size());
+		assertSame(Nil.INSTANCE, list.tail());
+		ConsTest.checkSpine(list.head(), Nil.INSTANCE, input.toArray(Datum[]::new));
+	}
+
+	@Test void testFromSingletonJavaList()
+	{
+		DatumList list = new DatumList(List.of(A));
+		assertEquals(List.of(A), list);
+		assertSame(Nil.INSTANCE, list.tail());
+		ConsTest.checkSpine(list.head(), Nil.INSTANCE, A);
+	}
+
+	/* Just like Datum.fromList, an empty list is nil */
+	@Test void testFromEmptyJavaList()
+	{
+		DatumList list = new DatumList(List.<Datum>of());
+		assertSame(Nil.INSTANCE, list.head());
+		assertSame(Nil.INSTANCE, list.tail());
+		assertEquals(0, list.size());
+		assertEquals(List.of(), list);
+	}
+
+	/* Another DatumList's tail is not copied, only its elements */
+	@Test void testFromImproperDatumList()
+	{
+		DatumList list = new DatumList(new DatumList(improper()));
+		assertEquals(List.of(A, B), list);
+		assertSame(Nil.INSTANCE, list.tail());
+		assertInstanceOf(Cons.class, list.head());
+	}
+
+	@Test void testJavaListIsNotRetained()
+	{
+		List<Datum> input = new ArrayList<>(List.of(A, B, C));
+		DatumList list = new DatumList(input);
+		input.set(0, Z);
+		input.clear();
+		assertEquals(List.of(A, B, C), list);
+		ConsTest.checkSpine(list.head(), Nil.INSTANCE, A, B, C);
+	}
+
+	@Test void testNullJavaListIsRejected()
+	{
+		assertThrows(NullPointerException.class,
+			() -> new DatumList((List<Datum>) null));
+		assertThrows(NullPointerException.class,
+			() -> new DatumList(Arrays.asList(A, null, C)));
 	}
 }

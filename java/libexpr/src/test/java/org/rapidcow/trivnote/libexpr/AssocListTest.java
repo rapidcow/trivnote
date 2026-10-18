@@ -6,7 +6,9 @@
 package org.rapidcow.trivnote.libexpr;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -277,5 +279,120 @@ class AssocListTest
 		assertFalse(it.hasNext());
 		assertFalse(it.hasNext());
 		assertThrows(NoSuchElementException.class, it::next);
+	}
+
+	/* {a: 1, b: 2, c: 3}, in that iteration order */
+	static Map<Datum,Datum> abcMap()
+	{
+		Map<Datum,Datum> map = new LinkedHashMap<>();
+		map.put(A, Scalar.of("1"));
+		map.put(B, Scalar.of("2"));
+		map.put(C, Scalar.of("3"));
+		return map;
+	}
+
+	@Test void testFromDatumMap()
+	{
+		Map<Datum,Datum> map = abcMap();
+		for (AssocList alist : List.of(new AssocList(map), Datum.fromMap(map))) {
+			assertEquals(map, alist);
+			assertEquals(3, alist.size());
+			assertEquals(3L, alist.count());
+			assertTrue(alist.hasUniqueKeys());
+			/* Entries keep the map's iteration order */
+			assertEquals(List.copyOf(map.entrySet()), entriesOf(alist));
+			assertEquals(abc(), alist);
+		}
+	}
+
+	@Test void testFromSymbolMap()
+	{
+		Map<Symbol,Scalar> map = new LinkedHashMap<>();
+		map.put(Symbol.of("x"), Scalar.of("1"));
+		map.put(Symbol.of("y"), Scalar.of("2"));
+		for (AssocList alist : List.of(new AssocList(map), Datum.fromMap(map))) {
+			assertEquals(map, alist);
+			assertEquals(2, alist.size());
+			assertTrue(alist.hasUniqueKeys());
+			assertEquals(List.copyOf(map.entrySet()), entriesOf(alist));
+			assertSame(map.get(Symbol.of("x")), alist.get(Symbol.of("x")));
+		}
+	}
+
+	@Test void testFromSingletonMap()
+	{
+		for (AssocList alist : List.of(new AssocList(Map.of(A, B)), Datum.fromMap(Map.of(A, B)))) {
+			assertEquals(1, alist.size());
+			assertSame(B, alist.get(A));
+			assertEquals(List.of(Map.entry(A, B)), entriesOf(alist));
+		}
+	}
+
+	@Test void testFromEmptyMap()
+	{
+		for (AssocList alist : List.of(new AssocList(Map.of()), Datum.fromMap(Map.of()))) {
+			assertEquals(0, alist.size());
+			assertEquals(0L, alist.count());
+			assertTrue(alist.hasUniqueKeys());
+			assertNull(alist.get(A));
+			assertEquals(List.of(), entriesOf(alist));
+			assertEquals(new AssocList(Nil.INSTANCE), alist);
+		}
+	}
+
+	/* Values (and keys) may be anything, nil and structures included */
+	@Test void testFromMapOfStructures()
+	{
+		Cons key = Cons.ofList(A, B);
+		Cons value = Cons.of(B, C);
+		Map<Datum,Datum> map = new LinkedHashMap<>();
+		map.put(key, value);
+		map.put(Nil.INSTANCE, Nil.INSTANCE);
+		AssocList alist = Datum.fromMap(map);
+		assertSame(value, alist.get(Cons.ofList(A, B)));
+		assertSame(Nil.INSTANCE, alist.get(Nil.INSTANCE));
+		assertTrue(alist.containsKey(Nil.INSTANCE));
+		assertEquals(2, alist.size());
+	}
+
+	/* An alist copied into an alist is the same map */
+	@Test void testFromAssocList()
+	{
+		AssocList shadowed = new AssocList(Cons.ofList(
+			pair(A, B), pair(B, C), pair(A, Z)));
+		AssocList copy = new AssocList(shadowed);
+		assertEquals(shadowed, copy);
+		assertEquals(2, copy.size());
+		assertTrue(copy.hasUniqueKeys());
+		assertSame(B, copy.get(A));
+	}
+
+	@Test void testMapIsNotRetained()
+	{
+		Map<Datum,Datum> map = abcMap();
+		AssocList alist = Datum.fromMap(map);
+		map.put(A, Z);
+		map.put(Z, A);
+		map.remove(B);
+		assertEquals(abc(), alist);
+		assertEquals(3, alist.size());
+		assertNull(alist.get(Z));
+	}
+
+	@Test void testNullMapIsRejected()
+	{
+		assertThrows(NullPointerException.class,
+			() -> new AssocList((Map<Datum,Datum>) null));
+		assertThrows(NullPointerException.class, () -> Datum.fromMap(null));
+
+		Map<Datum,Datum> nullKey = new HashMap<>();
+		nullKey.put(null, A);
+		assertThrows(NullPointerException.class, () -> new AssocList(nullKey));
+		assertThrows(NullPointerException.class, () -> Datum.fromMap(nullKey));
+
+		Map<Datum,Datum> nullValue = new HashMap<>();
+		nullValue.put(A, null);
+		assertThrows(NullPointerException.class, () -> new AssocList(nullValue));
+		assertThrows(NullPointerException.class, () -> Datum.fromMap(nullValue));
 	}
 }
