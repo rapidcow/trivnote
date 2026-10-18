@@ -39,8 +39,6 @@ extends
 		size = iter.position();
 	}
 
-	/* pass-thru */
-
 	@Override
 	public Datum
 	get(Object key)
