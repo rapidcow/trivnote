@@ -50,6 +50,12 @@ implements
 	public
 	DatumList(List<? extends Datum> list)
 	{
+		if (list.isEmpty()) {
+			head = Nil.INSTANCE;
+			size = 0;
+			tail = Nil.INSTANCE;
+			return;
+		}
 		ConsList cList = Cons.fromList(list);
 		head = cList;
 		size = cList.count();
