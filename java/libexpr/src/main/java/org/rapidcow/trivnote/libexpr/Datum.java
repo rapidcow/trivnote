@@ -58,7 +58,7 @@ permits
 	 *    terminator is not nil; i.e. improper list
 	 * @since %v
 	 */
-	public static List<Datum>
+	public static DatumList
 	asList(Datum node)
 	{
 		return new DatumList(node).requireProperTail();
@@ -119,5 +119,20 @@ permits
 			return Nil.INSTANCE;
 		}
 		return Cons.fromList(list);
+	}
+
+	/**
+	 * {@return the datum as an associative list}
+	 *
+	 * @param node  datum
+	 * @throws IllegalArgumentException if the list
+	 *    is not a proper list, or the list consists
+	 *    of any non-cons datuk
+	 * @since %v
+	 */
+	public static AssocList
+	asAlist(Datum node)
+	{
+		return new AssocList(node);
 	}
 }
