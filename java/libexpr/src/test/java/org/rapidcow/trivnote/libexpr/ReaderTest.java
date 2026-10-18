@@ -396,7 +396,7 @@ class ReaderTest
 		assertNull(loader.lastIOException());
 	}
 
-	private void assertStringEscape(String source, String expected)
+	private void checkStringEscape(String source, String expected)
 	{
 		DataLoader reader = new DataLoader(new StringReader("\"" + source + "\""));
 		assertEquals(Scalar.ofString(expected), reader.next(), source);
@@ -406,48 +406,48 @@ class ReaderTest
 
 	@Test void testStringNamedEscapes()
 	{
-		assertStringEscape("\\a\\b\\t\\n\\v\\f\\r\\e\\\"\\\\\\|", "\007\b\t\n\013\014\r\033\"\\|");
-		assertStringEscape("\\q", "q");
+		checkStringEscape("\\a\\b\\t\\n\\v\\f\\r\\e\\\"\\\\\\|", "\007\b\t\n\013\014\r\033\"\\|");
+		checkStringEscape("\\q", "q");
 	}
 
 	@Test void testStringOctalEscapes()
 	{
-		assertStringEscape("\\0z\\7z\\10z\\101\\7778\\1234", "\000z\007z\bzA\u01ff8S4");
-		assertStringEscape("\\1\\12\\123", "\001\nS");
-		assertStringEscape("\\7", "\007");
+		checkStringEscape("\\0z\\7z\\10z\\101\\7778\\1234", "\000z\007z\bzA\u01ff8S4");
+		checkStringEscape("\\1\\12\\123", "\001\nS");
+		checkStringEscape("\\7", "\007");
 	}
 
 	@Test void testStringHexEscapes()
 	{
-		assertStringEscape("\\xg\\xAz\\x41F\\xff\\x", "\000g\nzAF\u00ff\000");
-		assertStringEscape("\\x41;", "A;");
-		assertStringEscape("\\x\\n", "\000\n");
+		checkStringEscape("\\xg\\xAz\\x41F\\xff\\x", "\000g\nzAF\u00ff\000");
+		checkStringEscape("\\x41;", "A;");
+		checkStringEscape("\\x\\n", "\000\n");
 	}
 
 	@Test void testStringBracedEscapes()
 	{
-		assertStringEscape("\\x{}\\o{}\\x{000041}\\o{101}", "\000\000AA");
-		assertStringEscape("\\x{1F600}\\o{373000}", new String(Character.toChars(0x1f600)).repeat(2));
-		assertStringEscape("\\x{10ffff}\\o{4177777}", new String(Character.toChars(0x10ffff)).repeat(2));
-		assertStringEscape("\\x{000000000000000000000000000041}", "A");
+		checkStringEscape("\\x{}\\o{}\\x{000041}\\o{101}", "\000\000AA");
+		checkStringEscape("\\x{1F600}\\o{373000}", new String(Character.toChars(0x1f600)).repeat(2));
+		checkStringEscape("\\x{10ffff}\\o{4177777}", new String(Character.toChars(0x10ffff)).repeat(2));
+		checkStringEscape("\\x{000000000000000000000000000041}", "A");
 	}
 
 	@Test void testStringControlEscapes()
 	{
-		assertStringEscape("\\c@\\cA\\cZ\\c[\\c?\\ca", "\000\001\032\033\177!");
-		assertStringEscape("\\c\"", "b");
-		assertStringEscape("\\c\\", "\034");
+		checkStringEscape("\\c@\\cA\\cZ\\c[\\c?\\ca", "\000\001\032\033\177!");
+		checkStringEscape("\\c\"", "b");
+		checkStringEscape("\\c\\", "\034");
 	}
 
 	@Test void testStringLineContinuations()
 	{
 		for (String ending : List.of("\n", "\r", "\r\n")) {
-			assertStringEscape("a\\ \t" + ending + "\t b", "ab");
-			assertStringEscape("a\\" + ending + "b", "ab");
-			assertStringEscape("a\\" + ending + "  ", "a");
-			assertStringEscape("a\\" + ending + (ending.equals("\r") ? "\n\nb" : "\nb"), "a\nb");
+			checkStringEscape("a\\ \t" + ending + "\t b", "ab");
+			checkStringEscape("a\\" + ending + "b", "ab");
+			checkStringEscape("a\\" + ending + "  ", "a");
+			checkStringEscape("a\\" + ending + (ending.equals("\r") ? "\n\nb" : "\nb"), "a\nb");
 		}
-		assertStringEscape("a\nb", "a\nb");
+		checkStringEscape("a\nb", "a\nb");
 	}
 
 	@Test void testStringInvalidEscapes()
