@@ -58,7 +58,7 @@ extends
 			Datum cdr = Objects.requireNonNull(e.getValue(), "value");
 			q.push(Cons.of(car, cdr));
 		}
-		Cons p = Cons.ofList(q.pop());
+		Datum p = Nil.INSTANCE;
 		while (!q.isEmpty()) {
 			p = Cons.of(q.pop(), p);
 		}
