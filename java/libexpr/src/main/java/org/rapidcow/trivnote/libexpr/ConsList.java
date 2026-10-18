@@ -72,7 +72,7 @@ extends
 	}
 
 	/**
-	 * Creates a non-empty chain with the given tail; {@code etc} may be empty.
+	 * Creates a non-empty chain with the given tail.
 	 *
 	 * @throws NullPointerException if any argument or array element is null
 	 */
