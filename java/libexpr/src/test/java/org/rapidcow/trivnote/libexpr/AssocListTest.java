@@ -490,13 +490,42 @@ class AssocListTest
 		assertSame(empty, empty.withUniqueKeys());
 	}
 
-	/* Without a cached count, a copy is fine, but it must still be right */
-	@Test void testWithUniqueKeysOfUncountedUniqueAlist()
+	/* Checking first is how callers ask to reuse the same alist */
+	@Test void testWithUniqueKeysAfterCheckingUniqueness()
 	{
-		AssocList uniq = abc().withUniqueKeys();
+		AssocList checked = abc();
+		assertTrue(checked.hasUniqueKeys());
+		assertSame(checked, checked.withUniqueKeys());
+
+		AssocList required = abc().requireUniqueKeys();
+		assertSame(required, required.withUniqueKeys());
+
+		AssocList failed = shadowed();
+		assertThrows(IllegalArgumentException.class, failed::requireUniqueKeys);
+		AssocList uniq = failed.withUniqueKeys();
 		checkUnique(uniq, 3);
-		assertEquals(abc(), uniq);
-		assertEquals(entriesOf(abc()), entriesOf(uniq));
+		assertEquals(failed, uniq);
+	}
+
+	/* Even unchecked, an alist that turns out unique is kept as is */
+	@Test void testWithUniqueKeysOfUncheckedUniqueAlist()
+	{
+		AssocList alist = abc();
+		assertSame(alist, alist.withUniqueKeys());
+		checkUnique(alist, 3);
+		AssocList fromMap = Datum.fromMap(abcMap());
+		assertSame(fromMap, fromMap.withUniqueKeys());
+		checkUnique(fromMap, 3);
+	}
+
+	/* The scan counts the original's keys as a side effect */
+	@Test void testWithUniqueKeysCountsOriginal()
+	{
+		AssocList alist = shadowed();
+		AssocList uniq = alist.withUniqueKeys();
+		assertEquals(3L, alist.count());
+		assertFalse(alist.hasUniqueKeys());
+		assertSame(uniq.head(), uniq.withUniqueKeys().head());
 	}
 
 	@Test void testWithUniqueKeysOfEmptyList()
@@ -505,6 +534,7 @@ class AssocListTest
 				new AssocList(Nil.INSTANCE),
 				counted(new AssocList(Nil.INSTANCE)))) {
 			AssocList uniq = alist.withUniqueKeys();
+			assertSame(alist, uniq);
 			checkUnique(uniq, 0);
 			assertSame(Nil.INSTANCE, uniq.head());
 			assertEquals(List.of(), entriesOf(uniq));

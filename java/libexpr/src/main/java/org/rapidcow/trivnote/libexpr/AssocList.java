@@ -174,16 +174,26 @@ extends
 				q.push(pair);
 			}
 		}
+		len = uniq.size();
+		pLen = len;
+		if (len == size) {
+			/*
+			 * All keys are unique.  The deque is wasted,
+			 * but we won't have to do this for a second
+			 * time thanks to caching it. :)
+			 *
+			 * Callers with a memory budget may want to
+			 * inflict the side-effect of setting pLen
+			 * with hasUniqueKeys() before being certain
+			 * about redundancy and calling us...
+			 */
+			return this;
+		}
 		Datum p = Nil.INSTANCE;
 		while (!q.isEmpty()) {
 			p = Cons.of(q.pop(), p);
 		}
-		/*
-		 * If len was non-negative, its value should
-		 * agree with us.  Nevertheless, we can just
-		 * use our freshly computed value...
-		 */
-		return new AssocList(p, uniq.size());
+		return new AssocList(p, len);
 	}
 
 	@Override
