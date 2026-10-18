@@ -65,6 +65,14 @@ extends
 		head = p;
 	}
 
+	public final Datum
+	head()
+	{
+		return head;
+	}
+
+	/* There is no tail(); an alist's terminator is always Nil.INSTANCE. */
+
 	@Override
 	public Datum
 	get(Object key)
