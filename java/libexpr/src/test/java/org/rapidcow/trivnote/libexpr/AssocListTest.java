@@ -127,6 +127,7 @@ class AssocListTest
 		assertNull(alist.get(Cons.of(A, B)));
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Test void testForeignKeys()
 	{
 		AssocList alist = abc();
