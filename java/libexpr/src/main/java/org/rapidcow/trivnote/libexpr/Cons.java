@@ -18,7 +18,6 @@ import java.util.List;
  * If the list terminates with a meaningless datum
  * (i.e., nil), it is considered <em>proper</em>.
  * It is otherwise considered <em>improper</em>.
- * Cons cells are {@link Iterable} as a list.
  */
 public non-sealed
 abstract class
