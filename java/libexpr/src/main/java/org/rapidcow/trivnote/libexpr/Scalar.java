@@ -24,20 +24,20 @@ permits
 	StringScalar
 {
 	/**
-	 * {@return an immutable scalar atom}
+	 * {@return an immutable numeric scalar atom}
 	 *
 	 * @param value  the given value
 	 * @throws NullPointerException on null {@code value}
 	 * @since %v
 	 */
-	public static Scalar
+	public static NumberScalar
 	ofNumber(String value)
 	{
 		return new SimpleScalar(value);
 	}
 
 	/**
-	 * {@return an immutable scalar atom}
+	 * {@return an immutable string scalar atom}
 	 * This variant of {@link Scalar#ofNumber} hints to
 	 * {@link DataDumper} that it must always be quoted.
 	 *
@@ -45,7 +45,7 @@ permits
 	 * @throws NullPointerException on null {@code value}
 	 * @since %v
 	 */
-	public static Scalar
+	public static StringScalar
 	ofString(String value)
 	{
 		return new StringScalar(value);

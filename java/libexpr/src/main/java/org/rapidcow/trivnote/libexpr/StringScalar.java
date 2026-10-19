@@ -7,7 +7,7 @@ package org.rapidcow.trivnote.libexpr;
 
 import java.util.Objects;
 
-final
+public final
 class
 	StringScalar
 extends
@@ -15,6 +15,9 @@ extends
 {
 	private final String value;
 
+	/*
+	 * Do not depend on this.  Use Scalar.ofString()
+	 */
 	public
 	StringScalar(String value)
 	{

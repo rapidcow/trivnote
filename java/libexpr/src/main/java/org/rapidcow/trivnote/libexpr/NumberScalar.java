@@ -2,9 +2,6 @@ package org.rapidcow.trivnote.libexpr;
 
 /**
  * Numeric scalar.
- *
- * <p>
- * 
  */
 public sealed
 abstract class

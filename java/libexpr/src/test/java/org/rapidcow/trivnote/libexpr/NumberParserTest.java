@@ -22,7 +22,7 @@ class NumberParserTest
 				for (String prefix : new String[] {
 					radices[r] + exactness[e], exactness[e] + radices[r]}) {
 					String token = prefix + "-01";
-					NumberScalar n = (NumberScalar) Scalar.ofNumber(token);
+					NumberScalar n = Scalar.ofNumber(token);
 					assertEquals(token, n.value());
 					assertEquals(prefix, n.prefix());
 					assertEquals("-01", n.number());
@@ -47,7 +47,7 @@ class NumberParserTest
 			{"#b10p-12", "", "10", "p-12"}
 		};
 		for (String[] c : cases) {
-			NumberScalar n = (NumberScalar) Scalar.ofNumber(c[0]);
+			NumberScalar n = Scalar.ofNumber(c[0]);
 			assertEquals(c[0], n.value());
 			assertEquals(c[1], n.sign());
 			assertEquals(c[2], n.mantissa());
