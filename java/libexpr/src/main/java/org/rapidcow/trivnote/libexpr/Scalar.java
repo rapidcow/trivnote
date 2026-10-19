@@ -19,7 +19,7 @@ abstract class
 implements
 	Atom
 permits
-	SimpleScalar,
+	NumberScalar,
 	TruthScalar,
 	StringScalar
 {

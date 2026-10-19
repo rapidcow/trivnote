@@ -1,0 +1,353 @@
+/*
+ * Copyright 2026 rapidcow!
+ *
+ * SPDX-License-Identifier: LGPL-3.0-or-later
+ */
+package org.rapidcow.trivnote.libexpr;
+
+/* This file is GENERATED.  See src/skel/java for original */
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+class NumberParser
+{
+	private final int radix;
+	private final Exactness exact;
+	/*
+	 * Radix = 2**0
+	 *  Exact = 2**1
+	 *   Order = 2**2
+	 * 100 =   radix only
+	 * 010 =   exact only
+	 * 110 =   exact then radix
+	 * 111 =   radix then exact
+	 */
+	private static final int HAS_RADIX = 1;
+	private static final int HAS_EXACT = 2;
+	private static final int RADIX_FIRST = 4;
+	private final int flags;
+	private final String sign;
+	private final String mantissa;
+	private final String exponent;
+
+	/*
+	 * R7RS stopped allowing # in digits:
+	 * https://docs.scheme.org/surveys/five-to-six-to-seven/
+	 *
+	 * But it is still present in Racket!  Quote:
+	 * "A # in an <inexact_{n}> number is the same as 0, but
+	 * # can be used to suggest that the digit's actual value
+	 * is unknown."
+	 * https://docs.racket-lang.org/reference/reader.html?version=9.3#%28part._parse-number%29
+	 *
+	 * I think it is still useful to keep... :)
+	 *
+	 * Note that unlike Racket, our exponent is always in
+	 * base 10.  This is stupid, but it's what C printf %a
+	 * does so...
+	 *
+	 * It's likely also silly to allow 10^e, given that
+	 * 1/5 does not terminate in base 2^n, but we've been
+	 * doing that for floating-point numbers; didn't seem
+	 * to bother anyone that it was lossy. =_= (Though in
+	 * hexadecimal it is physically impossible to use e+N
+	 * given how e is indistinguishable from a hex digit.)
+	 *
+	 * These regular expressions do not handle inf/NaN,
+	 * since those are the oddballs without an exponent.
+	 */
+	private final Pattern NUMBER_BINARY_PATTERN
+		= Pattern.compile("""
+(?<sign>
+	[+-]?)
+(?<mantissa>
+# uinteger
+	[0-1]+ \\#* [.]? \\#*
+|	[0-1]* [.] [0-1]+ \\#*
+|	[0-1]+ / [0-1]+
+)
+(?<exponent>
+	(?:[ep][+-]?[0-9]+)?)
+"""
+		, Pattern.CASE_INSENSITIVE | Pattern.COMMENTS
+	);
+
+	private final Pattern NUMBER_OCTAL_PATTERN
+		= Pattern.compile("""
+(?<sign>
+	[+-]?)
+(?<mantissa>
+# uinteger
+	[0-7]+ \\#* [.]? \\#*
+|	[0-7]* [.] [0-7]+ \\#*
+|	[0-7]+ / [0-7]+
+)
+(?<exponent>
+	(?:[ep][+-]?[0-9]+)?)
+"""
+		, Pattern.CASE_INSENSITIVE | Pattern.COMMENTS
+	);
+
+	private final Pattern NUMBER_BASE10_PATTERN
+		= Pattern.compile("""
+(?<sign>
+	[+-]?)
+(?<mantissa>
+# uinteger
+	[0-9]+ \\#* [.]? \\#*
+|	[0-9]* [.] [0-9]+ \\#*
+|	[0-9]+ / [0-9]+
+)
+(?<exponent>
+	(?:[ep][+-]?[0-9]+)?)
+"""
+		, Pattern.CASE_INSENSITIVE | Pattern.COMMENTS
+	);
+
+	private final Pattern NUMBER_BASE16_PATTERN
+		= Pattern.compile("""
+(?<sign>
+	[+-]?)
+(?<mantissa>
+# uinteger
+	[0-9a-f]+ \\#* [.]? \\#*
+|	[0-9a-f]* [.] [0-9a-f]+ \\#*
+|	[0-9a-f]+ / [0-9a-f]+
+)
+(?<exponent>
+	(?:p[+-]?[0-9]+)?)
+"""
+		, Pattern.CASE_INSENSITIVE | Pattern.COMMENTS
+	);
+
+	public NumberParser(String value)
+	{
+		Exactness exact = Exactness.UNSPECIFIED;
+		int order = 1;
+		int radix = 0;
+
+		int i = 0;
+		final int n = value.length();
+
+		while (i + 1 < n) {
+			if (value.charAt(i) != '#') {
+				break;
+			}
+			char c = value.charAt(i + 1);
+			switch (c) {
+			case 'e': case 'E':
+				if (exact != Exactness.UNSPECIFIED) {
+					throw new IllegalArgumentException(
+"Misplaced exactness specification `#e'"
+					);
+				}
+				exact = Exactness.EXACT;
+				order = order + 1;
+				break;
+			case 'i': case 'I':
+				if (exact != Exactness.UNSPECIFIED) {
+					throw new IllegalArgumentException(
+"Misplaced exactness specification `#i'"
+					);
+				}
+				exact = Exactness.LOSSY;
+				order = order + 1;
+				break;
+			case 'b': case 'B':
+
+				if (radix != 0) {
+					throw new IllegalArgumentException(
+"Misplaced radix specification `#b'"
+					);
+				}
+				radix = 2;
+				order = order * 2;
+				break;
+			case 'o': case 'O':
+
+				if (radix != 0) {
+					throw new IllegalArgumentException(
+"Misplaced radix specification `#o'"
+					);
+				}
+				radix = 8;
+				order = order * 2;
+				break;
+			case 'd': case 'D':
+
+				if (radix != 0) {
+					throw new IllegalArgumentException(
+"Misplaced radix specification `#d'"
+					);
+				}
+				radix = 10;
+				order = order * 2;
+				break;
+			case 'x': case 'X':
+
+				if (radix != 0) {
+					throw new IllegalArgumentException(
+"Misplaced radix specification `#x'"
+					);
+				}
+				radix = 16;
+				order = order * 2;
+				break;
+			default:
+				throw new IllegalArgumentException(
+"Unknown specification `#" + c + "'"
+				);
+			}
+		}
+
+		this.flags = (
+			((radix == 0) ? HAS_RADIX : 0)
+			| ((exact == Exactness.UNSPECIFIED) ? HAS_EXACT : 0)
+			| ((order == 3) ? RADIX_FIRST : 0)
+		);
+		radix = (radix == 0) ? 10 : radix;
+		this.exact = exact;
+		this.radix = radix;
+
+		if (
+			value.equalsIgnoreCase("+inf.0") ||
+			value.equalsIgnoreCase("-inf.0") ||
+			value.equalsIgnoreCase("+nan.0") ||
+			value.equalsIgnoreCase("-nan.0"))
+		{
+			this.sign = value.substring(0, 1);
+			this.mantissa = value.substring(1);
+			this.exponent = "";
+			return;
+		}
+
+		Matcher match;
+		switch (radix) {
+			case 2:
+				match = NUMBER_BINARY_PATTERN.matcher(value);
+				break;
+			case 8:
+				match = NUMBER_OCTAL_PATTERN.matcher(value);
+				break;
+			case 10:
+				match = NUMBER_BASE10_PATTERN.matcher(value);
+				break;
+			case 16:
+				match = NUMBER_BASE16_PATTERN.matcher(value);
+				break;
+			default:
+				throw new IllegalStateException("unreachable");
+		}
+		if (!match.find()) {
+			throw new IllegalArgumentException(
+				"Illegal base-" + radix + " number"
+			);
+		}
+		sign = match.group("sign");
+		mantissa = match.group("mantissa");
+		exponent = match.group("exponent");
+	}
+
+	/**
+	 * {@return the radix of the parsed result}
+	 */
+	final int
+	getRadix()
+	{
+		return radix;
+	}
+
+	/**
+	 * {@return the exactness of the parsed result}
+	 */
+	final Exactness
+	getExactness()
+	{
+		return exact;
+	}
+
+	/**
+	 * {@return the sign of the parsed result}
+	 */
+	final String
+	getSign()
+	{
+		return sign;
+	}
+
+	/**
+	 * {@return the mantissa of the parsed result}
+	 */
+	final String
+	getMantissa()
+	{
+		return mantissa;
+	}
+
+	/**
+	 * {@return the exponent of the parsed result}
+	 */
+	final String
+	getExponent()
+	{
+		return exponent;
+	}
+
+	private String
+	formatExact()
+	{
+		switch (exact) {
+		case EXACT:
+			return "%e";
+		case LOSSY:
+			return "%i";
+		default:
+			return "";
+		}
+	}
+
+	private String
+	formatRadix()
+	{
+		switch (radix) {
+		case 2:
+			return "#b";
+		case 8:
+			return "#o";
+		case 10:
+			return "#d";
+		case 16:
+			return "#x";
+		default:
+			throw new IllegalStateException("unreachable");
+		}
+	}
+
+	String getPrefix()
+	{
+		int need = 0;
+		if (( flags & HAS_RADIX ) != 0) {
+			need += 2;
+		}
+		if (( flags & HAS_EXACT ) != 0) {
+			need += 2;
+		}
+		StringBuilder sb = new StringBuilder(need);
+		if (( flags & (HAS_RADIX | HAS_EXACT) ) != 0) {
+			if (( flags & RADIX_FIRST ) != 0) {
+				sb.append(formatRadix());
+				sb.append(formatExact());
+			} else {
+				sb.append(formatExact());
+				sb.append(formatRadix());
+			}
+		}
+		else if (( flags & HAS_RADIX ) != 0) {
+			sb.append(formatRadix());
+		}
+		else if (( flags & HAS_EXACT ) != 0) {
+			sb.append(formatExact());
+		}
+		return sb.toString();
+	}
+}
