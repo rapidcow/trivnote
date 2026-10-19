@@ -746,7 +746,19 @@ implements
 				}
 			}
 
-			if (( v = readWord(sb, v) ) != -1) {
+			/*
+			 * Alright.  We got some special cases to
+			 * deal with, but we need to be careful here:
+			 * specifically we do not want to treat any-
+			 * thing with |'s as an IEEE float literal.
+			 *
+			 * +|nan.0| should pass-through as symbol,
+			 * namely.  (This is tested on Racket v9.3.)
+			 *
+			 * On a first read, we will try bare-only...
+			 */
+			sb.append((char) v);
+			if (( v = readPlain(sb, -1) ) != -1) {
 				unreadChar(v);
 			}
 			String word = sb.toString();
@@ -755,7 +767,13 @@ implements
 			{
 				return new Token(makeSimple(word));
 			}
-			return new Token(makeSymbol(word));
+			/* The only way we have more is if v was a bar. */
+			if (v == '|') {
+				if (( v = readWord(sb, readChar()) ) != -1) {
+					unreadChar(v);
+				}
+			}
+			return new Token(makeSymbol(sb.toString()));
 		}
 
 		if (bg == -1) {

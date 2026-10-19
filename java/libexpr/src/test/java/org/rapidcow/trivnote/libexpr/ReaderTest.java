@@ -10,6 +10,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -373,6 +374,25 @@ class ReaderTest
 			), list);
 		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
+	}
+
+	@DisplayName("Test IEEE-754 inf/nan")
+	@Test void testIEEE754FloatLiterals()
+	{
+		/* IEEE-754 float literals are *almost* symbols,
+		 * if not for their un-|...|'d nature.  See if
+		 * we can distinguish them. */
+		input = new StringReader("(+inf.0 +|inf.0| +inf)");
+		loader = new DataLoader(input);
+		token = loader.next();
+		list = Datum.asList(token);
+		assertIterableEquals(
+			List.of(
+				Scalar.ofNumber("+inf.0"),
+				Symbol.of("+inf.0"),
+				Symbol.of("+inf")
+			), list
+		);
 	}
 
 	@Test void testStringQuote()
