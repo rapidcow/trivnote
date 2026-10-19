@@ -763,14 +763,14 @@ implements
 	{
 		int v;
 		while (( v = readChar() ) != -1) {
+			if (isPOSIXspace(v)) {
+				return -1;
+			}
+
 			if (expect == 0) {
 				break;
 			}
 			--expect;
-
-			if (isPOSIXspace(v)) {
-				return -1;
-			}
 
 			if (v == '(' || v == '[' || v == '{' ||
 				v == ')' || v == ']' || v == '}' ||
