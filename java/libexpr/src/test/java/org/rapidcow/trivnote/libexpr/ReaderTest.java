@@ -29,6 +29,42 @@ class ReaderTest
 	private List<Datum> list;
 	private DatumWalk walk;
 
+	@Test void testSpecialNumbersAndQuotedSymbols()
+	{
+		for (String literal : List.of("+nan.0", "-nan.0", "+inf.0", "-inf.0")) {
+			/* The sentinel checks that the whole token was consumed. */
+			DataLoader bare = new DataLoader(new StringReader(literal + " sentinel"));
+			assertEquals(Scalar.ofNumber(literal), bare.next());
+			assertEquals(Symbol.of("sentinel"), bare.next());
+			assertEquals(false, bare.hasNext());
+
+			String[][] quoted = {
+				{"|" + literal + "|", literal},
+				{literal.substring(0, 1) + "|" + literal.substring(1) + "|", literal},
+				{literal.substring(0, 4) + "|" + literal.substring(4) + "|", literal},
+				{literal + "||", literal},
+				{literal + "|suffix|", literal + "suffix"},
+				{literal + "suffix", literal + "suffix"}
+			};
+			for (String[] c : quoted) {
+				DataLoader reader = new DataLoader(new StringReader(c[0] + " sentinel"));
+				assertEquals(Symbol.of(c[1]), reader.next(), c[0]);
+				assertEquals(Symbol.of("sentinel"), reader.next(), c[0]);
+				assertEquals(false, reader.hasNext(), c[0]);
+			}
+		}
+	}
+
+	@Test void testBareSymbolMakesProgressInList()
+	{
+		/* Bound growth so a regression fails instead of exhausting the heap. */
+		DataLoader reader = new DataLoader(new StringReader("(abc def) sentinel"))
+			.useLengthLimit(2);
+		assertEquals(Cons.ofList(Symbol.of("abc"), Symbol.of("def")), reader.next());
+		assertEquals(Symbol.of("sentinel"), reader.next());
+		assertEquals(false, reader.hasNext());
+	}
+
 	@Test void testReadSymbol()
 	{
 		input = new StringReader("(foo bar baz)");

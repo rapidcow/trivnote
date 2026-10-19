@@ -762,8 +762,8 @@ implements
 				unreadChar(v);
 			}
 			String word = sb.toString();
-			if ("+nan.0".equals(word) || "-nan.0".equals(word)
-				|| "+inf.0".equals(word) || "-inf.0".equals(word))
+			if (v != '|' && ( "+nan.0".equals(word) || "-nan.0".equals(word)
+				|| "+inf.0".equals(word) || "-inf.0".equals(word) ))
 			{
 				return new Token(makeSimple(word));
 			}
