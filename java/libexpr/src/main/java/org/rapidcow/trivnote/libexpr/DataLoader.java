@@ -15,10 +15,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * S-expression reader.
@@ -39,6 +41,11 @@ implements
 	 * Symbol cache.
 	 */
 	private Map<String,Symbol> sym;
+
+	/**
+	 * Dispatch callbacks.
+	 */
+	private Map<Datum, Function<? super Cons, ? extends Cons>> cb;
 
 	/**
 	 * Most levels of list nesting, and most elements per list.
@@ -125,6 +132,35 @@ implements
 	getSymbolCache()
 	{
 		return Optional.ofNullable(sym);
+	}
+
+	public final DataLoader
+	useDispatch(
+		Datum name,
+		Function<? super Cons, ? extends Cons> dispatch
+	)
+	{
+		if (cb == null) {
+			cb = new HashMap<>();
+		}
+		cb.put(name, dispatch);
+		return this;
+	}
+
+	public final DataLoader
+	noDispatch(Datum name)
+	{
+		if (cb != null) {
+			cb.remove(name);
+		}
+		return this;
+	}
+
+	public final DataLoader
+	clearDispatch()
+	{
+		cb = null;
+		return this;
 	}
 
 	/**
@@ -426,6 +462,15 @@ implements
 	protected Cons
 	makeList(Deque<Datum> q, Datum s, Datum e)
 	{
+		if (cb != null) {
+			Function<? super Cons, ? extends Cons> dispatch;
+			Datum a = q.peekLast();
+			if (( dispatch = cb.get(a) ) != null) {
+				q.removeLast();
+				Cons p = new ConsCell(a, new ConsList(q, s, e));
+				return dispatch.apply(p);
+			}
+		}
 		return new ConsList(q, s, e);
 	}
 
