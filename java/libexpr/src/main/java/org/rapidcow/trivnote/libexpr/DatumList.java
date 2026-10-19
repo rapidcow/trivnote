@@ -171,4 +171,14 @@ implements
 		}
 		return size;
 	}
+
+	@Override
+	public final boolean
+	isEmpty()
+	{
+		if (Datum.isAtom(head)) {
+			return true;
+		}
+		return super.isEmpty();
+	}
 }
