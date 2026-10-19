@@ -55,6 +55,9 @@ class ReaderDispatchTest
 	{
 		Datum a = p.car();
 		List<Datum> v = Datum.asList(p.cdr());
+		if (v.size() != 1) {
+			return p;
+		}
 		Datum e = v.get(0);
 		if (!(e instanceof Scalar x)) {
 			return p;
