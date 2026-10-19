@@ -277,7 +277,8 @@ class NumberParser
 		}
 	}
 
-	String getPrefix()
+	String
+	getPrefix()
 	{
 		int need = 0;
 		boolean hasRadix = (( flags & HAS_RADIX ) != 0);
