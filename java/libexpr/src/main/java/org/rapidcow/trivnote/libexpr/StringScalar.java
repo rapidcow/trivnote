@@ -7,7 +7,7 @@ package org.rapidcow.trivnote.libexpr;
 
 import java.util.Objects;
 
-public final
+final
 class
 	StringScalar
 extends
