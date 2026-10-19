@@ -56,7 +56,7 @@ class NumberParser
 	 * These regular expressions do not handle inf/NaN,
 	 * since those are the oddballs without an exponent.
 	 */
-	private final Pattern NUMBER_BINARY_PATTERN
+	private static final Pattern NUMBER_BINARY_PATTERN
 		= Pattern.compile("""
 (?<sign>
 	[+-]?)
@@ -72,7 +72,7 @@ class NumberParser
 		, Pattern.CASE_INSENSITIVE | Pattern.COMMENTS
 	);
 
-	private final Pattern NUMBER_OCTAL_PATTERN
+	private static final Pattern NUMBER_OCTAL_PATTERN
 		= Pattern.compile("""
 (?<sign>
 	[+-]?)
@@ -88,7 +88,7 @@ class NumberParser
 		, Pattern.CASE_INSENSITIVE | Pattern.COMMENTS
 	);
 
-	private final Pattern NUMBER_BASE10_PATTERN
+	private static final Pattern NUMBER_BASE10_PATTERN
 		= Pattern.compile("""
 (?<sign>
 	[+-]?)
@@ -104,7 +104,7 @@ class NumberParser
 		, Pattern.CASE_INSENSITIVE | Pattern.COMMENTS
 	);
 
-	private final Pattern NUMBER_BASE16_PATTERN
+	private static final Pattern NUMBER_BASE16_PATTERN
 		= Pattern.compile("""
 (?<sign>
 	[+-]?)

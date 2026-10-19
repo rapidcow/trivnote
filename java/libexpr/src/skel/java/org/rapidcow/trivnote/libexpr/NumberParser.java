@@ -98,7 +98,7 @@ class NumberParser
 	SET digit = map_digit.item(code);
 	SET expo = map_expo.item(code);
 -%]
-	private final Pattern NUMBER_[% name %]_PATTERN
+	private static final Pattern NUMBER_[% name %]_PATTERN
 		= Pattern.compile("""
 (?<sign>
 	[+-]?)
