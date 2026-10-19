@@ -30,14 +30,16 @@ implements
 	 * value may not be an identical datum object, but its
 	 * hash code should be identical.  car may not be null.
 	 */
-	public abstract Datum car();
+	public abstract Datum
+	car();
 
 	/**
 	 * {@return the car of this cons cell}  The return
 	 * value may not be an identical datum object, but its
 	 * hash code should be identical.  cdr may not be null.
 	 */
-	public abstract Datum cdr();
+	public abstract Datum
+	cdr();
 
 	/*
 	 * Cached structural hash; 0 means "not computed yet".  A hash

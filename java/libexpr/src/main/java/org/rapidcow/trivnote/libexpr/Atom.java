@@ -32,5 +32,6 @@ permits
 	 * {@return the value of this atom}
 	 * The value may not be null.
 	 */
-	public abstract String value();
+	String
+	value();
 }
