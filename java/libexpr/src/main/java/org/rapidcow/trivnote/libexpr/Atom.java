@@ -25,7 +25,6 @@ interface
 extends
 	Datum
 permits
-	Bool,
 	Scalar,
 	Symbol
 {

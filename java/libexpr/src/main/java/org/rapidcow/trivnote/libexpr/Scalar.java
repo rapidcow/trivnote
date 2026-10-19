@@ -13,11 +13,15 @@ package org.rapidcow.trivnote.libexpr;
  * @see SimpleScalar
  * @see StringScalar
  */
-public non-sealed
+public sealed
 abstract class
 	Scalar
 implements
 	Atom
+permits
+	SimpleScalar,
+	TruthScalar,
+	StringScalar
 {
 	/**
 	 * {@return an immutable scalar atom}

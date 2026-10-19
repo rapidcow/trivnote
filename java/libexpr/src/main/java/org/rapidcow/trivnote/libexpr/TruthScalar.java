@@ -5,19 +5,19 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
-public
-enum
-	Bool
-implements
-	Atom
+public final
+class
+	TruthScalar
+extends
+	Scalar
 {
-	TRUE(true),
-	FALSE(false);
+	public static final TruthScalar TRUE = new TruthScalar(true);
+	public static final TruthScalar FALSE = new TruthScalar(false);
 
 	private final boolean value;
 
 	private
-	Bool(boolean value)
+	TruthScalar(boolean value)
 	{
 		this.value = value;
 	}
@@ -29,7 +29,13 @@ implements
 		return value ? "#t" : "#f";
 	}
 
-	public static Bool
+	public final boolean
+	truthValue()
+	{
+		return value;
+	}
+
+	public static TruthScalar
 	of(boolean value)
 	{
 		return value ? TRUE : FALSE;

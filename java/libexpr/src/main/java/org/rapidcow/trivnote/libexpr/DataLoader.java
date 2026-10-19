@@ -961,7 +961,7 @@ implements
 		return v;
 	}
 
-	private Bool
+	private TruthScalar
 	readBool(StringBuilder sb)
 	throws
 		IOException
@@ -982,10 +982,10 @@ implements
 		}
 		if (!sMore) {
 			if (word.equals("t") || word.equals("true")) {
-				return Bool.TRUE;
+				return TruthScalar.TRUE;
 			}
 			if (word.equals("f") || word.equals("false")) {
-				return Bool.FALSE;
+				return TruthScalar.FALSE;
 			}
 		}
 		throw loadingException(
