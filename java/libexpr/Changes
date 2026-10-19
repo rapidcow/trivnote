@@ -12,6 +12,10 @@ Revision history of trivnote-libexpr
       (ConsCell) and the longer ones (ConsList as a singly
       linked list); use Cons.of instead of new Cons!  (Use
       Cons.ofList if you want an implicit Nil-terminator :)
+    * AssocList as Map<Datum,Datum>!
+    * Better Scalar hier
+    * booleans?  (they're called TruthScalar for some reason.
+      (not a reference to truth serum nuh-uh i don't do that))
 
 0.0.0  2026-09-24  RC
     This was "done" a few days ago, but pinning this as a
