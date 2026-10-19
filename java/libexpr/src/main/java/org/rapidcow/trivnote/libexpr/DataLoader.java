@@ -704,7 +704,13 @@ implements
 			if (( v = readWord(sb, v) ) != -1) {
 				unreadChar(v);
 			}
-			return new Token(makeSymbol(sb.toString()));
+			String word = sb.toString();
+			if ("+nan.0".equals(word) || "-nan.0".equals(word)
+				|| "+inf.0".equals(word) || "-inf.0".equals(word))
+			{
+				return new Token(makeSimple(word));
+			}
+			return new Token(makeSymbol(word));
 		}
 
 		if (bg == -1) {
