@@ -97,24 +97,37 @@ class NumberParser
 		d = "[ep]"
 		x = "p"
 	};
+	SET map_base = {
+		b = 2
+		o = 8
+		d = 10
+		x = 16
+	};
 -%]
 [% FOREACH code IN radix_code -%]
 [%
 	SET name = map_name.item(code);
+	SET base = map_base.item(code);
 	SET digit = map_digit.item(code);
 	SET expo = map_expo.item(code);
 -%]
 	private static final Pattern NUMBER_[% name %]_PATTERN
 		= Pattern.compile("""
+# (Grammar defs from Racket.)
 (?<sign>
+# [<sign>]
 	[+-]?)
 (?<mantissa>
-# uinteger
+# Names from 
+# (<digits [% base %]>)+ "#"* ["."] "#"*
 	[% digit %]+ \\#* [.]? \\#*
+# [(<digits [% base %]>)+] "." <digits [% base %]>)+ "#"*
 |	[% digit %]* [.] [% digit %]+ \\#*
-|	[% digit %]+ / [% digit %]+
+# (<digits [% base %]>)+ "#"* / (<digits [% base %]>)+ "#"*
+|	[% digit %]+ \\#* / [% digit %]+ \\#*
 )
 (?<exponent>
+# Exponent power is coded by suffix, and radix is always 10.
 	(?:[% expo %][+-]?[0-9]+)?)
 """
 		, Pattern.CASE_INSENSITIVE | Pattern.COMMENTS
@@ -158,14 +171,6 @@ class NumberParser
 				order = order + 1;
 				break;
 [% END -%]
-[%
-	SET map_base = {
-		b = 2
-		o = 8
-		d = 10
-		x = 16
-	};
--%]
 [% FOREACH code IN ["b", "o", "d", "x"] -%]
 [%	SET base = map_base.item(code) -%]
 			case [% "'" _ code.upper _ "'" %]:

@@ -6,12 +6,20 @@
 package org.rapidcow.trivnote.libexpr;
 
 /**
- * Regular {@link Atom} meant to represent a diverse
- * range of values.  A scalar is represented by its
- * string representation specified by {@link #value()}.
+ * Unquoted {@link Atom}.  Like all atoms, a scalar is
+ * represented by its string representation, specified
+ * by {@link #value()}.  Unlike other atoms, it is the
+ * only atom whose string representation is identical
+ * to its wire serialization.
  *
- * @see SimpleScalar
- * @see StringScalar
+ * <p>
+ * A {@code Scalar} is one of three values: boolean,
+ * {@code #t} ({@link TruthScalar#TRUE}) and {@code #f}
+ * ({@link TruthScalar#FALSE}); free-form strings (via
+ * {@link Scalar#ofString(String)}; and numbers (via
+ * {@link Scalar#ofNumber(String)}).  Scalars are
+ * compared by {@link #value} for equality with the
+ * <em>sole exception</em> of strings.
  */
 public sealed
 abstract class
@@ -24,10 +32,27 @@ permits
 	StringScalar
 {
 	/**
+	 * Default constructor.
+	 */
+	protected Scalar()
+	{
+		/* nothing to do. */
+	}
+
+	/**
 	 * {@return an immutable numeric scalar atom}
+	 *
+	 * <p>
+	 * Usage:
+	 * <pre>{@code Scalar v = new Scalar.ofNumber("17/29");}</pre>
+	 *
+	 * If you need to access number-specific fields,
+	 * declare your variable with the type
+	 * {@link NumberScalar}.
 	 *
 	 * @param value  the given value
 	 * @throws NullPointerException on null {@code value}
+	 * @throws IllegalArgumentException on illegal number format
 	 * @since %v
 	 */
 	public static NumberScalar
@@ -38,8 +63,10 @@ permits
 
 	/**
 	 * {@return an immutable string scalar atom}
-	 * This variant of {@link Scalar#ofNumber} hints to
-	 * {@link DataDumper} that it must always be quoted.
+	 *
+	 * <p>
+	 * Usage:
+	 * <pre>{@code Scalar v = new Scalar.ofString("abc");}</pre>
 	 *
 	 * @param value  the given value
 	 * @throws NullPointerException on null {@code value}
@@ -53,6 +80,7 @@ permits
 
 	/**
 	 * {@return whether this should be a quoted string}
+	 *
 	 * @since %v
 	 */
 	public final boolean
@@ -84,6 +112,11 @@ permits
 		return false;
 	}
 
+	/**
+	 * {@return hash code for this scalar}
+	 * This implementation is consistent with
+	 * {@link #equals(Object)}.
+	 */
 	@Override
 	public final int
 	hashCode()

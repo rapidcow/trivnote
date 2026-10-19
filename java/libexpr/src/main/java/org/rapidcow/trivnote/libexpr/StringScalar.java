@@ -7,6 +7,11 @@ package org.rapidcow.trivnote.libexpr;
 
 import java.util.Objects;
 
+/**
+ * The string scalar type.  The only method
+ * of use here is {@code value()}, which is
+ * specified by {@link Atom#value()}.
+ */
 public final
 class
 	StringScalar
@@ -15,8 +20,10 @@ extends
 {
 	private final String value;
 
-	/*
-	 * Do not depend on this.  Use Scalar.ofString()
+	/**
+	 * Constructs a new string scalar.
+	 * <b>Do not depend on this.</b>  Use {@link
+	 * Scalar#ofString(String)}.
 	 */
 	public
 	StringScalar(String value)
@@ -24,6 +31,12 @@ extends
 		this.value = Objects.requireNonNull(value);
 	}
 
+	/**
+	 * Returns the value of this atom.
+	 * The value is always non-null.
+	 *
+	 * @return {@inheritDoc}
+	 */
 	@Override
 	public final String
 	value()
@@ -31,6 +44,9 @@ extends
 		return value;
 	}
 
+	/**
+	 * {@return a good-enough string representation of this scalar}
+	 */
 	@Override
 	public String
 	toString()
