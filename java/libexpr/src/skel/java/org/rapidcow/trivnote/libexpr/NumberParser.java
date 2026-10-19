@@ -121,10 +121,10 @@ class NumberParser
 		int order = 1;
 		int radix = 0;
 
-		int i = 0;
+		int i;
 		final int n = value.length();
 
-		while (i + 1 < n) {
+		for (i = 0; i + 1 < n; i += 2) {
 			if (value.charAt(i) != '#') {
 				break;
 			}
@@ -185,6 +185,8 @@ class NumberParser
 		this.exact = exact;
 		this.radix = radix;
 
+		value = value.substring(i);
+
 		if (
 			value.equalsIgnoreCase("+inf.0") ||
 			value.equalsIgnoreCase("-inf.0") ||
@@ -211,7 +213,7 @@ class NumberParser
 			default:
 				throw new IllegalStateException("unreachable");
 		}
-		if (!match.find()) {
+		if (!match.matches()) {
 			throw new IllegalArgumentException(
 				"Illegal base-" + radix + " number"
 			);

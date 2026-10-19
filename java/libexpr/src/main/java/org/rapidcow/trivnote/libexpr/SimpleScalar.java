@@ -26,7 +26,7 @@ extends
 	public final String
 	value()
 	{
-		return prefix() + sign() + mantissa() + exponent();
+		return prefix() + number();
 	}
 
 	@Override
