@@ -354,14 +354,16 @@ class NumberParser
 	String getPrefix()
 	{
 		int need = 0;
-		if (( flags & HAS_RADIX ) != 0) {
+		boolean hasRadix = (( flags & HAS_RADIX ) != 0);
+		boolean hasExact = (( flags & HAS_EXACT ) != 0);
+		if (hasRadix) {
 			need += 2;
 		}
-		if (( flags & HAS_EXACT ) != 0) {
+		if (hasExact) {
 			need += 2;
 		}
 		StringBuilder sb = new StringBuilder(need);
-		if (( flags & HAS_RADIX ) != 0 && ( flags & HAS_EXACT) != 0) {
+		if (hasRadix && hasExact) {
 			if (( flags & RADIX_FIRST ) != 0) {
 				sb.append(formatRadix());
 				sb.append(formatExact());
@@ -370,10 +372,10 @@ class NumberParser
 				sb.append(formatRadix());
 			}
 		}
-		else if (( flags & HAS_RADIX ) != 0) {
+		else if (hasRadix) {
 			sb.append(formatRadix());
 		}
-		else if (( flags & HAS_EXACT ) != 0) {
+		else if (hasExact) {
 			sb.append(formatExact());
 		}
 		return sb.toString();
