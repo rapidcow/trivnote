@@ -546,19 +546,43 @@ implements
 
 			if (v == '#') {
 				if (( w = readChar() ) != -1) {
-					if (w == '|') {
+					switch (w) {
+					case '|':
 						skipBlockComment();
 						continue;
-					}
-					if (w == ';') {
+					case ';':
 						if (readDatum(-1, depth) == null) {
 							throw loadingException(
 								"Expected datum following `#;'"
 							);
 						}
 						continue;
+					case 't': case 'f':
+					case 'T': case 'F':
+						/* a boolean? */
+						sb = new StringBuilder().append((char) w);
+						return new Token(readBool(sb));
+					case 'e': case 'E':  /* exact */
+					case 'i': case 'I':  /* inexact */
+					case 'b': case 'B':  /* binary */
+					case 'o': case 'O':  /* octal */
+					case 'd': case 'D':  /* decimal */
+					case 'x': case 'X':  /* hexadecimal */
+						sb = new StringBuilder();
+						if (( v = readPlain(sb) ) != -1) {
+							unreadChar(v);
+						}
+						String prefix = "#" + (char) w;
+						if (sb.isEmpty()) {
+							throw loadingException("Empty " + prefix + " number");
+						}
+						return new Token(makeSimple(prefix + sb.toString()));
+					default:
+						throw loadingException(
+							"Unimplemented reader dispatch "
+							+ "for #" + (char) w
+						);
 					}
-					unreadChar(w);
 				}
 			}
 
@@ -729,9 +753,21 @@ implements
 	throws
 		IOException
 	{
-		int v;
+		return readPlain(sb, -1);
+	}
 
+	private int
+	readPlain(StringBuilder sb, int expect)
+	throws
+		IOException
+	{
+		int v;
 		while (( v = readChar() ) != -1) {
+			if (expect == 0) {
+				break;
+			}
+			--expect;
+
 			if (isPOSIXspace(v)) {
 				return -1;
 			}
@@ -923,5 +959,37 @@ implements
 		}
 
 		return v;
+	}
+
+	private Bool
+	readBool(StringBuilder sb)
+	throws
+		IOException
+	{
+		/*
+		 * t[rue] f[alse] needs at most 4 characters.
+		 */
+		int v = readPlain(sb, 4);
+		String word = sb.toString();
+		boolean sMore;
+		if (v == -1) {
+			sMore = false;
+		} else {
+			sMore = (v != '(' && v != '[' && v != '{' &&
+				v != ')' && v != ']' && v != '}' &&
+				v != '"' && v != '|' && v != ';');
+			unreadChar(v);
+		}
+		if (!sMore) {
+			if (word.equals("t") || word.equals("true")) {
+				return Bool.TRUE;
+			}
+			if (word.equals("f") || word.equals("false")) {
+				return Bool.FALSE;
+			}
+		}
+		throw loadingException(
+			"Invalid boolean literal: #" + word + (sMore ? "" : "[...]")
+		);
 	}
 }
