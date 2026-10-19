@@ -46,7 +46,7 @@ class ReaderDispatchTest
 		@Override public Datum cdr()
 		{
 			int f32Data = Float.floatToIntBits(data);
-			return Scalar.of(Integer.toString(f32Data));
+			return Scalar.ofNumber(Integer.toString(f32Data));
 		}
 	}
 

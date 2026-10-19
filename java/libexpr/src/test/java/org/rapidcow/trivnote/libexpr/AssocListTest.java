@@ -42,9 +42,9 @@ class AssocListTest
 	static AssocList abc()
 	{
 		return new AssocList(Cons.ofList(
-			pair(A, Scalar.of("1")),
-			pair(B, Scalar.of("2")),
-			pair(C, Scalar.of("3"))));
+			pair(A, Scalar.ofNumber("1")),
+			pair(B, Scalar.ofNumber("2")),
+			pair(C, Scalar.ofNumber("3"))));
 	}
 
 	@Test void testEmptyList()
@@ -85,9 +85,9 @@ class AssocListTest
 	@Test void testGet()
 	{
 		AssocList alist = abc();
-		assertEquals(Scalar.of("1"), alist.get(A));
-		assertEquals(Scalar.of("2"), alist.get(B));
-		assertEquals(Scalar.of("3"), alist.get(C));
+		assertEquals(Scalar.ofNumber("1"), alist.get(A));
+		assertEquals(Scalar.ofNumber("2"), alist.get(B));
+		assertEquals(Scalar.ofNumber("3"), alist.get(C));
 		assertNull(alist.get(Z));
 	}
 
@@ -202,16 +202,16 @@ class AssocListTest
 		int n = 100_000;
 		Datum entries = Nil.INSTANCE;
 		for (int i = n - 1; i >= 0; --i) {
-			Datum key = Scalar.of(Integer.toString(i % (n / 2)));
-			entries = new ConsCell(pair(key, Scalar.of(Integer.toString(i))), entries);
+			Datum key = Scalar.ofNumber(Integer.toString(i % (n / 2)));
+			entries = new ConsCell(pair(key, Scalar.ofNumber(Integer.toString(i))), entries);
 		}
 		AssocList alist = new AssocList(entries);
 		assertEquals(n / 2, alist.size());
 		assertFalse(alist.hasUniqueKeys());
 		/* Key 0 appears at index 0 and n/2; the first one wins. */
-		assertEquals(Scalar.of("0"), alist.get(Scalar.of("0")));
-		assertEquals(Scalar.of(Integer.toString(n / 2 - 1)),
-			alist.get(Scalar.of(Integer.toString(n / 2 - 1))));
+		assertEquals(Scalar.ofNumber("0"), alist.get(Scalar.ofNumber("0")));
+		assertEquals(Scalar.ofNumber(Integer.toString(n / 2 - 1)),
+			alist.get(Scalar.ofNumber(Integer.toString(n / 2 - 1))));
 	}
 
 	static List< Map.Entry<Datum,Datum> > entriesOf(AssocList alist)
@@ -227,9 +227,9 @@ class AssocListTest
 	@Test void testEntrySetOfUniqueKeys()
 	{
 		assertEquals(List.of(
-			Map.entry(A, Scalar.of("1")),
-			Map.entry(B, Scalar.of("2")),
-			Map.entry(C, Scalar.of("3"))),
+			Map.entry(A, Scalar.ofNumber("1")),
+			Map.entry(B, Scalar.ofNumber("2")),
+			Map.entry(C, Scalar.ofNumber("3"))),
 			entriesOf(abc()));
 	}
 
@@ -237,16 +237,16 @@ class AssocListTest
 	@Test void testEntrySetSkipsShadowedEntries()
 	{
 		AssocList alist = new AssocList(Cons.ofList(
-			pair(A, Scalar.of("1")),
-			pair(B, Scalar.of("2")),
-			pair(A, Scalar.of("3")),
-			pair(C, Scalar.of("4")),
-			pair(B, Scalar.of("5")),
-			pair(A, Scalar.of("6"))));
+			pair(A, Scalar.ofNumber("1")),
+			pair(B, Scalar.ofNumber("2")),
+			pair(A, Scalar.ofNumber("3")),
+			pair(C, Scalar.ofNumber("4")),
+			pair(B, Scalar.ofNumber("5")),
+			pair(A, Scalar.ofNumber("6"))));
 		assertEquals(List.of(
-			Map.entry(A, Scalar.of("1")),
-			Map.entry(B, Scalar.of("2")),
-			Map.entry(C, Scalar.of("4"))),
+			Map.entry(A, Scalar.ofNumber("1")),
+			Map.entry(B, Scalar.ofNumber("2")),
+			Map.entry(C, Scalar.ofNumber("4"))),
 			entriesOf(alist));
 	}
 
@@ -286,9 +286,9 @@ class AssocListTest
 	static Map<Datum,Datum> abcMap()
 	{
 		Map<Datum,Datum> map = new LinkedHashMap<>();
-		map.put(A, Scalar.of("1"));
-		map.put(B, Scalar.of("2"));
-		map.put(C, Scalar.of("3"));
+		map.put(A, Scalar.ofNumber("1"));
+		map.put(B, Scalar.ofNumber("2"));
+		map.put(C, Scalar.ofNumber("3"));
 		return map;
 	}
 
@@ -309,8 +309,8 @@ class AssocListTest
 	@Test void testFromSymbolMap()
 	{
 		Map<Symbol,Scalar> map = new LinkedHashMap<>();
-		map.put(Symbol.of("x"), Scalar.of("1"));
-		map.put(Symbol.of("y"), Scalar.of("2"));
+		map.put(Symbol.of("x"), Scalar.ofNumber("1"));
+		map.put(Symbol.of("y"), Scalar.ofNumber("2"));
 		for (AssocList alist : List.of(new AssocList(map), Datum.fromMap(map))) {
 			assertEquals(map, alist);
 			assertEquals(2, alist.size());
@@ -408,12 +408,12 @@ class AssocListTest
 	static AssocList shadowed()
 	{
 		return new AssocList(Cons.ofList(
-			pair(A, Scalar.of("1")),
-			pair(B, Scalar.of("2")),
-			pair(A, Scalar.of("3")),
-			pair(C, Scalar.of("4")),
-			pair(B, Scalar.of("5")),
-			pair(A, Scalar.of("6"))));
+			pair(A, Scalar.ofNumber("1")),
+			pair(B, Scalar.ofNumber("2")),
+			pair(A, Scalar.ofNumber("3")),
+			pair(C, Scalar.ofNumber("4")),
+			pair(B, Scalar.ofNumber("5")),
+			pair(A, Scalar.ofNumber("6"))));
 	}
 
 	static void checkUnique(AssocList alist, long n)
@@ -431,9 +431,9 @@ class AssocListTest
 			AssocList uniq = alist.withUniqueKeys();
 			checkUnique(uniq, 3);
 			assertEquals(List.of(
-				Map.entry(A, Scalar.of("1")),
-				Map.entry(B, Scalar.of("2")),
-				Map.entry(C, Scalar.of("4"))),
+				Map.entry(A, Scalar.ofNumber("1")),
+				Map.entry(B, Scalar.ofNumber("2")),
+				Map.entry(C, Scalar.ofNumber("4"))),
 				entriesOf(uniq));
 			assertEquals(alist, uniq);
 		}

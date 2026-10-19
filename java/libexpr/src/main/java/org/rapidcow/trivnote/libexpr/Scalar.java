@@ -31,14 +31,14 @@ permits
 	 * @since %v
 	 */
 	public static Scalar
-	of(String value)
+	ofNumber(String value)
 	{
 		return new SimpleScalar(value);
 	}
 
 	/**
 	 * {@return an immutable scalar atom}
-	 * This variant of {@link Scalar#of} hints to
+	 * This variant of {@link Scalar#ofNumber} hints to
 	 * {@link DataDumper} that it must always be quoted.
 	 *
 	 * @param value  the given value

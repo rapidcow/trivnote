@@ -149,7 +149,7 @@ class ListTest
 	@Test void testFromDatumJavaList()
 	{
 		Cons nested = Cons.ofList(B, C);
-		List<Datum> input = List.of(A, Scalar.of("1"), nested, Nil.INSTANCE);
+		List<Datum> input = List.of(A, Scalar.ofNumber("1"), nested, Nil.INSTANCE);
 		DatumList list = new DatumList(input);
 		assertEquals(input, list);
 		assertEquals(4, list.size());

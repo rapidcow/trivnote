@@ -58,10 +58,10 @@ class ReaderTest
 		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
-				Scalar.of("2.719"),
-				Scalar.of("-0.898"),
-				Scalar.of(".67"),
-				Scalar.of("-.1"),
+				Scalar.ofNumber("2.719"),
+				Scalar.ofNumber("-0.898"),
+				Scalar.ofNumber(".67"),
+				Scalar.ofNumber("-.1"),
 				Scalar.ofString("1024"),
 				Scalar.ofString("abc")
 			), list);
@@ -98,7 +98,7 @@ class ReaderTest
 		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
-				Scalar.of("42")
+				Scalar.ofNumber("42")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());

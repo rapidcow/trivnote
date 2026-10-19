@@ -448,7 +448,7 @@ implements
 	protected Scalar
 	makeSimple(String value)
 	{
-		return Scalar.of(value);
+		return Scalar.ofNumber(value);
 	}
 
 	/**

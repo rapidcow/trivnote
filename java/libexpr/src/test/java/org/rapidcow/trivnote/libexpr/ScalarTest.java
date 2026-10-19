@@ -14,23 +14,23 @@ class ScalarTest
 {
 	@Test void testIsString()
 	{
-		assertEquals(false, Scalar.of("1").isString());
+		assertEquals(false, Scalar.ofNumber("1").isString());
 		assertEquals(true, Scalar.ofString("1").isString());
 	}
 
 	@Test void testEqualsBySameKind()
 	{
-		assertEquals(Scalar.of("1"), Scalar.of("1"));
+		assertEquals(Scalar.ofNumber("1"), Scalar.ofNumber("1"));
 		assertEquals(Scalar.ofString("1"), Scalar.ofString("1"));
-		assertEquals(Scalar.of("1").hashCode(), Scalar.of("1").hashCode());
+		assertEquals(Scalar.ofNumber("1").hashCode(), Scalar.ofNumber("1").hashCode());
 		assertEquals(Scalar.ofString("1").hashCode(),
 			Scalar.ofString("1").hashCode());
-		assertNotEquals(Scalar.of("1"), Scalar.of("01"));
+		assertNotEquals(Scalar.ofNumber("1"), Scalar.ofNumber("01"));
 	}
 
 	@Test void testStringDistinctFromBare()
 	{
-		Scalar bare = Scalar.of("1");
+		Scalar bare = Scalar.ofNumber("1");
 		Scalar quot = Scalar.ofString("1");
 
 		/* symmetric */
