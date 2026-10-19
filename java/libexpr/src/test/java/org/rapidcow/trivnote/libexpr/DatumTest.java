@@ -22,11 +22,11 @@ class DatumTest
 		/*
 		 * N.B. JUnit puts "expect" before "actual"
 		 */
-		assertEquals(true, Datum.isAtom(car = Scalar.of("hi")));
+		assertEquals(true, Datum.isAtom(car = Scalar.of("7273")));
 		assertEquals(true, Datum.isAtom(cdr = Nil.INSTANCE));
 		assertEquals(false, Datum.isAtom(list = Cons.of(car, cdr)));
 
-		assertEquals("Scalar[value=hi]", car.toString());
+		assertEquals("Scalar[value=7273]", car.toString());
 
 		here = new DatumWalk(list);
 		assertEquals(true, here.hasNext());

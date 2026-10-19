@@ -43,7 +43,7 @@ class ScalarTest
 
 	@Test void testNotEqualToSymbol()
 	{
-		assertNotEquals(Scalar.of("a"), Symbol.of("a"));
-		assertNotEquals(Symbol.of("a"), Scalar.of("a"));
+		assertNotEquals(Scalar.ofString("a"), Symbol.of("a"));
+		assertNotEquals(Symbol.of("a"), Scalar.ofString("a"));
 	}
 }

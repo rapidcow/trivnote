@@ -107,11 +107,11 @@ class AssocListTest
 
 	@Test void testFirstEntryShadowsLaterOnes()
 	{
-		Datum first = Scalar.of("first");
+		Datum first = Scalar.ofString("first");
 		AssocList alist = new AssocList(Cons.ofList(
 			pair(A, first),
 			pair(B, Z),
-			pair(A, Scalar.of("second"))));
+			pair(A, Scalar.ofString("second"))));
 		assertSame(first, alist.get(A));
 		assertSame(Z, alist.get(B));
 	}
@@ -121,10 +121,10 @@ class AssocListTest
 	{
 		AssocList alist = new AssocList(Cons.ofList(
 			pair(Cons.ofList(A, B), C),
-			pair(Scalar.of("k"), Z),
+			pair(Scalar.ofString("k"), Z),
 			pair(Nil.INSTANCE, A)));
 		assertSame(C, alist.get(new ConsList(A, B, Nil.INSTANCE)));
-		assertSame(Z, alist.get(Scalar.of("k")));
+		assertSame(Z, alist.get(Scalar.ofString("k")));
 		assertSame(A, alist.get(Nil.INSTANCE));
 		assertNull(alist.get(Cons.ofList(A)));
 		assertNull(alist.get(Cons.of(A, B)));
@@ -178,8 +178,8 @@ class AssocListTest
 		AssocList alist = new AssocList(Cons.ofList(
 			pair(Cons.ofList(A, B), C),
 			pair(new ConsList(A, B, Nil.INSTANCE), Z),
-			pair(Scalar.of("k"), Z),
-			pair(Scalar.of("k"), A)));
+			pair(Scalar.ofString("k"), Z),
+			pair(Scalar.ofString("k"), A)));
 		assertEquals(2, alist.size());
 		assertEquals(2L, alist.count());
 		assertFalse(alist.hasUniqueKeys());
@@ -464,12 +464,12 @@ class AssocListTest
 		AssocList alist = new AssocList(Cons.ofList(
 			pair(Cons.ofList(A, B), C),
 			pair(new ConsList(A, B, Nil.INSTANCE), Z),
-			pair(Scalar.of("k"), Z),
-			pair(Scalar.of("k"), A)));
+			pair(Scalar.ofString("k"), Z),
+			pair(Scalar.ofString("k"), A)));
 		AssocList uniq = alist.withUniqueKeys();
 		checkUnique(uniq, 2);
 		assertSame(C, uniq.get(Cons.ofList(A, B)));
-		assertSame(Z, uniq.get(Scalar.of("k")));
+		assertSame(Z, uniq.get(Scalar.ofString("k")));
 	}
 
 	@Test void testWithUniqueKeysOfAllDuplicates()
