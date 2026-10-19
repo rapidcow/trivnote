@@ -640,7 +640,7 @@ implements
 			}
 
 			if (isPOSIXdigit(v)) {
-				sb = new StringBuilder().append((char) v);
+				sb.append((char) v);
 				if (( v = readPlain(sb) ) != -1) {
 					unreadChar(v);
 				}
