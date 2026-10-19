@@ -17,14 +17,20 @@ class NumberParser
 	 * Radix = 2**0
 	 *  Exact = 2**1
 	 *   Order = 2**2
-	 * 100 =   radix only
-	 * 010 =   exact only
-	 * 110 =   exact then radix
-	 * 111 =   radix then exact
+	 *    RADIX = 2**3
+	 *     EXACT = 2**4
+	 * 100.. =   radix only
+	 * 010.. =   exact only
+	 * 110.. =   exact then radix
+	 * 111.. =   radix then exact
+	 *
+	 * Higher bits preserve capitalization.
 	 */
 	private static final int HAS_RADIX = 1;
 	private static final int HAS_EXACT = 2;
 	private static final int RADIX_FIRST = 4;
+	private static final int RADIX_UPPER = 8;
+	private static final int EXACT_UPPER = 16;
 	private final int flags;
 	private final String sign;
 	private final String mantissa;
@@ -124,6 +130,7 @@ class NumberParser
 	{
 		Exactness exact = Exactness.UNSPECIFIED;
 		int order = 1;
+		int flags = 0;
 		int radix = 0;
 
 		int i;
@@ -142,6 +149,9 @@ class NumberParser
 					);
 				}
 				exact = Exactness.EXACT;
+				if (Character.isUpperCase(c)) {
+					flags |= EXACT_UPPER;
+				}
 				order = order + 1;
 				break;
 			case 'i': case 'I':
@@ -151,6 +161,9 @@ class NumberParser
 					);
 				}
 				exact = Exactness.LOSSY;
+				if (Character.isUpperCase(c)) {
+					flags |= EXACT_UPPER;
+				}
 				order = order + 1;
 				break;
 			case 'b': case 'B':
@@ -161,6 +174,9 @@ class NumberParser
 					);
 				}
 				radix = 2;
+				if (Character.isUpperCase(c)) {
+					flags |= RADIX_UPPER;
+				}
 				order = order * 2;
 				break;
 			case 'o': case 'O':
@@ -171,6 +187,9 @@ class NumberParser
 					);
 				}
 				radix = 8;
+				if (Character.isUpperCase(c)) {
+					flags |= RADIX_UPPER;
+				}
 				order = order * 2;
 				break;
 			case 'd': case 'D':
@@ -181,6 +200,9 @@ class NumberParser
 					);
 				}
 				radix = 10;
+				if (Character.isUpperCase(c)) {
+					flags |= RADIX_UPPER;
+				}
 				order = order * 2;
 				break;
 			case 'x': case 'X':
@@ -191,6 +213,9 @@ class NumberParser
 					);
 				}
 				radix = 16;
+				if (Character.isUpperCase(c)) {
+					flags |= RADIX_UPPER;
+				}
 				order = order * 2;
 				break;
 			default:
@@ -201,9 +226,10 @@ class NumberParser
 		}
 
 		this.flags = (
-			((radix == 0) ? HAS_RADIX : 0)
-			| ((exact == Exactness.UNSPECIFIED) ? HAS_EXACT : 0)
+			((radix != 0) ? HAS_RADIX : 0)
+			| ((exact != Exactness.UNSPECIFIED) ? HAS_EXACT : 0)
 			| ((order == 3) ? RADIX_FIRST : 0)
+			| flags
 		);
 		radix = (radix == 0) ? 10 : radix;
 		this.exact = exact;
@@ -300,9 +326,9 @@ class NumberParser
 	{
 		switch (exact) {
 		case EXACT:
-			return "%e";
+			return (flags & EXACT_UPPER) != 0 ? "#E" : "#e";
 		case LOSSY:
-			return "%i";
+			return (flags & EXACT_UPPER) != 0 ? "#I" : "#i";
 		default:
 			return "";
 		}
@@ -313,13 +339,13 @@ class NumberParser
 	{
 		switch (radix) {
 		case 2:
-			return "#b";
+			return (flags & RADIX_UPPER) != 0 ? "#B" : "#b";
 		case 8:
-			return "#o";
+			return (flags & RADIX_UPPER) != 0 ? "#O" : "#o";
 		case 10:
-			return "#d";
+			return (flags & RADIX_UPPER) != 0 ? "#D" : "#d";
 		case 16:
-			return "#x";
+			return (flags & RADIX_UPPER) != 0 ? "#X" : "#x";
 		default:
 			throw new IllegalStateException("unreachable");
 		}
@@ -335,7 +361,7 @@ class NumberParser
 			need += 2;
 		}
 		StringBuilder sb = new StringBuilder(need);
-		if (( flags & (HAS_RADIX | HAS_EXACT) ) != 0) {
+		if (( flags & HAS_RADIX ) != 0 && ( flags & HAS_EXACT) != 0) {
 			if (( flags & RADIX_FIRST ) != 0) {
 				sb.append(formatRadix());
 				sb.append(formatExact());
