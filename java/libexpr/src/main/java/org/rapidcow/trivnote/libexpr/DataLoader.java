@@ -105,15 +105,15 @@ implements
 	 * between loaders running on different threads, it must be safe
 	 * for concurrent use, such as a {@link java.util.concurrent.ConcurrentHashMap}.
 	 *
-	 * @param sym  map of symbols, optionally
+	 * @param cache  map of symbols, optionally
 	 *    writable if the map is allowed to grow
 	 * @return this
 	 * @since %v
 	 */
 	public final DataLoader
-	useSymbolCache(Map<String,Symbol> sym)
+	useSymbolCache(Map<String,Symbol> cache)
 	{
-		this.sym = sym;
+		sym = cache;
 		return this;
 	}
 
