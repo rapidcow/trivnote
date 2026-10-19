@@ -1,0 +1,83 @@
+if you must know how, here is the patch you can play with...
+(base it on 2968b52d43d4572181c4f8b721d2dac9713a3f48:
+check out the commit then you can run
+
+    git notes show 62c6002e8a06a0bc0823f220ba7968afbcadf5eb | git apply
+
+or something like that...)
+
+diff --git a/java/libexpr/src/main/java/org/rapidcow/trivnote/libexpr/DataLoader.java b/java/libexpr/src/main/java/org/rapidcow/trivnote/libexpr/DataLoader.java
+index 9ea26c8..f0640a4 100644
+--- a/java/libexpr/src/main/java/org/rapidcow/trivnote/libexpr/DataLoader.java
++++ b/java/libexpr/src/main/java/org/rapidcow/trivnote/libexpr/DataLoader.java
+@@ -746,7 +746,18 @@ implements
+ 				}
+ 			}
+ 
+-			if (( v = readWord(sb, v) ) != -1) {
++			/*
++			 * Alright.  We got some special cases to
++			 * deal with, but we need to be careful here:
++			 * specifically we do not want to treat any-
++			 * thing with |'s as an IEEE float literal.
++			 *
++			 * +|nan.0| should pass-through as symbol,
++			 * namely.  (This is tested on Racket v9.3.)
++			 *
++			 * On a first read, we will try bare-only...
++			 */
++			if (( v = readWord(sb, v, true) ) != -1) {
+ 				unreadChar(v);
+ 			}
+ 			String word = sb.toString();
+@@ -755,7 +766,14 @@ implements
+ 			{
+ 				return new Token(makeSimple(word));
+ 			}
+-			return new Token(makeSymbol(word));
++			/* The only way we have more is if v was a bar. */
++			if (v == '|') {
++				System.exit(1);
++				if (( v = readWord(sb, readChar()) ) != -1) {
++					unreadChar(v);
++				}
++			}
++			return new Token(makeSymbol(sb.toString()));
+ 		}
+ 
+ 		if (bg == -1) {
+@@ -968,6 +986,14 @@ implements
+ 
+ 	private int
+ 	readWord(StringBuilder sb, int v)
++	throws
++		IOException
++	{
++		return readWord(sb, v, false);
++	}
++
++	private int
++	readWord(StringBuilder sb, int v, boolean bareOnly)
+ 	throws
+ 		IOException
+ 	{
+@@ -975,6 +1001,9 @@ implements
+ 		int w;
+ 
+ 		if (!( bar = (v == '|') )) {
++			if (bareOnly) {
++				return v;
++			}
+ 			sb.append((char) v);
+ 		}
+ 
+@@ -997,6 +1026,9 @@ implements
+ 			}
+ 			else {
+ 				if (( v = readPlain(sb) ) == '|') {
++					if (bareOnly) {
++						break;
++					}
+ 					bar = true;
+ 				}
+ 				else {
