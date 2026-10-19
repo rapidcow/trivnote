@@ -1050,10 +1050,10 @@ implements
 			unreadChar(v);
 		}
 		if (!sMore) {
-			if (word.equals("t") || word.equals("true")) {
+			if ("t".equalsIgnoreCase(word) || "true".equals(word)) {
 				return TruthScalar.TRUE;
 			}
-			if (word.equals("f") || word.equals("false")) {
+			if ("f".equalsIgnoreCase(word) || "false".equals(word)) {
 				return TruthScalar.FALSE;
 			}
 		}

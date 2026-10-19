@@ -39,8 +39,16 @@ class BoolTest
 	@Test void testShortAndLong()
 	{
 		assertIterableEquals(
-			List.of(TruthScalar.TRUE, TruthScalar.TRUE, TruthScalar.FALSE, TruthScalar.FALSE),
-			readList("(#t #true #f #false)"));
+			List.of(
+				TruthScalar.TRUE,
+				TruthScalar.TRUE,
+				TruthScalar.TRUE,
+				TruthScalar.FALSE,
+				TruthScalar.FALSE,
+				TruthScalar.FALSE
+			),
+			readList("(#t #T #true #f #F #false)")
+		);
 	}
 
 	@Test void testTopLevel()
