@@ -145,16 +145,16 @@ class NumberParser
 -%]
 [% FOREACH code IN exact_code -%]
 [%	SET exact = map_exact.item(code) -%]
-			case [% "'" _ code _ "'" %]: case [% "'" _ code.upper _ "'" %]:
+			case [% "'" _ code.upper _ "'" %]:
+				flags |= EXACT_UPPER;
+				/* fall-through */
+			case [% "'" _ code _ "'" %]:
 				if (exact != Exactness.UNSPECIFIED) {
 					throw new IllegalArgumentException(
 "Misplaced exactness specification `#[% code %]'"
 					);
 				}
 				exact = Exactness.[% exact %];
-				if (Character.isUpperCase(c)) {
-					flags |= EXACT_UPPER;
-				}
 				order = order + 1;
 				break;
 [% END -%]
@@ -168,17 +168,16 @@ class NumberParser
 -%]
 [% FOREACH code IN ["b", "o", "d", "x"] -%]
 [%	SET base = map_base.item(code) -%]
-			case [% "'" _ code _ "'" %]: case [% "'" _ code.upper _ "'" %]:
-
+			case [% "'" _ code.upper _ "'" %]:
+				flags |= RADIX_UPPER;
+				/* fall-through */
+			case [% "'" _ code _ "'" %]:
 				if (radix != 0) {
 					throw new IllegalArgumentException(
 "Misplaced radix specification `#[% code %]'"
 					);
 				}
 				radix = [% base %];
-				if (Character.isUpperCase(c)) {
-					flags |= RADIX_UPPER;
-				}
 				order = order * 2;
 				break;
 [% END -%]

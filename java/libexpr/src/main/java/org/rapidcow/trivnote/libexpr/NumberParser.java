@@ -142,80 +142,76 @@ class NumberParser
 			}
 			char c = value.charAt(i + 1);
 			switch (c) {
-			case 'e': case 'E':
+			case 'E':
+				flags |= EXACT_UPPER;
+				/* fall-through */
+			case 'e':
 				if (exact != Exactness.UNSPECIFIED) {
 					throw new IllegalArgumentException(
 "Misplaced exactness specification `#e'"
 					);
 				}
 				exact = Exactness.EXACT;
-				if (Character.isUpperCase(c)) {
-					flags |= EXACT_UPPER;
-				}
 				order = order + 1;
 				break;
-			case 'i': case 'I':
+			case 'I':
+				flags |= EXACT_UPPER;
+				/* fall-through */
+			case 'i':
 				if (exact != Exactness.UNSPECIFIED) {
 					throw new IllegalArgumentException(
 "Misplaced exactness specification `#i'"
 					);
 				}
 				exact = Exactness.LOSSY;
-				if (Character.isUpperCase(c)) {
-					flags |= EXACT_UPPER;
-				}
 				order = order + 1;
 				break;
-			case 'b': case 'B':
-
+			case 'B':
+				flags |= RADIX_UPPER;
+				/* fall-through */
+			case 'b':
 				if (radix != 0) {
 					throw new IllegalArgumentException(
 "Misplaced radix specification `#b'"
 					);
 				}
 				radix = 2;
-				if (Character.isUpperCase(c)) {
-					flags |= RADIX_UPPER;
-				}
 				order = order * 2;
 				break;
-			case 'o': case 'O':
-
+			case 'O':
+				flags |= RADIX_UPPER;
+				/* fall-through */
+			case 'o':
 				if (radix != 0) {
 					throw new IllegalArgumentException(
 "Misplaced radix specification `#o'"
 					);
 				}
 				radix = 8;
-				if (Character.isUpperCase(c)) {
-					flags |= RADIX_UPPER;
-				}
 				order = order * 2;
 				break;
-			case 'd': case 'D':
-
+			case 'D':
+				flags |= RADIX_UPPER;
+				/* fall-through */
+			case 'd':
 				if (radix != 0) {
 					throw new IllegalArgumentException(
 "Misplaced radix specification `#d'"
 					);
 				}
 				radix = 10;
-				if (Character.isUpperCase(c)) {
-					flags |= RADIX_UPPER;
-				}
 				order = order * 2;
 				break;
-			case 'x': case 'X':
-
+			case 'X':
+				flags |= RADIX_UPPER;
+				/* fall-through */
+			case 'x':
 				if (radix != 0) {
 					throw new IllegalArgumentException(
 "Misplaced radix specification `#x'"
 					);
 				}
 				radix = 16;
-				if (Character.isUpperCase(c)) {
-					flags |= RADIX_UPPER;
-				}
 				order = order * 2;
 				break;
 			default:
