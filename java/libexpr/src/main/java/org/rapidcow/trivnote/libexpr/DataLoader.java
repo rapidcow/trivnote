@@ -487,7 +487,11 @@ implements
 	protected Scalar
 	makeSimple(String value)
 	{
-		return Scalar.ofNumber(value);
+		try {
+			return Scalar.ofNumber(value);
+		} catch (IllegalArgumentException e) {
+			throw loadingException("Bad number scalar", e);
+		}
 	}
 
 	/**
@@ -525,6 +529,24 @@ implements
 	{
 		DataLoadingException e
 			= new DataLoadingException(message, row, col);
+		StackTraceElement[] f = e.getStackTrace();
+		/* Skip this frame */
+		e.setStackTrace(Arrays.copyOfRange(f, 1, f.length));
+		return e;
+	}
+
+	/**
+	 * {@return a new exception carrying the current cursor position}
+	 *
+	 * @param message  the detail message
+	 * @param cause    the chained cause
+	 * @since 0.1.0
+	 */
+	protected final DataLoadingException
+	loadingException(String message, Throwable cause)
+	{
+		DataLoadingException e
+			= new DataLoadingException(message, cause, row, col);
 		StackTraceElement[] f = e.getStackTrace();
 		/* Skip this frame */
 		e.setStackTrace(Arrays.copyOfRange(f, 1, f.length));
