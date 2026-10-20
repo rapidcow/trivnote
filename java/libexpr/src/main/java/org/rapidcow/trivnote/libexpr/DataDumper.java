@@ -195,8 +195,9 @@ class
 	throws
 		IOException
 	{
-		for (int i = 0; i < value.length(); ) {
-			int v = value.codePointAt(i);
+		int i, v, w;
+		for (i = 0; i < value.length(); ) {
+			v = value.codePointAt(i);
 			i += Character.charCount(v);
 			switch (v) {
 			case '\\': out.write("\\\\"); break;
@@ -215,8 +216,23 @@ class
 				} else if (' ' <= v && v < '\177') {
 					out.write(v);
 				} else {
-					out.write("\\x{"
-						+ Integer.toHexString(v).toUpperCase() + "}");
+					if (v > '\377') {
+						out.write("\\x{");
+						out.write(Integer.toHexString(v));
+						out.write("}");
+					}
+					else if (v >= '\100' || (i < value.length() &&
+						'0' <= (w = value.codePointAt(i)) && w <= '7'))
+					{
+						out.write("\\");
+						out.write((char) ('0' + (v >> 6)));
+						out.write((char) ('0' + ((v >> 3) & 7)));
+						out.write((char) ('0' + (v & 7)));
+					}
+					else {
+						out.write("\\");
+						out.write(Integer.toOctalString(v));
+					}
 				}
 			}
 		}

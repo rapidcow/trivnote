@@ -98,9 +98,9 @@ class WriterTest
 		assertDumps("|a\\nb|", Symbol.of("a\nb"));
 		assertDumps("|\\a\\b\\t\\n\\v\\f\\r\\e|",
 			Symbol.of("\007\010\011\012\013\014\015\033"));
-		assertDumps("|\\x{0}|", Symbol.of("\0"));
-		assertDumps("|\\x{7F}|", Symbol.of("\177"));
-		assertDumps("|\\x{1F}z|", Symbol.of("\037z"));
+		assertDumps("|\\0|", Symbol.of("\0"));
+		assertDumps("|\\177|", Symbol.of("\177"));
+		assertDumps("|\\37z|", Symbol.of("\037z"));
 	}
 
 	@DisplayName("Symbols with non-ASCII characters")
@@ -108,9 +108,9 @@ class WriterTest
 	throws
 		IOException
 	{
-		assertDumps("|caf\\x{E9}|", Symbol.of("café"));
-		assertDumps("|\\x{8A18}\\x{61B6}|", Symbol.of("記憶"));
-		assertDumps("|\\x{1F600}|", Symbol.of("😀"));
+		assertDumps("|caf\\351|", Symbol.of("café"));
+		assertDumps("|\\x{8a18}\\x{61b6}|", Symbol.of("記憶"));
+		assertDumps("|\\x{1f600}|", Symbol.of("😀"));
 	}
 
 	@DisplayName("Symbols that look like numbers")
@@ -158,10 +158,10 @@ class WriterTest
 	{
 		assertDumps("\"\\a\\b\\t\\n\\v\\f\\r\\e\"",
 			Scalar.ofString("\007\010\011\012\013\014\015\033"));
-		assertDumps("\"\\x{0}\"", Scalar.ofString("\0"));
-		assertDumps("\"\\x{1F}\"", Scalar.ofString("\037"));
-		assertDumps("\"\\x{7F}\"", Scalar.ofString("\177"));
-		assertDumps("\"\\x{0}1\"", Scalar.ofString("\0001"));
+		assertDumps("\"\\0\"", Scalar.ofString("\0"));
+		assertDumps("\"\\37\"", Scalar.ofString("\037"));
+		assertDumps("\"\\177\"", Scalar.ofString("\177"));
+		assertDumps("\"\\0001\"", Scalar.ofString("\0001"));
 	}
 
 	@DisplayName("Strings with non-ASCII characters")
@@ -169,9 +169,9 @@ class WriterTest
 	throws
 		IOException
 	{
-		assertDumps("\"caf\\x{E9}\"", Scalar.ofString("caf\u00e9"));
-		assertDumps("\"\\x{4E2D}\\x{6587}\"", Scalar.ofString("\u4e2d\u6587"));
+		assertDumps("\"caf\\351\"", Scalar.ofString("caf\u00e9"));
+		assertDumps("\"\\x{4e2d}\\x{6587}\"", Scalar.ofString("\u4e2d\u6587"));
 		/* a supplementary character is one escape, not two */
-		assertDumps("\"\\x{1F600}\"", Scalar.ofString("\uD83D\uDE00"));
+		assertDumps("\"\\x{1f600}\"", Scalar.ofString("\uD83D\uDE00"));
 	}
 }
