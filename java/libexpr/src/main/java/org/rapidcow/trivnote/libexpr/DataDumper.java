@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import static org.rapidcow.trivnote.libexpr.DataLoader.isPOSIXdigit;
 
 /**
  * S-expression writer.  This class is incomplete.
@@ -163,8 +164,7 @@ class
 		if (i < value.length() && value.charAt(i) == '.') {
 			i++;
 		}
-		return i < value.length()
-			&& '0' <= value.charAt(i) && value.charAt(i) <= '9';
+		return i < value.length() && isPOSIXdigit(value.charAt(i));
 	}
 
 	private void

@@ -288,7 +288,7 @@ implements
 		static final Token DOT = new Token(null, true);
 	}
 
-	private static boolean
+	static boolean
 	isPOSIXspace(int v)
 	{
 		return (
@@ -301,7 +301,7 @@ implements
 		);
 	}
 
-	private static boolean
+	static boolean
 	isPOSIXdigit(int v)
 	{
 		return '0' <= v && v <= '9';
