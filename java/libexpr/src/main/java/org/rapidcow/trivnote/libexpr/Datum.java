@@ -26,7 +26,7 @@ import java.util.Map;
  * {@code Datum} promises no interface methods explicitly,
  * though through being a sealed interface it limits the
  * classes that can implement it.  For that reason we can
- * guarantee that is all datums implement
+ * guarantee that all datums implement
  * <code>{@linkplain Object#hashCode() hashCode()}</code> and
  * <code>{@linkplain Object#equals(Object) equals(Object)}</code>
  * in a way such that they are compared by value, not by
@@ -94,7 +94,7 @@ permits
 	 *
 	 * <p>
 	 * Note this view is even more permissive than
-	 * {@link #isAtom}, treating non-nill atoms as empty
+	 * {@link #isAtom}, treating non-nil atoms as empty
 	 * lists with itself as the improper terminator.
 	 * If this seems unacceptable, chain this call with
 	 * <q><code>.{@linkplain DatumList#requireProperTail() requireProperTail()}</code></q>

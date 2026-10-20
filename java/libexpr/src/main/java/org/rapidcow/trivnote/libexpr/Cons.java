@@ -34,7 +34,7 @@ implements
 	car();
 
 	/**
-	 * {@return the car of this cons cell}  The return
+	 * {@return the cdr of this cons cell}  The return
 	 * value may not be an identical datum object, but
 	 * it must be equal.  cdr may not be null.
 	 */
@@ -124,7 +124,7 @@ implements
 	 * cdrs are equal.
 	 *
 	 * @implNote This implementation uses a stack to compare
-	 *    cons children, instead of recursion which can over
+	 *    cons children, instead of recursion which can overflow
 	 *    the stack memory fast.  Cached hash codes are used
 	 *    to reject peers early, but they are not expected,
 	 *    and will not be populated if absent.

@@ -51,7 +51,7 @@ permits
 	 *
 	 * <p>
 	 * Usage:
-	 * <pre>{@code Scalar v = new Scalar.ofNumber("17/29");}</pre>
+	 * <pre>{@code Scalar v = Scalar.ofNumber("17/29");}</pre>
 	 *
 	 * If you need to access number-specific fields,
 	 * declare your variable with the type
@@ -73,7 +73,7 @@ permits
 	 *
 	 * <p>
 	 * Usage:
-	 * <pre>{@code Scalar v = new Scalar.ofString("abc");}</pre>
+	 * <pre>{@code Scalar v = Scalar.ofString("abc");}</pre>
 	 *
 	 * @param value  the given value
 	 * @throws NullPointerException on null {@code value}
