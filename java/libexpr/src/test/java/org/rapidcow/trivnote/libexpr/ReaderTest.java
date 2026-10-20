@@ -583,4 +583,18 @@ class ReaderTest
 		assertSame(Nil.INSTANCE, token);
 		assertNull(loader.lastIOException());
 	}
+
+	/* A lone # is rejected, but |#| is a symbol named "#". */
+	@Test void testLoneHashIsRejected()
+	{
+		loader = new DataLoader(new StringReader("#"));
+		assertThrows(DataLoadingException.class, () -> loader.next());
+
+		loader = new DataLoader(new StringReader("(a #)"));
+		assertThrows(DataLoadingException.class, () -> loader.next());
+
+		loader = new DataLoader(new StringReader("|#|"));
+		token = loader.next();
+		assertEquals(Symbol.of("#"), token);
+	}
 }

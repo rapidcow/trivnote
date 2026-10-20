@@ -669,6 +669,11 @@ implements
 						);
 					}
 				}
+				else {
+					throw loadingException(
+						"Unexpected `#' at end of input"
+					);
+				}
 			}
 
 			if (v == '(' || v == '[' || v == '{') {
