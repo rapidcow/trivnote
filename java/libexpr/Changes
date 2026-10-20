@@ -6,6 +6,10 @@ Revision history of trivnote-libexpr
     *** DataLoader.eio() renamed to DataLoader.lastIOException()
     *** Walk renamed to DatumWalk (wherein tail renamed to rest)
     * Racket/Perl-ish "..." escapes!
+    *-> |...| is now adorned with the same escapes.  this is
+      NOT compatible with any Scheme-impl i know of!  if you
+      want to remain compatible, you have to stick to simple
+      un-escaped names or wait for a dedicated Scheme dumper...
     * DatumList as a real List<Datum>!
     *** Cons, Nil are no longer iterable; use Datum.asList.
     *** Cons is split into to two concrete types: the pairs
