@@ -1090,12 +1090,11 @@ implements
 					bar = false;
 				}
 				else {
-					if (v == '\\') {
-						if (( w = readChar() ) != -1) {
-							v = w;
-						}
+					if (v == '\\' && ( w = readChar() ) != -1) {
+						readEscape(sb, (char) w);
+					} else {
+						sb.append((char) v);
 					}
-					sb.append((char) v);
 				}
 			}
 			else {
