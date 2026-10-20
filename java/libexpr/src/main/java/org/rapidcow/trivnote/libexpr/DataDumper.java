@@ -127,12 +127,12 @@ class
 		boolean once = true;
 		while (walk.hasNext()) {
 			node = walk.next();
-			writeDatum(node);
 			if (once) {
 				once = false;
 			} else {
 				out.write(" ");
 			}
+			writeDatum(node);
 		}
 		node = walk.rest();
 		if (node != Nil.INSTANCE) {
