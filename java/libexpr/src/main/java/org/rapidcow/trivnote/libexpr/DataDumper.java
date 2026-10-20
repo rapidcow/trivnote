@@ -96,8 +96,75 @@ class
 	throws
 		IOException
 	{
-		// TODO
-		out.write(name.value());
+		String value = name.value();
+		if (!needsBars(value)) {
+			out.write(value);
+			return;
+		}
+		/*
+		 * The reader treats a backslash inside |...| as "take the
+		 * next character literally", so these two are the only
+		 * escapes available.  Anything else is written as is.
+		 */
+		out.write("|");
+		for (int i = 0; i < value.length(); i++) {
+			char v = value.charAt(i);
+			if (v == '|' || v == '\\') {
+				out.write("\\");
+			}
+			out.write(v);
+		}
+		out.write("|");
+	}
+
+	/**
+	 * {@return whether the reader would misread {@code value}
+	 * as something other than a symbol if written bare}
+	 */
+	private static boolean
+	needsBars(String value)
+	{
+		if (value.isEmpty() || value.equals(".") || value.charAt(0) == '#') {
+			return true;
+		}
+		if (value.equals("+nan.0") || value.equals("-nan.0")
+			|| value.equals("+inf.0") || value.equals("-inf.0"))
+		{
+			return true;
+		}
+		for (int i = 0; i < value.length(); i++) {
+			char v = value.charAt(i);
+			if (v <= ' ' || v == '\177') {
+				return true;  /* whitespace or C0 control (or DEL) */
+			}
+			switch (v) {
+			case '(': case ')':
+			case '[': case ']':
+			case '{': case '}':
+			case '"': case '|': case ';':
+				return true;
+			}
+		}
+		return looksNumeric(value);
+	}
+
+	/**
+	 * {@return whether the reader would start parsing {@code value}
+	 * as a number}  Only the beginning matters: {@code 1cm} and
+	 * {@code -.4cm} count, {@code -.cm} does not.
+	 */
+	private static boolean
+	looksNumeric(String value)
+	{
+		int i = 0;
+		if (value.charAt(i) == '+' || value.charAt(i) == '-') {
+			i++;
+		}
+		if (i < value.length() && value.charAt(i) == '.') {
+			i++;
+		}
+		return i < value.length()
+			&& '0' <= value.charAt(i) && value.charAt(i) <= '9';
 	}
 
 	private void
@@ -105,13 +172,46 @@ class
 	throws
 		IOException
 	{
-		// TODO
 		if (!leaf.isString()) {
 			out.write(leaf.value());
 			return;
 		}
+		writeString(leaf.value());
+	}
+
+	/**
+	 * Writes a quoted string.  The output is pure printable ASCII:
+	 * everything else is escaped.
+	 */
+	private void
+	writeString(String value)
+	throws
+		IOException
+	{
 		out.write("\"");
-		out.write(leaf.value().replace("\"", "\\\""));
+		for (int i = 0; i < value.length(); ) {
+			int v = value.codePointAt(i);
+			i += Character.charCount(v);
+			switch (v) {
+			case '"':  out.write("\\\""); break;
+			case '\\': out.write("\\\\"); break;
+			case '\007': out.write("\\a"); break;
+			case '\010': out.write("\\b"); break;
+			case '\011': out.write("\\t"); break;
+			case '\012': out.write("\\n"); break;
+			case '\013': out.write("\\v"); break;
+			case '\014': out.write("\\f"); break;
+			case '\015': out.write("\\r"); break;
+			case '\033': out.write("\\e"); break;
+			default:
+				if (' ' <= v && v < '\177') {
+					out.write(v);
+				} else {
+					out.write("\\x{"
+						+ Integer.toHexString(v).toUpperCase() + "}");
+				}
+			}
+		}
 		out.write("\"");
 	}
 
