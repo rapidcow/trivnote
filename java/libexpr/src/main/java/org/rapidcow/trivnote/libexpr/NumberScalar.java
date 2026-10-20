@@ -8,7 +8,7 @@ package org.rapidcow.trivnote.libexpr;
  * Use {@link Scalar#ofNumber(String)} to parse and
  * construct a numeric scalar.
  *
- * <p>The syntax is mostly based on Racket's grammar.
+ * <p>The syntax is mostly based on Racket’s grammar.
  * There are four orthogonally represented components:
  *
  * <ul>
@@ -36,8 +36,8 @@ package org.rapidcow.trivnote.libexpr;
  *     also be in fraction notation, in which case the
  *     numerator and denominator are unsigned integers
  *     separated by {@code /}.  Because of how the way
- *     this is spelled is awfully similar to "sign", it
- *     is given as "mantissa" in the method name here.
+ *     this is spelled is awfully similar to “sign”, it
+ *     is given as “mantissa” in the method name here.
  *
  *   <li><em>Exponent</em>: Optional powers of 10
  *     exponent of the form {@code e+N} or powers of
@@ -48,7 +48,7 @@ package org.rapidcow.trivnote.libexpr;
  * </ul>
  *
  * <p>
- * The following identifies should hold true:
+ * The following identities should hold true:
  *
  * <ul>
  *   <li><code>{@linkplain #value() value()}.equals(

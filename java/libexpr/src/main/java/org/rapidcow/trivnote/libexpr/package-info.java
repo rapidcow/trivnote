@@ -12,7 +12,7 @@
  *   <li>
  *     Consider an S-expression as binary tree:
  *     an <em>atom</em> is a terminal node; it either
- *     has a value ({@code Atom}) or it doesn&rsquo;t
+ *     has a value ({@code Atom}) or it doesn’t
  *     ({@code Nil}).
  *   </li>
  *   <li>
