@@ -102,19 +102,8 @@ class
 			out.write(value);
 			return;
 		}
-		/*
-		 * The reader treats a backslash inside |...| as "take the
-		 * next character literally", so these two are the only
-		 * escapes available.  Anything else is written as is.
-		 */
 		out.write("|");
-		for (int i = 0; i < value.length(); i++) {
-			char v = value.charAt(i);
-			if (v == '|' || v == '\\') {
-				out.write("\\");
-			}
-			out.write(v);
-		}
+		writeEscaped(value, '|');
 		out.write("|");
 	}
 
@@ -135,8 +124,9 @@ class
 		}
 		for (int i = 0; i < value.length(); i++) {
 			char v = value.charAt(i);
-			if (v <= ' ' || v == '\177') {
-				return true;  /* whitespace or C0 control (or DEL) */
+			if (v <= ' ' || v >= '\177') {
+				/* whitespace, control, DEL or non-ASCII */
+				return true;
 			}
 			switch (v) {
 			case '(': case ')':
@@ -180,8 +170,7 @@ class
 	}
 
 	/**
-	 * Writes a quoted string.  The output is pure printable ASCII:
-	 * everything else is escaped.
+	 * Writes a quoted string.
 	 */
 	private void
 	writeString(String value)
@@ -189,11 +178,27 @@ class
 		IOException
 	{
 		out.write("\"");
+		writeEscaped(value, '"');
+		out.write("\"");
+	}
+
+	/**
+	 * Writes the body of a {@code "..."} string or a {@code |...|}
+	 * symbol, as pure printable ASCII: {@code quote}, the backslash
+	 * and everything that is not printable ASCII are escaped.
+	 *
+	 * @param value  the text to write
+	 * @param quote  the delimiter, {@code '"'} or {@code '|'}
+	 */
+	private void
+	writeEscaped(String value, int quote)
+	throws
+		IOException
+	{
 		for (int i = 0; i < value.length(); ) {
 			int v = value.codePointAt(i);
 			i += Character.charCount(v);
 			switch (v) {
-			case '"':  out.write("\\\""); break;
 			case '\\': out.write("\\\\"); break;
 			case '\007': out.write("\\a"); break;
 			case '\010': out.write("\\b"); break;
@@ -204,7 +209,10 @@ class
 			case '\015': out.write("\\r"); break;
 			case '\033': out.write("\\e"); break;
 			default:
-				if (' ' <= v && v < '\177') {
+				if (v == quote) {
+					out.write("\\");
+					out.write(v);
+				} else if (' ' <= v && v < '\177') {
 					out.write(v);
 				} else {
 					out.write("\\x{"
@@ -212,7 +220,6 @@ class
 				}
 			}
 		}
-		out.write("\"");
 	}
 
 	private void

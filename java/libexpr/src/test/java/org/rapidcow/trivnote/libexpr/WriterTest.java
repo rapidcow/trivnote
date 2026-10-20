@@ -67,7 +67,7 @@ class WriterTest
 	{
 		for (String name : new String[] {
 			"hello", "+", "-", "...", "..", "a.b", "a#b", "-.cm",
-			"+inf", "nan.0", "+NaN.0", "a'b", "a\\b", "\u00e9"
+			"+inf", "nan.0", "+NaN.0", "a'b", "a\\b"
 		}) {
 			assertDumps(name, Symbol.of(name));
 		}
@@ -84,11 +84,33 @@ class WriterTest
 		assertDumps("|a(b|", Symbol.of("a(b"));
 		assertDumps("|a;b|", Symbol.of("a;b"));
 		assertDumps("|a\"b|", Symbol.of("a\"b"));
-		assertDumps("|a\nb|", Symbol.of("a\nb"));
 		assertDumps("|#t|", Symbol.of("#t"));
 		assertDumps("|#|", Symbol.of("#"));
 		assertDumps("|a\\|b|", Symbol.of("a|b"));
 		assertDumps("|a b\\\\c|", Symbol.of("a b\\c"));
+	}
+
+	@DisplayName("Symbols with control characters")
+	@Test void testSymbolControls()
+	throws
+		IOException
+	{
+		assertDumps("|a\\nb|", Symbol.of("a\nb"));
+		assertDumps("|\\a\\b\\t\\n\\v\\f\\r\\e|",
+			Symbol.of("\007\010\011\012\013\014\015\033"));
+		assertDumps("|\\x{0}|", Symbol.of("\0"));
+		assertDumps("|\\x{7F}|", Symbol.of("\177"));
+		assertDumps("|\\x{1F}z|", Symbol.of("\037z"));
+	}
+
+	@DisplayName("Symbols with non-ASCII characters")
+	@Test void testSymbolNonASCII()
+	throws
+		IOException
+	{
+		assertDumps("|caf\\x{E9}|", Symbol.of("café"));
+		assertDumps("|\\x{4E2D}\\x{6587}|", Symbol.of("中文"));
+		assertDumps("|\\x{1F600}|", Symbol.of("😀"));
 	}
 
 	@DisplayName("Symbols that look like numbers")
