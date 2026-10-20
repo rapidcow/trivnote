@@ -80,6 +80,7 @@ permits
 	 * that requires a nil terminator.
 	 *
 	 * @param node  the datum
+	 * @since %v
 	 */
 	public static boolean
 	isProperList(Datum node)

@@ -27,6 +27,7 @@ implements
 	 * in case the underlying implementation changes.
 	 *
 	 * @param value  symbol value
+	 * @since %v
 	 */
 	public
 	Symbol(String value)
