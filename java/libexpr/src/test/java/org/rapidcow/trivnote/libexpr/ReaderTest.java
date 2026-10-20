@@ -583,4 +583,41 @@ class ReaderTest
 		assertSame(Nil.INSTANCE, token);
 		assertNull(loader.lastIOException());
 	}
+
+	/* A lone # is rejected, but |#| is a symbol named "#". */
+	@Test void testLoneHashIsRejected()
+	{
+		loader = new DataLoader(new StringReader("#"));
+		assertThrows(DataLoadingException.class, () -> loader.next());
+
+		loader = new DataLoader(new StringReader("(a #)"));
+		assertThrows(DataLoadingException.class, () -> loader.next());
+
+		loader = new DataLoader(new StringReader("|#|"));
+		token = loader.next();
+		assertEquals(Symbol.of("#"), token);
+	}
+
+	/* Number-like literals are off-limits (consider them "reserved"...) */
+	@Test void testNumberLookingLiterals()
+	{
+		/* Bad */
+		loader = new DataLoader(new StringReader("(length 5cm)"));
+		assertThrows(DataLoadingException.class, () -> loader.next());
+		assertNull(loader.lastIOException());
+
+		/* Better */
+		loader = new DataLoader(new StringReader("(length . (cm 5))"));
+		token = loader.next();
+		assertEquals(Cons.of(Symbol.of("length"),
+			Cons.ofList(Symbol.of("cm"), Scalar.ofNumber("5"))),
+			token);
+		assertNull(loader.lastIOException());
+
+		/* Not encouraged; but if you must... */
+		loader = new DataLoader(new StringReader("(length |5cm|)"));
+		token = loader.next();
+		assertEquals(Cons.ofList(Symbol.of("length"), Symbol.of("5cm")), token);
+		assertNull(loader.lastIOException());
+	}
 }

@@ -64,15 +64,20 @@ class NumberParser
 	 */
 	private static final Pattern NUMBER_BINARY_PATTERN
 		= Pattern.compile("""
+# (Grammar defs from Racket.)
 (?<sign>
+# [<sign>]
 	[+-]?)
 (?<mantissa>
-# uinteger
+# (<digits 2>)+ "#"* ["."] "#"*
 	[0-1]+ \\#* [.]? \\#*
+# [(<digits 2>)+] "." <digits 2>)+ "#"*
 |	[0-1]* [.] [0-1]+ \\#*
-|	[0-1]+ / [0-1]+
+# (<digits 2>)+ "#"* / (<digits 2>)+ "#"*
+|	[0-1]+ \\#* / [0-1]+ \\#*
 )
 (?<exponent>
+# Exponent power is coded by suffix, and radix is always 10.
 	(?:[ep][+-]?[0-9]+)?)
 """
 		, Pattern.CASE_INSENSITIVE | Pattern.COMMENTS
@@ -80,15 +85,20 @@ class NumberParser
 
 	private static final Pattern NUMBER_OCTAL_PATTERN
 		= Pattern.compile("""
+# (Grammar defs from Racket.)
 (?<sign>
+# [<sign>]
 	[+-]?)
 (?<mantissa>
-# uinteger
+# (<digits 8>)+ "#"* ["."] "#"*
 	[0-7]+ \\#* [.]? \\#*
+# [(<digits 8>)+] "." <digits 8>)+ "#"*
 |	[0-7]* [.] [0-7]+ \\#*
-|	[0-7]+ / [0-7]+
+# (<digits 8>)+ "#"* / (<digits 8>)+ "#"*
+|	[0-7]+ \\#* / [0-7]+ \\#*
 )
 (?<exponent>
+# Exponent power is coded by suffix, and radix is always 10.
 	(?:[ep][+-]?[0-9]+)?)
 """
 		, Pattern.CASE_INSENSITIVE | Pattern.COMMENTS
@@ -96,15 +106,20 @@ class NumberParser
 
 	private static final Pattern NUMBER_BASE10_PATTERN
 		= Pattern.compile("""
+# (Grammar defs from Racket.)
 (?<sign>
+# [<sign>]
 	[+-]?)
 (?<mantissa>
-# uinteger
+# (<digits 10>)+ "#"* ["."] "#"*
 	[0-9]+ \\#* [.]? \\#*
+# [(<digits 10>)+] "." <digits 10>)+ "#"*
 |	[0-9]* [.] [0-9]+ \\#*
-|	[0-9]+ / [0-9]+
+# (<digits 10>)+ "#"* / (<digits 10>)+ "#"*
+|	[0-9]+ \\#* / [0-9]+ \\#*
 )
 (?<exponent>
+# Exponent power is coded by suffix, and radix is always 10.
 	(?:[ep][+-]?[0-9]+)?)
 """
 		, Pattern.CASE_INSENSITIVE | Pattern.COMMENTS
@@ -112,15 +127,20 @@ class NumberParser
 
 	private static final Pattern NUMBER_BASE16_PATTERN
 		= Pattern.compile("""
+# (Grammar defs from Racket.)
 (?<sign>
+# [<sign>]
 	[+-]?)
 (?<mantissa>
-# uinteger
+# (<digits 16>)+ "#"* ["."] "#"*
 	[0-9a-f]+ \\#* [.]? \\#*
+# [(<digits 16>)+] "." <digits 16>)+ "#"*
 |	[0-9a-f]* [.] [0-9a-f]+ \\#*
-|	[0-9a-f]+ / [0-9a-f]+
+# (<digits 16>)+ "#"* / (<digits 16>)+ "#"*
+|	[0-9a-f]+ \\#* / [0-9a-f]+ \\#*
 )
 (?<exponent>
+# Exponent power is coded by suffix, and radix is always 10.
 	(?:p[+-]?[0-9]+)?)
 """
 		, Pattern.CASE_INSENSITIVE | Pattern.COMMENTS
