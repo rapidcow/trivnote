@@ -20,12 +20,23 @@ implements
 {
 	private final String value;
 
+	/**
+	 * Constructs a new symbol.  You may use this now
+	 * that the global symbol cache is gone, but it is
+	 * better to still use {@link Symbol#of(String)}
+	 * in case the underlying implementation changes.
+	 *
+	 * @param value  symbol value
+	 */
 	public
 	Symbol(String value)
 	{
 		this.value = Objects.requireNonNull(value);
 	}
 
+	/**
+	 * {@return the value of this symbol}
+	 */
 	@Override
 	public final String
 	value()

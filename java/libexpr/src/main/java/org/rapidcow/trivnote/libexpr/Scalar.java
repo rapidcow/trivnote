@@ -17,9 +17,16 @@ package org.rapidcow.trivnote.libexpr;
  * {@code #t} ({@link TruthScalar#TRUE}) and {@code #f}
  * ({@link TruthScalar#FALSE}); free-form strings (via
  * {@link Scalar#ofString(String)}; and numbers (via
- * {@link Scalar#ofNumber(String)}).  Scalars are
- * compared by {@link #value} for equality with the
- * <em>sole exception</em> of strings.
+ * {@link Scalar#ofNumber(String)}).
+ *
+ * <p>Scalars are compared by {@link #value} for equality
+ * with the <em>sole exception</em> of strings, which can
+ * be distinguished using {@link #isString()}.  The reason
+ * is that while the value of a string scalar is the only
+ * escaped string, the value of a non-string scalar
+ * corresponds to its wire representation.  In other
+ * words non-string scalars are the only datums who own
+ * serialization logic outside of {@link DataDumper}.
  */
 public sealed
 abstract class
