@@ -8,7 +8,7 @@ package org.rapidcow.trivnote.libexpr;
 /**
  * Parsing exception.
  *
- * @since %v
+ * @since 0.1.0
  */
 public final
 class

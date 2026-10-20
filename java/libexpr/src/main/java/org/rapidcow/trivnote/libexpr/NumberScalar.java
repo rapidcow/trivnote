@@ -62,7 +62,7 @@ package org.rapidcow.trivnote.libexpr;
  *   )</code>;</li>
  * </ul>
  *
- * @since %v
+ * @since 0.1.0
  */
 public sealed
 abstract class

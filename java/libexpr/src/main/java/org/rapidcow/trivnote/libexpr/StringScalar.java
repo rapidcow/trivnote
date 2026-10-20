@@ -12,7 +12,7 @@ import java.util.Objects;
  * of use here is {@code value()}, which is
  * specified by {@link Atom#value()}.
  *
- * @since %v
+ * @since 0.1.0
  */
 public final
 class

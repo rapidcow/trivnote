@@ -3,7 +3,7 @@ package org.rapidcow.trivnote.libexpr;
 /**
  * Numeric scalar exactness.
  *
- * @since %v
+ * @since 0.1.0
  */
 public enum Exactness
 {

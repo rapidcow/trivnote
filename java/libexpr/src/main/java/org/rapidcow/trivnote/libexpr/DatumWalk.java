@@ -39,7 +39,7 @@ implements
 	/**
 	 * {@return the root datum}
 	 *
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public final Datum
 	head()
@@ -61,7 +61,7 @@ implements
 	/**
 	 * {@return the current position}
 	 *
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public final long
 	position()
@@ -106,7 +106,7 @@ implements
 	 * This value is truncated at the 32-bit integer maximum.
 	 * For full resolution, use <code>{@linkplain #position position()}</code>.
 	 *
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	@Override
 	public int
@@ -135,7 +135,7 @@ implements
 	 * @param off  offset relative to the current position
 	 * @return sub-list starting at given position
 	 * @throws IndexOutOfBoundsException  if you went too far
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public Datum
 	seek(long off)

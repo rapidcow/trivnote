@@ -13,7 +13,7 @@ import java.util.Objects;
  * This was the original implementation of {@link Cons}
  * before it abstracted.
  *
- * @since %v
+ * @since 0.1.0
  */
 public final
 class

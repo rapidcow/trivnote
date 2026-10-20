@@ -60,7 +60,7 @@ permits
 	 * @param value  the given value
 	 * @throws NullPointerException on null {@code value}
 	 * @throws IllegalArgumentException on illegal number format
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public static NumberScalar
 	ofNumber(String value)
@@ -77,7 +77,7 @@ permits
 	 *
 	 * @param value  the given value
 	 * @throws NullPointerException on null {@code value}
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public static StringScalar
 	ofString(String value)
@@ -88,7 +88,7 @@ permits
 	/**
 	 * {@return whether this should be a quoted string}
 	 *
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public final boolean
 	isString()

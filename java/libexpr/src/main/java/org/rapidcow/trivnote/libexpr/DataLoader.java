@@ -115,7 +115,7 @@ implements
 	 * @param cache  map of symbols, optionally
 	 *    writable if the map is allowed to grow
 	 * @return this
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public final DataLoader
 	useSymbolCache(Map<String,Symbol> cache)
@@ -126,7 +126,7 @@ implements
 
 	/**
 	 * {@return the current symbol cache}
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public final Optional< Map<String,Symbol> >
 	getSymbolCache()
@@ -138,7 +138,7 @@ implements
 	 * {@return the registered list dispatch hook for the given name}
 	 *
 	 * @param name  the given name
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public final Optional <
 		Function<? super Cons, ? extends Cons>
@@ -156,7 +156,7 @@ implements
 	 * @param name  the given name
 	 * @param dispatch  callback function
 	 * @return this
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public final DataLoader
 	useDispatch(
@@ -176,7 +176,7 @@ implements
 	 *
 	 * @param name  the given name
 	 * @return this
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public final DataLoader
 	noDispatch(Datum name)
@@ -191,7 +191,7 @@ implements
 	 * Un-register all list dispatch hooks
 	 *
 	 * @return this
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public final DataLoader
 	clearDispatch()
@@ -214,7 +214,7 @@ implements
 	 * @param depth  the most levels of nesting allowed
 	 * @return this
 	 * @throws IllegalArgumentException if {@code depth} is negative
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public final DataLoader
 	useDepthLimit(long depth)
@@ -228,7 +228,7 @@ implements
 
 	/**
 	 * {@return the most levels of list nesting allowed}
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public final long
 	getDepthLimit()
@@ -245,7 +245,7 @@ implements
 	 * @param length  the most elements per list allowed
 	 * @return this
 	 * @throws IllegalArgumentException if {@code length} is negative
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public final DataLoader
 	useLengthLimit(long length)
@@ -259,7 +259,7 @@ implements
 
 	/**
 	 * {@return the most elements per list allowed}
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public final long
 	getLengthLimit()
@@ -314,7 +314,7 @@ implements
 	 *
 	 * @return the character read, or -1 on EOF
 	 * @throws IOException on I/O error
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	protected final int
 	readChar()
@@ -344,7 +344,7 @@ implements
 	 *
 	 * @param v  the character most recently returned by {@link #readChar()}
 	 * @throws IOException on I/O error
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	protected final void
 	unreadChar(int v)
@@ -430,7 +430,7 @@ implements
 	 *
 	 * @param value  the text of the symbol
 	 * @return a symbol for value, from the symbol cache if any
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	protected Symbol
 	makeSymbol(String value)
@@ -465,7 +465,7 @@ implements
 	 *
 	 * @param value  the text of the string, with escapes processed
 	 * @return a string scalar by default
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	protected Scalar
 	makeString(String value)
@@ -482,7 +482,7 @@ implements
 	 *
 	 * @param value  the text of the number
 	 * @return a plain scalar by default
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	protected Scalar
 	makeSimple(String value)
@@ -497,7 +497,7 @@ implements
 	 * @param s  final list datum
 	 * @param e  list terminator
 	 * @return a list
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	protected Cons
 	makeList(Deque<Datum> q, Datum s, Datum e)
@@ -518,7 +518,7 @@ implements
 	 * {@return a new exception carrying the current cursor position}
 	 *
 	 * @param message  the detail message
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	protected final DataLoadingException
 	loadingException(String message)

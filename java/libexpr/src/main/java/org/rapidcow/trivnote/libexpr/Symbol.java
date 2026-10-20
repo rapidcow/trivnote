@@ -27,7 +27,7 @@ implements
 	 * in case the underlying implementation changes.
 	 *
 	 * @param value  symbol value
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public
 	Symbol(String value)
@@ -90,7 +90,7 @@ implements
 	 *
 	 * @param o  symbol to compare
 	 * @return the comparison result
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	@Override
 	public int

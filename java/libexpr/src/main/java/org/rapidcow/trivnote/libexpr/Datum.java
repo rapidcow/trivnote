@@ -80,7 +80,7 @@ permits
 	 * that requires a nil terminator.
 	 *
 	 * @param node  the datum
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public static boolean
 	isProperList(Datum node)
@@ -103,7 +103,7 @@ permits
 	 *
 	 * @param node  the datum
 	 * @return a view as a list
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public static DatumList
 	asList(Datum node)
@@ -120,7 +120,7 @@ permits
 	 * @return a view as a proper list
 	 * @throws IllegalArgumentException if the list
 	 *    terminator is not nil; i.e. improper list
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public static DatumList
 	asProperList(Datum node)
@@ -133,7 +133,7 @@ permits
 	 *
 	 * @param node  the given datum
 	 * @throws IllegalArgumentException if not a cons
-	 * @since %v
+	 * @since 0.1.0
 	 * @see Cons#car()
 	 */
 	public static Datum
@@ -150,7 +150,7 @@ permits
 	 *
 	 * @param node  the given datum
 	 * @throws IllegalArgumentException if not a cons
-	 * @since %v
+	 * @since 0.1.0
 	 * @see Cons#cdr()
 	 */
 	public static Datum
@@ -168,7 +168,7 @@ permits
 	 * @param node  the given datum
 	 * @throws IllegalArgumentException if {@code node} is not an
 	 *    {@link Atom} instance; nil has no value
-	 * @since %v
+	 * @since 0.1.0
 	 * @see Atom#value()
 	 */
 	public static String
@@ -189,7 +189,7 @@ permits
 	 * @param list  the source list
 	 * @return a copy of the list wrapped in a list datum view
 	 * @throws NullPointerException if the list or any element is null
-	 * @since %v
+	 * @since 0.1.0
 	 * @see Cons#fromList(List)
 	 */
 	public static Datum
@@ -215,7 +215,7 @@ permits
 	 *    is not a proper list, or the list consists
 	 *    of any non-cons datum
 	 * @throws NullPointerException if {@code node} is null
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public static AssocList
 	asAlist(Datum node)
@@ -233,7 +233,7 @@ permits
 	 * @param map  the source map
 	 * @return a copy of the map wrapped in an associative map datum view
 	 * @throws NullPointerException if the map, any key, or any value is null
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public static AssocList
 	fromMap(Map<? extends Datum, ? extends Datum> map)

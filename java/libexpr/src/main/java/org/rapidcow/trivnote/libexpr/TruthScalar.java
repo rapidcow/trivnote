@@ -8,7 +8,7 @@ package org.rapidcow.trivnote.libexpr;
 /**
  * Boolean scalars.  Booleans are singletons.
  *
- * @since %v
+ * @since 0.1.0
  */
 public final
 class

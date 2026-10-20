@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * Cons cells with a known length.
  *
- * @since %v
+ * @since 0.1.0
  */
 public final
 class

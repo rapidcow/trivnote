@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 /**
  * List view into a datum.
  *
- * @since %v
+ * @since 0.1.0
  */
 public final
 class
@@ -154,7 +154,7 @@ implements
 	 * @throws IllegalStateException if you have a mega list
 	 *    with length exceeding {@link Integer#MAX_VALUE};
 	 *    I think this should be rare, but still be careful!
-	 * @since %v
+	 * @since 0.1.0
 	 */
 	public DatumList
 	toProperList()

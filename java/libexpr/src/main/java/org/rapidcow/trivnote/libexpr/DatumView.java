@@ -11,7 +11,7 @@ package org.rapidcow.trivnote.libexpr;
  * So they are not serializable; but you can make it
  * by having them return their underlying storage!
  *
- * @since %v
+ * @since 0.1.0
  */
 public
 interface
