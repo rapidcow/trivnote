@@ -5,13 +5,22 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
+/**
+ * Boolean scalars.  Booleans are singletons.
+ */
 public final
 class
 	TruthScalar
 extends
 	Scalar
 {
+	/**
+	 * True.  Represented as <q>{@code #t}</q>.
+	 */
 	public static final TruthScalar TRUE = new TruthScalar(true);
+	/**
+	 * False.  Represented as <q>{@code #f}</q>.
+	 */
 	public static final TruthScalar FALSE = new TruthScalar(false);
 
 	private final boolean value;
@@ -22,6 +31,10 @@ extends
 		this.value = value;
 	}
 
+	/**
+	 * {@return the value of this atom}  This value is
+	 * suitable for serialization.
+	 */
 	@Override
 	public final String
 	value()
@@ -29,12 +42,20 @@ extends
 		return value ? "#t" : "#f";
 	}
 
+	/**
+	 * {@return the boolean value of this scalar}
+	 */
 	public final boolean
 	truthValue()
 	{
 		return value;
 	}
 
+	/**
+	 * {@return the boolean scalar for the given value}
+	 *
+	 * @param value  the given value
+	 */
 	public static TruthScalar
 	of(boolean value)
 	{

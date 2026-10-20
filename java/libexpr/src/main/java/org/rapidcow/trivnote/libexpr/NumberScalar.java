@@ -81,6 +81,13 @@ permits
 	}
 
 	/**
+	 * {@return the value of this atom}  This value is
+	 * suitable for serialization.
+	 */
+	public abstract String
+	value();
+
+	/**
 	 * {@return the prefixes of this scalar}
 	 * This should be returned in the original casing and order.
 	 */

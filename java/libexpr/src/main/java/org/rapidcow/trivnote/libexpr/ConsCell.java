@@ -7,6 +7,14 @@ package org.rapidcow.trivnote.libexpr;
 
 import java.util.Objects;
 
+/**
+ * Simple cons cells.  They are simple in that they do
+ * not know their length or their terminator.
+ * This was the original implementation of {@link Cons}
+ * before it abstracted.
+ *
+ * @since %v
+ */
 public final
 class
 	ConsCell

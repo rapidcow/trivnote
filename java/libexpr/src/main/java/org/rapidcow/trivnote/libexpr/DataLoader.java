@@ -134,6 +134,26 @@ implements
 		return Optional.ofNullable(sym);
 	}
 
+	/**
+	 * {@return the registered list dispatch hook for the given name}
+	 *
+	 * @param name  the given name
+	 */
+	public final Optional <
+		Function<? super Cons, ? extends Cons>
+	> getDispatch(Datum name)
+	{
+		return Optional.ofNullable(cb.get(name));
+	}
+
+	/**
+	 * Register list dispatch hook for the given name.
+	 *
+	 * @param name  the given name
+	 * @param dispatch  callback function
+	 * @return this
+	 * @since %v
+	 */
 	public final DataLoader
 	useDispatch(
 		Datum name,
@@ -147,6 +167,13 @@ implements
 		return this;
 	}
 
+	/**
+	 * Un-register list dispatch hook for the given name.
+	 *
+	 * @param name  the given name
+	 * @return this
+	 * @since %v
+	 */
 	public final DataLoader
 	noDispatch(Datum name)
 	{
@@ -156,6 +183,12 @@ implements
 		return this;
 	}
 
+	/**
+	 * Un-register all list dispatch hooks
+	 *
+	 * @return this
+	 * @since %v
+	 */
 	public final DataLoader
 	clearDispatch()
 	{

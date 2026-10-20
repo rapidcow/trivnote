@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
 
+/**
+ * Cons cells with a known length.
+ */
 public final
 class
 	ConsList

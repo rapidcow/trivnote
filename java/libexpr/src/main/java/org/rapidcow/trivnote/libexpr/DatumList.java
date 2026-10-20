@@ -38,6 +38,12 @@ implements
 	 */
 	private long size = -1;
 
+	/**
+	 * Construct a list view.  All datums are
+	 * valid, though possibly improper lists.
+	 *
+	 * @param list  source datum
+	 */
 	public
 	DatumList(Datum list)
 	{
@@ -63,12 +69,21 @@ implements
 		tail = cList.tail();
 	}
 
+	/**
+	 * {@return the underlying source datum}
+	 */
+	@Override
 	public final Datum
 	head()
 	{
 		return head;
 	}
 
+	/**
+	 * {@return the list terminator}  The list
+	 * terminator is the final atom in the cons
+	 * chain.
+	 */
 	public final Datum
 	tail()
 	{
@@ -101,10 +116,31 @@ implements
 		tail = iter.rest();
 	}
 
-	public DatumList
+	/**
+	 * {@return whether this list is proper}
+	 * A list is proper if and only if its terminator
+	 * {@link #tail()} is nil.
+	 *
+	 * <p>
+	 * If you are doing this as a part of validation,
+	 * consider the stricter {@link requireProperTail}.
+	 */
+	public final boolean
+	isProperList()
+	{
+		return tail() == Nil.INSTANCE;
+	}
+
+	/**
+	 * Require this list be nil-terminated.
+	 *
+	 * @throws IllegalArgumentException if this list is not proper
+	 * @return this
+	 */
+	public final DatumList
 	requireProperTail()
 	{
-		if (tail() != Nil.INSTANCE) {
+		if (!isProperList()) {
 			throw new IllegalArgumentException("Improper tail");
 		}
 		return this;
@@ -123,9 +159,11 @@ implements
 	public DatumList
 	toProperList()
 	{
-		if (tail() == Nil.INSTANCE) {
+		/* Trigger the side-effect of computing list size. */
+		if (isProperList()) {
 			return this;
 		}
+		/* Observe racy field now! */
 		long mySize = size;
 		if (mySize == 0) {
 			return new DatumList(Nil.INSTANCE);

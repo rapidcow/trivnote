@@ -11,6 +11,10 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Associative list view into a datum.
+ * Note that this is not a multi-map.
+ */
 public final
 class
 	AssocList
@@ -21,6 +25,7 @@ implements
 {
 	private final Datum head;
 	private final long size;
+	/* Unique pair length.  (The name is bad, but eh.) */
 	private volatile long pLen = -1;
 
 	public
@@ -192,7 +197,7 @@ implements
 			/*
 			 * All keys are unique.  The deque is wasted,
 			 * but we won't have to do this for a second
-			 * time thanks to caching it. :)
+			 * time thanks to caching the pair-length. :)
 			 *
 			 * Callers with a memory budget may want to
 			 * inflict the side-effect of setting pLen

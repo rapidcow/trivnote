@@ -5,6 +5,9 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
+/*
+ * Note: these imports are for javadoc
+ */
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +31,8 @@ permits
 {
 	/**
 	 * {@return whether the datum is an atom}
+	 * This method checks for more than {@link Atom}
+	 * class: namely, nil is an atom devoid of value.
 	 *
 	 * @param node  the datum
 	 */
@@ -38,10 +43,16 @@ permits
 	}
 
 	/**
-	 * {@return whether datum is a list}  A list
-	 * is either a cons cell or nil.  A list is
-	 * iterable, though you must cast it to the
-	 * specific class to please the compiler.
+	 * {@return whether datum is a list}
+	 * A list is either a cons cell or nil.
+	 * An atom is <em>not</em> considered a list, despite
+	 * {@link DatumList} treating it as an empty list with
+	 * an improper terminator.
+	 *
+	 * <p>
+	 * This is a basic type check and does not check that
+	 * the terminator is nil by the way.  To validate a
+	 * <em>proper</em> list, use {@link DatumList#isProperList}.
 	 *
 	 * @param node  the datum
 	 */
@@ -53,8 +64,10 @@ permits
 
 	/**
 	 * {@return the datum as a proper list}
+	 * This value conforms to the interface
+	 * <code>{@linkplain List List}&lt;{@linkplain Datum Datum},{@linkplain Datum Datum}&gt;</code>.
 	 *
-	 * @param node  datum
+	 * @param node  the datum
 	 * @throws IllegalArgumentException if the list
 	 *    terminator is not nil; i.e. improper list
 	 * @since %v
@@ -66,11 +79,12 @@ permits
 	}
 
 	/**
-	 * Return the car of given datum.
+	 * {@return the car of the given datum}
 	 *
-	 * @param node  datum
+	 * @param node  the given datum
 	 * @throws IllegalArgumentException if not a cons
 	 * @since %v
+	 * @see Cons#car()
 	 */
 	public static Datum
 	car(Datum node)
@@ -82,11 +96,12 @@ permits
 	}
 
 	/**
-	 * Return the cdr of given datum.
+	 * {@return the cdr of the given datum}
 	 *
-	 * @param node  datum
+	 * @param node  the given datum
 	 * @throws IllegalArgumentException if not a cons
 	 * @since %v
+	 * @see Cons#cdr()
 	 */
 	public static Datum
 	cdr(Datum node)
@@ -98,11 +113,12 @@ permits
 	}
 
 	/**
-	 * Return the value of given datum.
+	 * {@return the value of the given datum}
 	 *
-	 * @param node  datum
+	 * @param node  the given datum
 	 * @throws IllegalArgumentException not an atom
 	 * @since %v
+	 * @see Atom#value()
 	 */
 	public static String
 	value(Datum node)
@@ -122,17 +138,10 @@ permits
 		return Cons.fromList(list);
 	}
 
-	/* This may be a good thing to write
-	 * if your friend doesn't know Lisp */
-
-	public static Nil
-	emptyList()
-	{
-		return Nil.INSTANCE;
-	}
-
 	/**
 	 * {@return the datum as an associative list}
+	 * This value conforms to the interface
+	 * <code>{@linkplain Map Map}&lt;{@linkplain Datum Datum},{@linkplain Datum Datum}&gt;</code>.
 	 *
 	 * @param node  datum
 	 * @throws IllegalArgumentException if the list

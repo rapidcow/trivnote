@@ -241,7 +241,12 @@ implements
 	/**
 	 * Creates a non-empty chain with the last datum as its tail.
 	 *
-	 * @throws NullPointerException if any argument or array element is null
+	 * @param car  first element
+	 * @param cdr  second element
+	 * @param etc  optionally more elements
+	 * @throws NullPointerException if any argument or
+	 *    array element is {@code null}
+	 * @return the concatenated cons chain
 	 */
 	public static Cons
 	of(Datum car, Datum cdr, Datum... etc)
@@ -253,9 +258,14 @@ implements
 	}
 
 	/**
-	 * Creates a non-empty chain with the given tail.
+	 * Creates a non-empty cons chain with the given tail.
 	 *
-	 * @throws NullPointerException if any argument or array element is null
+	 * @param car  first element
+	 * @param etc  rest elements
+	 * @param tail  list terminator
+	 * @throws NullPointerException if any argument or
+	 *    array element is {@code null}
+	 * @return the concatenated cons chain
 	 */
 	public static Cons
 	of(Datum car, Datum[] etc, Datum tail)
@@ -269,7 +279,11 @@ implements
 	/**
 	 * Creates a non-empty proper list.
 	 *
+	 * @param car  first element
+	 * @param etc  rest elements
+	 *
 	 * @throws NullPointerException if any argument or array element is null
+	 * @return the concatenated cons chain
 	 */
 	public static Cons
 	ofList(Datum car, Datum... etc)
@@ -284,8 +298,10 @@ implements
 	 * Creates a cons from a non-empty list.  If list is
 	 * possibly empty, use {@link Datum#fromList(List)}.
 	 *
+	 * @param list  list of origin
 	 * @throws IllegalArgumentException if {@code list} is empty
 	 * @throws NullPointerException if {@code list} or any element is null
+	 * @return the transformed cons chain
 	 */
 	public static ConsList
 	fromList(List<? extends Datum> list)

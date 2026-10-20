@@ -10,13 +10,15 @@ package org.rapidcow.trivnote.libexpr;
  * a datum, but are otherwise not a datum themselves.
  * So they are not serializable; but you can make it
  * by having them return their underlying storage!
+ *
+ * @since %v
  */
 public
 interface
 	DatumView
 {
 	/**
-	 * {@return the underlying datum}
+	 * {@return the underlying source datum}
 	 * The return value should always return
 	 * the same object.
 	 */
