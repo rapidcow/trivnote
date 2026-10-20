@@ -584,6 +584,57 @@ class ReaderTest
 		assertNull(loader.lastIOException());
 	}
 
+	private void checkSymbolEscape(String source, String expected)
+	{
+		DataLoader reader = new DataLoader(new StringReader("|" + source + "|"));
+		assertEquals(Symbol.of(expected), reader.next(), source);
+		assertNull(reader.lastIOException());
+		assertEquals(false, reader.hasNext());
+	}
+
+	/* Inside |...| the escapes are the same as inside "...". */
+	@Test void testSymbolNamedEscapes()
+	{
+		checkSymbolEscape("\\a\\b\\t\\n\\v\\f\\r\\e\\\"\\\\\\|", "\007\b\t\n\013\014\r\033\"\\|");
+		checkSymbolEscape("\\q", "q");
+	}
+
+	@Test void testSymbolNumericEscapes()
+	{
+		checkSymbolEscape("\\101\\7", "A\007");
+		checkSymbolEscape("\\x41;\\xe9", "A;é");
+		checkSymbolEscape("\\x{41}\\x{E9}\\o{101}", "AéA");
+		checkSymbolEscape("\\x{1F600}", new String(Character.toChars(0x1F600)));
+		checkSymbolEscape("\\cA\\c?", "\001\177");
+	}
+
+	@Test void testSymbolEscapesStayInsideBars()
+	{
+		/* an escaped bar does not close the symbol */
+		loader = new DataLoader(new StringReader("(|a\\|b| c)"));
+		token = loader.next();
+		assertEquals(Cons.ofList(Symbol.of("a|b"), Symbol.of("c")), token);
+		assertNull(loader.lastIOException());
+
+		/* escapes work in every |...| piece of a symbol */
+		loader = new DataLoader(new StringReader("a|\\x41|b|\\n|c"));
+		token = loader.next();
+		assertEquals(Symbol.of("aAb\nc"), token);
+		assertNull(loader.lastIOException());
+	}
+
+	@Test void testSymbolBadEscapes()
+	{
+		loader = new DataLoader(new StringReader("|a\\"));
+		assertThrows(DataLoadingException.class, () -> loader.next());
+
+		loader = new DataLoader(new StringReader("|a\\x{41"));
+		assertThrows(DataLoadingException.class, () -> loader.next());
+
+		loader = new DataLoader(new StringReader("|\\o41|"));
+		assertThrows(DataLoadingException.class, () -> loader.next());
+	}
+
 	/* A lone # is rejected, but |#| is a symbol named "#". */
 	@Test void testLoneHashIsRejected()
 	{

@@ -985,70 +985,88 @@ implements
 				sb.append((char) v);
 				continue;
 			}
-			v = readChar();
-			switch (v) {
-			case -1:
+			if (( v = readChar() ) == -1) {
 				throw loadingException("Unterminated quote");
-			case 'a': sb.append('\007'); break;  /* BEL */
-			case 'b': sb.append('\010'); break;  /* BS (backspace) */
-			case 't': sb.append('\011'); break;  /* HT (h-tab) */
-			case 'n': sb.append('\012'); break;  /* LF (new line) */
-			case 'v': sb.append('\013'); break;  /* VT (v-tab) */
-			case 'f': sb.append('\014'); break;  /* FF (new page) */
-			case 'r': sb.append('\015'); break;  /* CR */
-			case 'e': sb.append('\033'); break;  /* ESC */
-			case 'c':
-				w = readChar();
-				if (w < 0 || w > 127) {
-					throw loadingException(
-						"Expected ASCII character "
-						+ "after control escape");
-				}
-				sb.append((char) (w ^ '@'));
-				break;
-			case 'x': case 'o':  /* queso... 😋 */
-				w = readChar();
-				if (v == 'o' && w != '{') {
-					throw loadingException(
-						"Expected opening brace "
-						+ "after octal escape");
-				}
-				boolean curly = (w == '{');
-				strictAppendCodePoint(sb, readEscapeNumber(v == 'x' ? 16 : 8,
-					curly ? -1 : 2, curly ? readChar() : w, curly));
-				break;
-			case '0': case '1': case '2': case '3':
-			case '4': case '5': case '6': case '7':
-				strictAppendCodePoint(sb, readEscapeNumber(8, 3, v, false));
-				break;
-			case ' ': case '\t': case '\r': case '\n':
-				/* XXX: I don't know what this case means? */
-				while (v == ' ' || v == '\t') {
-					v = readChar();
-				}
-				if (v != '\r' && v != '\n') {
-					throw loadingException(
-						"Expected line ending in escape"
-					);
-				}
-				if (v == '\r') {
-					v = readChar();
-					if (v != '\n' && v != -1) {
-						unreadChar(v);
-					}
-				}
-				while (( v = readChar() ) == ' ' || v == '\t') {
-					/* Discard indentation following the line ending. */
-				}
-				if (v != -1) {
-					unreadChar(v);
-				}
-				break;
-			default:
-				sb.append((char) v);
 			}
+			readEscape(sb, v);
 		}
 		throw loadingException("Unterminated quote \"...\"");
+	}
+
+	/**
+	 * Processes the escape sequence whose first character after
+	 * the backslash is {@code v}, shared by {@code "..."} and
+	 * {@code |...|}.  Unknown escapes stand for the character itself,
+	 * which is how {@code \"}, {@code \\} and {@code \|} work.
+	 *
+	 * @param sb  str buf
+	 * @param v   character code; must not be -1.
+	 */
+	private void
+	readEscape(StringBuilder sb, int v)
+	throws
+		IOException
+	{
+		int w;
+		switch (v) {
+		case 'a': sb.append('\007'); break;  /* BEL */
+		case 'b': sb.append('\010'); break;  /* BS (backspace) */
+		case 't': sb.append('\011'); break;  /* HT (h-tab) */
+		case 'n': sb.append('\012'); break;  /* LF (new line) */
+		case 'v': sb.append('\013'); break;  /* VT (v-tab) */
+		case 'f': sb.append('\014'); break;  /* FF (new page) */
+		case 'r': sb.append('\015'); break;  /* CR */
+		case 'e': sb.append('\033'); break;  /* ESC */
+		case 'c':
+			w = readChar();
+			if (w < 0 || w > 127) {
+				throw loadingException(
+					"Expected ASCII character "
+					+ "after control escape");
+			}
+			sb.append((char) (w ^ '@'));
+			break;
+		case 'x': case 'o':  /* queso... 😋 */
+			w = readChar();
+			if (v == 'o' && w != '{') {
+				throw loadingException(
+					"Expected opening brace "
+					+ "after octal escape");
+			}
+			boolean curly = (w == '{');
+			strictAppendCodePoint(sb, readEscapeNumber(v == 'x' ? 16 : 8,
+				curly ? -1 : 2, curly ? readChar() : w, curly));
+			break;
+		case '0': case '1': case '2': case '3':
+		case '4': case '5': case '6': case '7':
+			strictAppendCodePoint(sb, readEscapeNumber(8, 3, v, false));
+			break;
+		case ' ': case '\t': case '\r': case '\n':
+			/* XXX: I don't know what this case means? */
+			while (v == ' ' || v == '\t') {
+				v = readChar();
+			}
+			if (v != '\r' && v != '\n') {
+				throw loadingException(
+					"Expected line ending in escape"
+				);
+			}
+			if (v == '\r') {
+				v = readChar();
+				if (v != '\n' && v != -1) {
+					unreadChar(v);
+				}
+			}
+			while (( v = readChar() ) == ' ' || v == '\t') {
+				/* Discard indentation following the line ending. */
+			}
+			if (v != -1) {
+				unreadChar(v);
+			}
+			break;
+		default:
+			sb.append((char) v);
+		}
 	}
 
 	private int
@@ -1072,12 +1090,11 @@ implements
 					bar = false;
 				}
 				else {
-					if (v == '\\') {
-						if (( w = readChar() ) != -1) {
-							v = w;
-						}
+					if (v == '\\' && ( w = readChar() ) != -1) {
+						readEscape(sb, (char) w);
+					} else {
+						sb.append((char) v);
 					}
-					sb.append((char) v);
 				}
 			}
 			else {
