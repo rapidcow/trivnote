@@ -46,9 +46,9 @@ permits
 	/**
 	 * {@return whether datum is a list}
 	 * A list is either a cons cell or nil.
-	 * An atom is <em>not</em> considered a list, despite
-	 * {@link DatumList} treating it as an empty list with
-	 * an improper terminator.
+	 * An non-nil atom is <em>not</em> considered a list,
+	 * despite {@link DatumList} treating it as an empty
+	 * list with an improper terminator.
 	 *
 	 * <p>
 	 * This is a basic type check and does not check that
