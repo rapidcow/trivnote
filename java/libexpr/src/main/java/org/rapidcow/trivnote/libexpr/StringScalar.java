@@ -24,6 +24,8 @@ extends
 	 * Constructs a new string scalar.
 	 * <b>Do not depend on this.</b>  Use {@link
 	 * Scalar#ofString(String)}.
+	 *
+	 * @param value  the given value
 	 */
 	public
 	StringScalar(String value)
