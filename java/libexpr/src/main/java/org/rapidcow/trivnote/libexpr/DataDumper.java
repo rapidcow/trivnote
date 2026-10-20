@@ -98,7 +98,7 @@ class
 		IOException
 	{
 		String value = name.value();
-		if (!needsBars(value)) {
+		if (!needsQuoting(value)) {
 			out.write(value);
 			return;
 		}
@@ -112,7 +112,7 @@ class
 	 * as something other than a symbol if written bare}
 	 */
 	private static boolean
-	needsBars(String value)
+	needsQuoting(String value)
 	{
 		if (value.isEmpty() || value.equals(".") || value.charAt(0) == '#') {
 			return true;
