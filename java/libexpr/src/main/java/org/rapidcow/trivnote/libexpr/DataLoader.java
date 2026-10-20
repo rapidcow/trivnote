@@ -138,6 +138,7 @@ implements
 	 * {@return the registered list dispatch hook for the given name}
 	 *
 	 * @param name  the given name
+	 * @since %v
 	 */
 	public final Optional <
 		Function<? super Cons, ? extends Cons>
@@ -310,6 +311,7 @@ implements
 	 *
 	 * @return the character read, or -1 on EOF
 	 * @throws IOException on I/O error
+	 * @since %v
 	 */
 	protected final int
 	readChar()
@@ -339,6 +341,7 @@ implements
 	 *
 	 * @param v  the character most recently returned by {@link #readChar()}
 	 * @throws IOException on I/O error
+	 * @since %v
 	 */
 	protected final void
 	unreadChar(int v)
@@ -491,6 +494,7 @@ implements
 	 * @param s  final list datum
 	 * @param e  list terminator
 	 * @return a list
+	 * @since %v
 	 */
 	protected Cons
 	makeList(Deque<Datum> q, Datum s, Datum e)

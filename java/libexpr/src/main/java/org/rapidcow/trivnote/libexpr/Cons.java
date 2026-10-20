@@ -131,6 +131,7 @@ implements
 	 *
 	 * @param o  object to compare
 	 * @return whether this equals {@code o}
+	 * @since %v
 	 */
 	@Override
 	public final boolean
@@ -181,6 +182,7 @@ implements
 	 * {@return hash code for this}  Equal cons cells
 	 * hash to the same code.
 	 *
+	 * @since %v
 	 * @implNote This implementation uses a stack to
 	 *    traverse cons children with an absent hash,
 	 *    instead of recursion which can overflow the
@@ -247,6 +249,7 @@ implements
 	 * @throws NullPointerException if any argument or
 	 *    array element is {@code null}
 	 * @return the concatenated cons chain
+	 * @since %v
 	 */
 	public static Cons
 	of(Datum car, Datum cdr, Datum... etc)
@@ -266,6 +269,7 @@ implements
 	 * @throws NullPointerException if any argument or
 	 *    array element is {@code null}
 	 * @return the concatenated cons chain
+	 * @since %v
 	 */
 	public static Cons
 	of(Datum car, Datum[] etc, Datum tail)
@@ -284,6 +288,7 @@ implements
 	 *
 	 * @throws NullPointerException if any argument or array element is null
 	 * @return the concatenated cons chain
+	 * @since %v
 	 */
 	public static Cons
 	ofList(Datum car, Datum... etc)
@@ -302,6 +307,7 @@ implements
 	 * @throws IllegalArgumentException if {@code list} is empty
 	 * @throws NullPointerException if {@code list} or any element is null
 	 * @return the transformed cons chain
+	 * @since %v
 	 */
 	public static ConsList
 	fromList(List<? extends Datum> list)

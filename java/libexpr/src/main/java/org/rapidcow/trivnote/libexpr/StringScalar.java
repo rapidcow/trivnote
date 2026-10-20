@@ -11,6 +11,8 @@ import java.util.Objects;
  * The string scalar type.  The only method
  * of use here is {@code value()}, which is
  * specified by {@link Atom#value()}.
+ *
+ * @since %v
  */
 public final
 class

@@ -14,6 +14,8 @@ import java.util.Set;
 /**
  * Associative list view into a datum.
  * Note that this is not a multi-map.
+ *
+ * @since %v
  */
 public final
 class

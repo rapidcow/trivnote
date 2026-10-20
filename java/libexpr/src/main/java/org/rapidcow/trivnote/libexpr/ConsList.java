@@ -12,6 +12,8 @@ import java.util.Objects;
 
 /**
  * Cons cells with a known length.
+ *
+ * @since %v
  */
 public final
 class
