@@ -22,3 +22,5 @@
 	permission = rwsx
 [shell "jackylin0036@gmail.com"]
 	permission = rx
+[shell "rapidcow@RCs-Mac-mini.local"]
+	permission = rwsx
