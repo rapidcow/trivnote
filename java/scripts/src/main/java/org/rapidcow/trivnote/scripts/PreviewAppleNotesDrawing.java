@@ -155,9 +155,9 @@ public class PreviewAppleNotesDrawing
 		Symbol pointKey = getSymbol("point");
 		Symbol radiusKey = getSymbol("radius");
 		List<Point> points = new ArrayList<>();
-		for (Datum node : Datum.asList(pointsNode)) {
+		for (Datum node : Datum.asProperList(pointsNode)) {
 			Map<Datum,Datum> fields = Datum.asAlist(node).requireUniqueKeys();
-			List<Datum> xy = Datum.asList(fields.get(pointKey));
+			List<Datum> xy = Datum.asProperList(fields.get(pointKey));
 			if (xy.size() != 2) {
 				throw up( "wrong arity" );
 			}
@@ -179,7 +179,7 @@ public class PreviewAppleNotesDrawing
 	{
 		List<Datum> rest = new ArrayList<>();
 		Symbol wantTag = getSymbol(tag);
-		for (Datum elt : Datum.asList(node)) {
+		for (Datum elt : Datum.asProperList(node)) {
 			if (!(elt instanceof Cons cp) || !wantTag.equals(cp.car())) {
 				throw up( "expected a (" + tag + " ...) form: " + elt );
 			}
@@ -212,7 +212,7 @@ public class PreviewAppleNotesDrawing
 		List<Ink> brushKit = new ArrayList<>();
 		for (Datum node : tagged("ink", root)) {
 			Map<Datum,Datum> props = Datum.asAlist(node).requireUniqueKeys();
-			List<Datum> colorList = Datum.asList(props.get(getSymbol("color")));
+			List<Datum> colorList = Datum.asProperList(props.get(getSymbol("color")));
 			float[] chan = new float[4];
 			int i = 0;
 			if (colorList.size() > 4) {
@@ -228,7 +228,7 @@ public class PreviewAppleNotesDrawing
 
 	private static Clock loadClock(Datum node)
 	{
-		List<Datum> list = Datum.asList(node);
+		List<Datum> list = Datum.asProperList(node);
 		int[] args = new int[3];
 		int i = 0;
 		if (list.size() > 3) {
@@ -267,7 +267,7 @@ public class PreviewAppleNotesDrawing
 
 	private static AffineTransform loadTransform(Datum node)
 	{
-		List<Datum> list = Datum.asList(node);
+		List<Datum> list = Datum.asProperList(node);
 		float[] args = new float[6];
 		int i = 0;
 		if (list.size() != 6) {
