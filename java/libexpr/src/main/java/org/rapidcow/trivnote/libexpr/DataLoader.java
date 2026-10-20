@@ -144,6 +144,9 @@ implements
 		Function<? super Cons, ? extends Cons>
 	> getDispatch(Datum name)
 	{
+		if (cb == null) {
+			return Optional.empty();
+		}
 		return Optional.ofNullable(cb.get(name));
 	}
 
