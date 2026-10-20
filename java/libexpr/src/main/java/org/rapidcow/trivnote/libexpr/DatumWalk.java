@@ -16,6 +16,7 @@ public final
 class
 	DatumWalk
 implements
+	DatumView,
 	ListIterator<Datum>
 {
 	private final Datum head;

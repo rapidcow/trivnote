@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * An immutable pair of {@link Datum}s.
  * A chain of cons cells created by recursively
- * appending to cdr forms a list.
+ * storing cons cells in the cdr forms a list.
  *
  * <p>
  * If the list terminates with a meaningless datum
@@ -27,32 +27,31 @@ implements
 {
 	/**
 	 * {@return the car of this cons cell}  The return
-	 * value may not be an identical datum object, but its
-	 * hash code should be identical.  car may not be null.
+	 * value may not be an identical datum object, but
+	 * it must be equal.  car may not be null.
 	 */
 	public abstract Datum
 	car();
 
 	/**
 	 * {@return the car of this cons cell}  The return
-	 * value may not be an identical datum object, but its
-	 * hash code should be identical.  cdr may not be null.
+	 * value may not be an identical datum object, but
+	 * it must be equal.  cdr may not be null.
 	 */
 	public abstract Datum
 	cdr();
 
 	/*
-	 * Cached structural hash; 0 means "not computed yet".  A hash
-	 * that happens to work out to 0 is stored as 1 instead, so the
-	 * cache never misses forever.  Racy but benign, like String's:
-	 * every thread computes the same value for an immutable cell.
+	 * Cached hash.  0 is a served sentinel value.  No thread
+	 * locks are acquired when read/writing to this, but this
+	 * should be fine as hashing is deterministic.
 	 *
 	 * Note: If we implement serializable, this field is transient.
 	 */
 	private int hash;
 
 	/*
-	 * Context for the cons cell whose hash is being computed.
+	 * Hashing context for the current cons cell.
 	 * We keep `p' (stands for "pointer") as a reference to this
 	 * cons cell, so that we can publish the cache for future
 	 * hashCode() and equals() calls.  `a' stores the accumulated
@@ -72,6 +71,11 @@ implements
 			p = c;
 		}
 
+		/**
+		 * Update with the hash code of the non-null child datum.
+		 *
+		 * @param h  hash code
+		 */
 		void
 		fold(int h)
 		{
@@ -79,12 +83,19 @@ implements
 			n++;
 		}
 
+		/**
+		 * {@return the accumulated hash}  This value is never
+		 * 0, because we use 0 to represent uncomputed cache.
+		 */
 		int
 		hash()
 		{
 			return (a == 0) ? 1 : a;
 		}
 
+		/*
+		 * Iterate!
+		 */
 		Datum
 		next()
 		{
@@ -94,6 +105,12 @@ implements
 			);
 		}
 
+		/*
+		 * Got s'more?
+		 *
+		 * Note: this can entirely be spelled as hasNext().
+		 * I just find this funnier.  Also I was hungry af.
+		 */
 		boolean
 		sMore()
 		{
@@ -102,15 +119,15 @@ implements
 	}
 
 	/**
-	 * Returns whether this equals {@code o}.  Two conses are equal
-	 * if their cars are equal and their cdrs are equal, regardless
-	 * of their concrete classes.
+	 * Returns whether this equals {@code o}.  Two cons
+	 * cells are equal if their cars are equal and their
+	 * cdrs are equal.
 	 *
-	 * @implNote The comparison walks both trees with an explicit
-	 *    stack, so neither long lists nor deep nesting can overflow
-	 *    the call stack.  Pairs of conses that both already cached
-	 *    their hash codes are told apart by those codes alone when
-	 *    the codes differ.
+	 * @implNote This implementation uses a stack to compare
+	 *    cons children, instead of recursion which can over
+	 *    the stack memory fast.  Cached hash codes are used
+	 *    to reject peers early, but they are not expected,
+	 *    and will not be populated if absent.
 	 *
 	 * @param o  object to compare
 	 * @return whether this equals {@code o}
@@ -161,12 +178,15 @@ implements
 	}
 
 	/**
-	 * {@return hash code for this}  Equal conses hash to
-	 * the same code.  The code is computed once and cached.
+	 * {@return hash code for this}  Equal cons cells
+	 * hash to the same code.
 	 *
-	 * @implNote Conses below this one that have not cached
-	 *    their codes yet get them computed and cached along the
-	 *    way, using an explicit stack rather than recursion.
+	 * @implNote This implementation uses a stack to
+	 *    traverse cons children with an absent hash,
+	 *    instead of recursion which can overflow the
+	 *    stack memory fast.  The hash is cached; and
+	 *    because 0 is used as the sentinel, it never
+	 *    returns 0.  (The choice of 0 is arbitrary.)
 	 */
 	@Override
 	public final int

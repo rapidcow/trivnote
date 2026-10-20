@@ -23,6 +23,7 @@ class
 extends
 	AbstractSequentialList<Datum>
 implements
+	DatumView,
 	Iterable<Datum>
 {
 	private final Datum head;
