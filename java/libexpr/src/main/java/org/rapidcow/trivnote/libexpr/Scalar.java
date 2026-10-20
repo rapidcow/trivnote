@@ -16,7 +16,7 @@ package org.rapidcow.trivnote.libexpr;
  * A {@code Scalar} is one of three values: boolean,
  * {@code #t} ({@link TruthScalar#TRUE}) and {@code #f}
  * ({@link TruthScalar#FALSE}); free-form strings (via
- * {@link Scalar#ofString(String)}; and numbers (via
+ * {@link Scalar#ofString(String)}); and numbers (via
  * {@link Scalar#ofNumber(String)}).
  *
  * <p>Scalars are compared by {@link #value} for equality
