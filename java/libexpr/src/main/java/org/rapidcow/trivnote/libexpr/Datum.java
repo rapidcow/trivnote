@@ -17,9 +17,10 @@ import java.util.Map;
  * or {@link Nil}.
  *
  * <p>
- * Note that {@link Nil} is both an <q>atom</q> (to be
- * distinguished from the {@link Atom} class, which is
- * exclusively atoms with a value) and a <q>list</q>.
+ * Note that {@link Nil} is both an <q>{@linkplain #isAtom(Datum) atom}</q>
+ * (to be distinguished from the {@link Atom} class, which is
+ * exclusively atoms with a {@linkplain Atom#value() value}) and a
+ * <q>{@linkplain #isList list}</q>.
  */
 public sealed
 interface
