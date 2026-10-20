@@ -118,7 +118,6 @@ class NumberParser
 # [<sign>]
 	[+-]?)
 (?<mantissa>
-# Names from 
 # (<digits [% base %]>)+ "#"* ["."] "#"*
 	[% digit %]+ \\#* [.]? \\#*
 # [(<digits [% base %]>)+] "." <digits [% base %]>)+ "#"*
