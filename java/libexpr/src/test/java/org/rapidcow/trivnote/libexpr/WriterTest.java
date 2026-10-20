@@ -109,7 +109,7 @@ class WriterTest
 		IOException
 	{
 		assertDumps("|caf\\x{E9}|", Symbol.of("café"));
-		assertDumps("|\\x{4E2D}\\x{6587}|", Symbol.of("中文"));
+		assertDumps("|\\x{8A18}\\x{61B6}|", Symbol.of("記憶"));
 		assertDumps("|\\x{1F600}|", Symbol.of("😀"));
 	}
 
