@@ -21,6 +21,16 @@ import java.util.Map;
  * (to be distinguished from the {@link Atom} class, which is
  * exclusively atoms with a {@linkplain Atom#value() value}) and a
  * <q>{@linkplain #isList(Datum) list}</q>.
+ *
+ * <p>
+ * {@code Datum} promises no interface methods explicitly,
+ * though through being a sealed interface it limits the
+ * classes that can implement it.  For that reason we can
+ * guarantee that is all datums implement
+ * <code>{@linkplain Object#hashCode() hashCode()}</code> and
+ * <code>{@linkplain Object#equals(Object) equals(Object)}</code>
+ * in a way such that they are compared by value, not by
+ * object identity.
  */
 public sealed
 interface
