@@ -20,7 +20,7 @@ import java.util.Map;
  * Note that {@link Nil} is both an <q>{@linkplain #isAtom(Datum) atom}</q>
  * (to be distinguished from the {@link Atom} class, which is
  * exclusively atoms with a {@linkplain Atom#value() value}) and a
- * <q>{@linkplain #isList list}</q>.
+ * <q>{@linkplain #isList(Datum) list}</q>.
  */
 public sealed
 interface
@@ -46,14 +46,14 @@ permits
 	/**
 	 * {@return whether datum is a list}
 	 * A list is either a cons cell or nil.
-	 * An non-nil atom is <em>not</em> considered a list,
+	 * A non-nil atom is <em>not</em> considered a list,
 	 * despite {@link DatumList} treating it as an empty
 	 * list with an improper terminator.
 	 *
 	 * <p>
 	 * This is a basic type check and does not check that
-	 * the terminator is nil by the way.  To validate a
-	 * <em>proper</em> list, use {@link DatumList#isProperList}.
+	 * the terminator is nil.  To validate a
+	 * <em>proper</em> list, use {@link DatumList#isProperList()}.
 	 *
 	 * @param node  the datum
 	 */
@@ -65,8 +65,9 @@ permits
 
 	/**
 	 * {@return the datum as a proper list}
-	 * This value conforms to the interface
-	 * <code>{@linkplain List List}&lt;{@linkplain Datum Datum},{@linkplain Datum Datum}&gt;</code>.
+	 * The returned view implements {@code List<Datum>} and
+	 * retains the source datum without copying its elements.
+	 * Nil produces an empty view.
 	 *
 	 * @param node  the datum
 	 * @throws IllegalArgumentException if the list
@@ -117,7 +118,8 @@ permits
 	 * {@return the value of the given datum}
 	 *
 	 * @param node  the given datum
-	 * @throws IllegalArgumentException not an atom
+	 * @throws IllegalArgumentException if {@code node} is not an
+	 *    {@link Atom} instance; nil has no value
 	 * @since %v
 	 * @see Atom#value()
 	 */
@@ -130,6 +132,17 @@ permits
 		throw new IllegalArgumentException("not an atom");
 	}
 
+	/**
+	 * {@return a proper list containing the given elements in order}
+	 * An empty source produces {@link Nil#INSTANCE}.  Otherwise,
+	 * the elements are copied into a cons list; later changes to
+	 * the source list do not affect the returned datum.
+	 *
+	 * @param list  the source elements
+	 * @throws NullPointerException if the list or any element is null
+	 * @since %v
+	 * @see Cons#fromList(List)
+	 */
 	public static Datum
 	fromList(List<? extends Datum> list)
 	{
@@ -141,13 +154,16 @@ permits
 
 	/**
 	 * {@return the datum as an associative list}
-	 * This value conforms to the interface
-	 * <code>{@linkplain Map Map}&lt;{@linkplain Datum Datum},{@linkplain Datum Datum}&gt;</code>.
+	 * The returned view implements {@code Map<Datum, Datum>}.
+	 * Each element must be a cons whose car is the key and whose
+	 * cdr is the value.  If keys compare equal, the first entry
+	 * supplies the value.  Nil produces an empty view.
 	 *
 	 * @param node  datum
 	 * @throws IllegalArgumentException if the list
 	 *    is not a proper list, or the list consists
-	 *    of any non-cons datuk
+	 *    of any non-cons datum
+	 * @throws NullPointerException if {@code node} is null
 	 * @since %v
 	 */
 	public static AssocList
@@ -156,6 +172,18 @@ permits
 		return new AssocList(node);
 	}
 
+	/**
+	 * {@return an associative list view of a copy of the map entries}
+	 * Entries become cons pairs in the iteration order of the
+	 * source map's entry set.  The underlying list is proper and
+	 * is nil for an empty map.  Later changes to the source map
+	 * do not affect the returned view.
+	 *
+	 * @param map  the source key-value mappings
+	 * @throws NullPointerException if the map, any key, or any value is null
+	 * @since %v
+	 * @see AssocList#head()
+	 */
 	public static AssocList
 	fromMap(Map<? extends Datum, ? extends Datum> map)
 	{
