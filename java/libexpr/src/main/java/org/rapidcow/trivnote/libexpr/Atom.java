@@ -17,7 +17,7 @@ package org.rapidcow.trivnote.libexpr;
  * </ul>
  *
  * <p>
- * An atom’s value is a freeform Unicode string,
+ * An atom’s value is a free-form Unicode string,
  * represented by {@link #value()}.
  */
 public sealed
