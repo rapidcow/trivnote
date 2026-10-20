@@ -36,8 +36,8 @@ package org.rapidcow.trivnote.libexpr;
  *     also be in fraction notation, in which case the
  *     numerator and denominator are unsigned integers
  *     separated by {@code /}.  Because of how the way
- *     this is spelled is awfully similar to “sign”, it
- *     is given as “mantissa” in the method name here.
+ *     this is spelled is awfully similar to <q>sign</q>, it
+ *     is given as <q>mantissa</q> in the method name here.
  *
  *   <li><em>Exponent</em>: Optional powers of 10
  *     exponent of the form {@code e+N} or powers of
