@@ -193,8 +193,8 @@ foreach (sort keys %REPLACE) {
 		print "REPLACE $this WITH $that\n";
 	}
 }
-while (my ($sha, $ref) = each %refs) {
-	print $REPLACE{$sha}, " ", $ref, "\n";
+foreach my $sha (sort keys %refs) {
+	print $REPLACE{$sha}, " ", $refs{$sha}, "\n";
 }
 
 sub replace_header
