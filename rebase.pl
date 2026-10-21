@@ -62,8 +62,31 @@ ef51449a273f03d8e4bd943898975287226afc95 refs/heads/libexpr/0.1.0
 b6598bd05c5d5a91f12f8b13a230861a331bf9f9 refs/tags/android/v0.0.0
 727b447999790b3967b56ee42e8a9ddf6c106371 refs/tags/libexpr/v0.0.0
 MAP
+# A commit that mentions another commit by its full hash has to be
+# rewritten after it, or the mention would keep the old hash (this
+# can happen across branches, where neither is the other's ancestor).
+# Treat each mention as one more edge next to the parent edges.
+my %deps = map { $_ => [ @{$parents{$_}} ] } keys %parents;
+{
+	local $/ = "\0";
+	my %mentions;
+	foreach (`git log --all --format=%H%n%B%x00`) {
+		chomp;
+		s/\A\s+//;
+		next unless length;
+		my ($sha, $body) = split /\n/, $_, 2;
+		$mentions{$sha} = $body // '';
+	}
+	foreach my $sha (sort keys %mentions) {
+		my %seen;
+		foreach (lc($mentions{$sha}) =~ /\b([0-9a-f]{40})\b/g) {
+			next if $_ eq $sha || $seen{$_}++ || !exists $mentions{$_};
+			push @{$deps{$sha}}, $_;
+		}
+	}
+}
 # Reverse topological sort
-my @walk = reachable(\%parents, keys %refs);
+my @walk = reachable(\%deps, keys %refs);
 
 #
 # Non-recursive version of:
