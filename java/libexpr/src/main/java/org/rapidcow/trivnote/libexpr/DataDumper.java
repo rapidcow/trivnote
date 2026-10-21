@@ -211,7 +211,7 @@ class
 			case '\033': out.write("\\e"); break;
 			default:
 				if (v == quote) {
-					out.write("\\");
+					out.write('\\');
 					out.write(v);
 				} else if (' ' <= v && v < '\177') {
 					out.write(v);
@@ -219,18 +219,18 @@ class
 					if (v > '\377') {
 						out.write("\\x{");
 						out.write(Integer.toHexString(v));
-						out.write("}");
+						out.write('}');
 					}
 					else if (v >= '\100' || (i < value.length() &&
 						'0' <= (w = value.codePointAt(i)) && w <= '7'))
 					{
-						out.write("\\");
+						out.write('\\');
 						out.write((char) ('0' + (v >> 6)));
 						out.write((char) ('0' + ((v >> 3) & 7)));
 						out.write((char) ('0' + (v & 7)));
 					}
 					else {
-						out.write("\\");
+						out.write('\\');
 						if (v >= 8) {
 							out.write((char) ('0' + ((v >> 3) & 7)));
 						}
