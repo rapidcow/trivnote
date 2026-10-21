@@ -231,7 +231,10 @@ class
 					}
 					else {
 						out.write("\\");
-						out.write(Integer.toOctalString(v));
+						if (v >= 8) {
+							out.write((char) ('0' + ((v >> 3) & 7)));
+						}
+						out.write((char) ('0' + (v & 7)));
 					}
 				}
 			}
