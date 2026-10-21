@@ -7,8 +7,4 @@ dc8aa3caad7d0cf315d83484884c99dd67f510b2	refs/junk/oldtags/libexpr/v0.0.0
 727b447999790b3967b56ee42e8a9ddf6c106371	refs/junk/oldtags/libexpr/v0.0.0^{}
 f56e489744c58e26052438fcb31a585074a7482a	refs/notes/amends
 ce4f49e35f3d87ff23851d9615566d3f59f1eeb3	refs/notes/commits
-161e32068a70b019e2546d692f9c8c6cbb28ebd2	refs/tags/android/v0.0.0
-b6598bd05c5d5a91f12f8b13a230861a331bf9f9	refs/tags/android/v0.0.0^{}
-dc8aa3caad7d0cf315d83484884c99dd67f510b2	refs/tags/libexpr/v0.0.0
-727b447999790b3967b56ee42e8a9ddf6c106371	refs/tags/libexpr/v0.0.0^{}
 9ab6a19fd614e77818691e1dd97cc918afe94dd9	refs/tags/presplit_head
