@@ -63,7 +63,7 @@ ef51449a273f03d8e4bd943898975287226afc95 refs/heads/libexpr/0.1.0
 dc8aa3caad7d0cf315d83484884c99dd67f510b2 refs/tags/libexpr/v0.0.0
 MAP
 # Reverse topological sort
-my @walk = reachable(\%futures, keys %refs);
+my @walk = reachable(\%parents, keys %refs);
 
 #
 # Non-recursive version of:
