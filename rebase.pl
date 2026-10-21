@@ -193,8 +193,13 @@ foreach (sort keys %REPLACE) {
 		print "REPLACE $this WITH $that\n";
 	}
 }
-foreach my $sha (sort keys %refs) {
-	print $REPLACE{$sha}, " ", $refs{$sha}, "\n";
+my @refs = sort {
+	$a->[1] cmp $b->[1]
+	|| $a->[0] cmp $b->[0]
+} map [ $_ => $refs{$_} ], keys %refs;
+foreach my $refv (@refs) {
+	my ($sha, $ref) = @$refv;
+	print $REPLACE{$sha}, " ", $ref, "\n";
 }
 
 sub replace_header
