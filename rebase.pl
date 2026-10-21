@@ -189,7 +189,9 @@ print STDERR "\n" if -t STDERR;
 
 foreach (sort keys %REPLACE) {
 	my ($this, $that) = ($_, $REPLACE{$_});
-	print "REPLACE $this WITH $that\n";
+	if ($this ne $that) {
+		print "REPLACE $this WITH $that\n";
+	}
 }
 while (my ($sha, $ref) = each %refs) {
 	print $REPLACE{$sha}, " ", $ref, "\n";
