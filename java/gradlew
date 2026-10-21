@@ -107,11 +107,13 @@ cygwin=false
 msys=false
 darwin=false
 nonstop=false
+freebsd=false
 case "$( uname )" in                #(
   CYGWIN* )         cygwin=true  ;; #(
   Darwin* )         darwin=true  ;; #(
   MSYS* | MINGW* )  msys=true    ;; #(
-  NONSTOP* )        nonstop=true ;;
+  NONSTOP* )        nonstop=true ;; #(
+  FreeBSD* )        freebsd=true ;;
 esac
 
 
@@ -244,5 +246,22 @@ eval "set -- $(
         sed ' s~[^-[:alnum:]+,./:=@_]~\\&~g; ' |
         tr '\n' ' '
     )" '"$@"'
+
+#
+# Jansi's org/fusesource/jansi/AnsiConsole.java appears to
+# fall back to $TERM=dumb when its native library cannot be
+# loaded (java.lang.UnsatisfiedLinkError).  To bypass this,
+# we can force this for terminals I know to be "smart".
+#
+# This is by no means complete by the way; I'm writing this
+# off the top of my head.
+#
+if "$freebsd"
+then
+	if [ "$TERM" = "xterm-256color" ] || [ "$TERM" = "tmux-256color" ]
+	then
+		set -- -Djansi.mode=force "$@"
+	fi
+fi
 
 exec "$JAVACMD" "$@"
