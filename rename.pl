@@ -37,7 +37,7 @@ foreach my $name (@files) {
 	die "$name: $target already exists\n" if $target ne $name && -e $target;
 
 	say "$name: $count hash(es) updated",
-		($target ne $name ? ", renamed to $target" : "");
+		($target ne $name ? ", renamed to $target" : ".");
 	next if $dry;
 
 	if ($new ne $content) {
