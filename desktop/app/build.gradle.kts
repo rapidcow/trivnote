@@ -8,6 +8,9 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+
+    // Pulls in the platform-specific JavaFX modules and puts them on the module path.
+    id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
 repositories {
@@ -29,9 +32,22 @@ java {
     }
 }
 
+javafx {
+    version = "25"
+    modules("javafx.controls", "javafx.fxml")
+}
+
 application {
     // Define the main class for the application.
     mainClass = "org.rapidcow.trivnote.desktop.MainApplication"
+
+    // JavaFX loads its native libraries via System::load (JEP 472).
+    applicationDefaultJvmArgs = listOf("--enable-native-access=javafx.graphics")
+}
+
+tasks.named<JavaExec>("run") {
+    // The JavaFX plugin (0.1.0) sets up the module path in a doFirst action.
+    notCompatibleWithConfigurationCache("org.openjfx.javafxplugin touches the project at execution time")
 }
 
 tasks.named<Test>("test") {
