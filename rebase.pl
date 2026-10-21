@@ -146,7 +146,7 @@ sub reachable
 			}
 		}
 	}
-	reverse @list;
+	@list;
 }
 
 # Maintain nodes in the current graph and the rebased graph
