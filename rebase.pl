@@ -179,6 +179,21 @@ i did not tell eep!  sorry >n<
 EOM
 	}
 
+	my $content = get_all_content($tempfh);
+	# Most contents remain untouched, so probably
+	# do the check first to avoid pipe overhead...
+	my $newbody = $content;
+	# %REPLACE at the current instant should be just
+	# right.  (If a commit was ever able to mention a
+	# "future" commit, well.... let's just say, it
+	# wouldn't be our job to panic over anyways. :x)
+	while (my ($SK, $SV) = each %REPLACE) {
+		$newbody =~ s/\Q$SK\E/$SV/ig;
+	}
+	unless ($newbody eq $content) {
+		replace_content($tempfh, \$mem, $newbody);
+	}
+
 	seek $tempfh, 0, SEEK_SET;
 	$that = hash commit => <$tempfh>;
 	$REPLACE{$this} = $that;
