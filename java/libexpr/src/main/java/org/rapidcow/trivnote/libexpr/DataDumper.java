@@ -116,7 +116,13 @@ class
 		this(file, StandardCharsets.UTF_8);
 	}
 
-	private DataDumpingException
+	/**
+	 * Constructs a new dumping exception.
+	 *
+	 * @param message  exception message
+	 * @return a new dumping exception.
+	 */
+	protected DataDumpingException
 	dumpingException(String message)
 	{
 		return new DataDumpingException(message);
