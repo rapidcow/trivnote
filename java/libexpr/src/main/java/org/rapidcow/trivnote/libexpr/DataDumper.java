@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import static org.rapidcow.trivnote.libexpr.DataLoader.isPOSIXdigit;
 
 /**
- * S-expression writer.  This class is incomplete.
+ * S-expression writer.
  */
 public
 class
@@ -24,6 +24,62 @@ class
 	 * Output character stream.
 	 */
 	protected final Writer out;
+
+	private long maxDepth = Long.MAX_VALUE;
+	private long maxLength = Long.MAX_VALUE;
+	private boolean unicode;
+
+	/**
+	 * Limits list nesting, using the same convention as
+	 * {@link DataLoader#useDepthLimit(long)}.  Atoms have depth zero;
+	 * even an empty list needs depth one.  The default is unlimited.
+	 * The writer recurses per level; a high limit can still exhaust
+	 * the call stack.
+	 * @param depth maximum list nesting
+	 * @return this
+	 * @throws IllegalArgumentException if depth is negative
+	 */
+	public final DataDumper
+	useMaxDepth(long depth)
+	{
+		if (depth < 0) {
+			throw new IllegalArgumentException("Negative depth");
+		}
+		maxDepth = depth;
+		return this;
+	}
+
+	/**
+	 * Limits elements per list, excluding a dotted tail, as in
+	 * {@link DataLoader#useLengthLimit(long)}.  The default is unlimited.
+	 * This does not limit string length or total output size.
+	 * @param length maximum elements per list
+	 * @return this
+	 * @throws IllegalArgumentException if length is negative
+	 */
+	public final DataDumper
+	useMaxLength(long length)
+	{
+		if (length < 0) {
+			throw new IllegalArgumentException("Negative length");
+		}
+		maxLength = length;
+		return this;
+	}
+
+	/**
+	 * Allows literal Unicode in strings and quoted symbols.  By default
+	 * output is ASCII.  Controls and unpaired surrogates stay escaped.
+	 * The output encoding must support the characters being written.
+	 * @param enabled whether to emit Unicode literally
+	 * @return this
+	 */
+	public final DataDumper
+	useUnicode(boolean enabled)
+	{
+		unicode = enabled;
+		return this;
+	}
 
 	/**
 	 * Creates a writer from a character stream.
@@ -60,18 +116,34 @@ class
 		this(file, StandardCharsets.UTF_8);
 	}
 
-	private RuntimeException
+	private DataDumpingException
 	dumpingException(String message)
 	{
-		// TODO
-		return new RuntimeException(message);
+		return new DataDumpingException(message);
 	}
 
+	/**
+	 * Writes one datum.  Failure may leave partial output in the stream.
+	 * @param node datum to write
+	 * @throws IOException on output failure
+	 * @throws DataDumpingException if a configured limit is exceeded
+	 */
 	public void
 	writeDatum(Datum node)
 	throws
 		IOException
 	{
+		writeDatum(node, 0);
+	}
+
+	private void
+	writeDatum(Datum node, long depth)
+	throws
+		IOException
+	{
+		if ((node == Nil.INSTANCE || node instanceof Cons) && depth >= maxDepth) {
+			throw dumpingException("Lists nested deeper than " + maxDepth);
+		}
 		if (node == Nil.INSTANCE) {
 			out.write("()");
 			return;
@@ -85,7 +157,7 @@ class
 			return;
 		}
 		if (node instanceof Cons cell) {
-			writeList(cell);
+			writeList(cell, depth + 1);
 			return;
 		}
 		/* This is impossible to reach as Datum is sealed. */
@@ -184,8 +256,8 @@ class
 
 	/**
 	 * Writes the body of a {@code "..."} string or a {@code |...|}
-	 * symbol, as pure printable ASCII: {@code quote}, the backslash
-	 * and everything that is not printable ASCII are escaped.
+	 * symbol.  Delimiters and controls are escaped, as is non-ASCII
+	 * text unless Unicode output is enabled.
 	 *
 	 * @param value  the text to write
 	 * @param quote  the delimiter, {@code '"'} or {@code '|'}
@@ -215,6 +287,10 @@ class
 					out.write(v);
 				} else if (' ' <= v && v < '\177') {
 					out.write(v);
+				} else if (unicode && !Character.isISOControl(v)
+					&& !(v >= 0xd800 && v <= 0xdfff))
+				{
+					out.write(Character.toChars(v));
 				} else {
 					if (v > '\377') {
 						out.write("\\x{");
@@ -242,7 +318,7 @@ class
 	}
 
 	private void
-	writeList(Cons cell)
+	writeList(Cons cell, long depth)
 	throws
 		IOException
 	{
@@ -252,18 +328,21 @@ class
 		out.write("(");
 		boolean once = true;
 		while (walk.hasNext()) {
+			if (walk.position() >= maxLength) {
+				throw dumpingException("List longer than " + maxLength);
+			}
 			node = walk.next();
 			if (once) {
 				once = false;
 			} else {
 				out.write(" ");
 			}
-			writeDatum(node);
+			writeDatum(node, depth);
 		}
 		node = walk.rest();
 		if (node != Nil.INSTANCE) {
 			out.write(" . ");
-			writeDatum(node);
+			writeDatum(node, depth);
 		}
 		out.write(")");
 	}

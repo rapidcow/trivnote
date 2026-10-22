@@ -12,6 +12,7 @@ import java.io.StringWriter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("Data Dumper test")
 class WriterTest
@@ -173,5 +174,68 @@ class WriterTest
 		assertDumps("\"\\x{4e2d}\\x{6587}\"", Scalar.ofString("\u4e2d\u6587"));
 		/* a supplementary character is one escape, not two */
 		assertDumps("\"\\x{1f600}\"", Scalar.ofString("\uD83D\uDE00"));
+	}
+
+	@Test void testLimits()
+	throws IOException
+	{
+		for (String source : new String[] {"a", "()", "(a)", "(a b . c)", "(a (b))", "(())"}) {
+			Datum node = new DataLoader(new StringReader(source)).readDatum();
+			for (long depth = 0; depth <= 3; depth++) {
+				for (long length = 0; length <= 3; length++) {
+					StringWriter out = new StringWriter();
+					DataDumper dumper = new DataDumper(out)
+						.useMaxDepth(depth).useMaxLength(length);
+					DataLoader loader = new DataLoader(new StringReader(source))
+						.useDepthLimit(depth).useLengthLimit(length);
+					try {
+						loader.readDatum();
+					} catch (DataLoadingException e) {
+						assertThrows(DataDumpingException.class, () -> dumper.writeDatum(node));
+						continue;
+					}
+					dumper.writeDatum(node);
+					assertEquals(node, new DataLoader(new StringReader(out.toString()))
+						.useDepthLimit(depth).useLengthLimit(length).readDatum());
+				}
+			}
+		}
+	}
+
+	@Test void testLimitConfigurationAndReuse()
+	throws IOException
+	{
+		StringWriter out = new StringWriter();
+		DataDumper dumper = new DataDumper(out);
+		assertThrows(IllegalArgumentException.class, () -> dumper.useMaxDepth(-1));
+		assertThrows(IllegalArgumentException.class, () -> dumper.useMaxLength(-1));
+		dumper.useMaxDepth(1).useMaxLength(1);
+		Datum nested = new DataLoader(new StringReader("((a))")).readDatum();
+		assertThrows(DataDumpingException.class, () -> dumper.writeDatum(nested));
+		out.getBuffer().setLength(0);
+		dumper.writeDatum(Nil.INSTANCE);
+		dumper.writeDatum(Nil.INSTANCE);
+		assertEquals("()()", out.toString());
+		dumper.useMaxDepth(Long.MAX_VALUE).useMaxLength(Long.MAX_VALUE);
+		dumper.writeDatum(nested);
+	}
+
+	@Test void testUnicode()
+	throws IOException
+	{
+		for (Datum node : new Datum[] {
+			Scalar.ofString("café 記憶 😀\n\u0085\"\\"),
+			Symbol.of("café 記憶 😀\n\u0085|\\")
+		}) {
+			StringWriter out = new StringWriter();
+			DataDumper dumper = new DataDumper(out).useUnicode(true);
+			dumper.writeDatum(node);
+			String quote = node instanceof Symbol ? "|" : "\"";
+			assertEquals(quote + "café 記憶 😀\\n\\205\\" + quote + "\\\\" + quote, out.toString());
+			assertEquals(node, new DataLoader(new StringReader(out.toString())).readDatum());
+			out.getBuffer().setLength(0);
+			dumper.useUnicode(false).writeDatum(node);
+			assertEquals(dump(node), out.toString());
+		}
 	}
 }
