@@ -176,7 +176,8 @@ class WriterTest
 		assertDumps("\"\\x{1f600}\"", Scalar.ofString("\uD83D\uDE00"));
 	}
 
-	@Test void testLimits()
+	@DisplayName("Test load/dump limit congruency")
+	@Test void testLimitsCongruency()
 	throws IOException
 	{
 		for (String source : new String[] {"a", "()", "(a)", "(a b . c)", "(a (b))", "(())"}) {
