@@ -163,7 +163,28 @@ class
 			return;
 		}
 		if (node instanceof Cons cell) {
-			writeList(cell, depth + 1);
+			DatumWalk walk = new DatumWalk(cell);
+			Datum item;
+			out.write("(");
+			boolean once = true;
+			while (walk.hasNext()) {
+				if (walk.position() >= maxLength) {
+					throw dumpingException("List longer than " + maxLength);
+				}
+				item = walk.next();
+				if (once) {
+					once = false;
+				} else {
+					out.write(" ");
+				}
+				writeDatum(item, 1 + depth);
+			}
+			item = walk.rest();
+			if (item != Nil.INSTANCE) {
+				out.write(" . ");
+				writeDatum(item, 1 + depth);
+			}
+			out.write(")");
 			return;
 		}
 		/* This is impossible to reach as Datum is sealed. */
@@ -321,35 +342,5 @@ class
 				}
 			}
 		}
-	}
-
-	private void
-	writeList(Cons cell, long depth)
-	throws
-		IOException
-	{
-		// TODO (indentation?)
-		DatumWalk walk = new DatumWalk(cell);
-		Datum node;
-		out.write("(");
-		boolean once = true;
-		while (walk.hasNext()) {
-			if (walk.position() >= maxLength) {
-				throw dumpingException("List longer than " + maxLength);
-			}
-			node = walk.next();
-			if (once) {
-				once = false;
-			} else {
-				out.write(" ");
-			}
-			writeDatum(node, depth);
-		}
-		node = walk.rest();
-		if (node != Nil.INSTANCE) {
-			out.write(" . ");
-			writeDatum(node, depth);
-		}
-		out.write(")");
 	}
 }
