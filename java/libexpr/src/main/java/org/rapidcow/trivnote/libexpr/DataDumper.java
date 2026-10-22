@@ -147,7 +147,7 @@ class
 	throws
 		IOException
 	{
-		if ((node == Nil.INSTANCE || node instanceof Cons) && depth >= maxDepth) {
+		if (Datum.isList(node) && depth >= maxDepth) {
 			throw dumpingException("Lists nested deeper than " + maxDepth);
 		}
 		if (node == Nil.INSTANCE) {
