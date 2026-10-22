@@ -5,6 +5,7 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -670,5 +671,18 @@ class ReaderTest
 		token = loader.next();
 		assertEquals(Cons.ofList(Symbol.of("length"), Symbol.of("5cm")), token);
 		assertNull(loader.lastIOException());
+	}
+
+	@Test void testRemoveLimits()
+	throws IOException
+	{
+		DataLoader loader = new DataLoader(new StringReader("((a)) (a b)"))
+			.useDepthLimit(0).useLengthLimit(1).noMaxDepth();
+		assertEquals(Long.MAX_VALUE, loader.getDepthLimit());
+		assertEquals(1, loader.getLengthLimit());
+		assertEquals(new DataLoader(new StringReader("((a))")).readDatum(), loader.readDatum());
+		loader.noMaxLength();
+		assertEquals(Long.MAX_VALUE, loader.getLengthLimit());
+		assertEquals(new DataLoader(new StringReader("(a b)")).readDatum(), loader.readDatum());
 	}
 }
