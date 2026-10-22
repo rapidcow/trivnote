@@ -12,3 +12,6 @@ plugins {
 
 rootProject.name = "trivnote-desktop"
 include("app")
+
+// Local trivnote libraries (substitutes org.rapidcow.trivnote:lib*).
+includeBuild("../java")

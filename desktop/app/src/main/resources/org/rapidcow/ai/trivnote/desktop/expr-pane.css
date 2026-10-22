@@ -1,0 +1,20 @@
+
+/* Both panels: monospace. */
+.expr-pane .text-area {
+	-fx-font-family: monospace;
+}
+
+/* Display panel: no backdrop, so it reads as output rather than input. */
+.expr-pane .display,
+.expr-pane .display .content {
+	-fx-background-color: transparent;
+}
+
+.expr-pane .display:error {
+	-fx-text-fill: #c00;
+}
+
+/* -fx-base tints the whole Modena button (hover, pressed, focus). */
+.expr-pane .exit {
+	-fx-base: #d33;
+}

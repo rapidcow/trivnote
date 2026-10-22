@@ -19,6 +19,9 @@ repositories {
 }
 
 dependencies {
+    // From the included build at ../java (see settings.gradle.kts).
+    implementation("org.rapidcow.trivnote:libexpr")
+
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
 
