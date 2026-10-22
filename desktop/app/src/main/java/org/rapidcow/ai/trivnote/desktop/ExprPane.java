@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import javafx.application.ColorScheme;
 import javafx.application.Platform;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
@@ -16,6 +17,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 
@@ -27,6 +29,10 @@ import org.rapidcow.trivnote.libexpr.Datum;
  * S-expression scratch pad: an editable source panel on top,
  * the {@link DataDumper} rendition of it below, and a row of
  * buttons in the bottom-right corner.
+ *
+ * <p>
+ * The "Dark" toggle switches to a dark palette; it starts out
+ * (and follows) the platform's color scheme.
  *
  * <p>
  * The action button cycles through three states:
@@ -54,9 +60,16 @@ extends
 	private static final PseudoClass ERROR
 		= PseudoClass.getPseudoClass("error");
 
+	/**
+	 * Set on the pane while the dark palette is in use.
+	 */
+	private static final PseudoClass DARK
+		= PseudoClass.getPseudoClass("dark");
+
 	private final TextArea source = new TextArea();
 	private final TextArea display = new TextArea();
 	private final Button action = new Button();
+	private final ToggleButton dark = new ToggleButton("Dark");
 	private final Button exit = new Button("Exit");
 
 	private State state;
@@ -80,13 +93,20 @@ extends
 		panels.setOrientation(Orientation.VERTICAL);
 		setCenter(panels);
 
-		var buttons = new HBox(8, action, exit);
+		var buttons = new HBox(8, dark, action, exit);
 		buttons.setAlignment(Pos.CENTER_RIGHT);
 		buttons.setPadding(new Insets(8));
 		setBottom(buttons);
 
 		action.setOnAction(e -> act());
 		exit.setOnAction(e -> Platform.exit());
+		dark.selectedProperty().addListener(
+				(obs, was, now) -> pseudoClassStateChanged(DARK, now));
+		var scheme = Platform.getPreferences().colorSchemeProperty();
+		scheme.addListener(
+				(obs, was, now) -> dark.setSelected(now == ColorScheme.DARK));
+		dark.setSelected(scheme.get() == ColorScheme.DARK);
+		pseudoClassStateChanged(DARK, dark.isSelected());
 		source.textProperty().addListener((obs, was, now) -> enter(State.PARSE));
 		enter(State.PARSE);
 	}
