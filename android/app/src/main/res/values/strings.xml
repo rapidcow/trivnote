@@ -4,4 +4,14 @@
     <string name="pencil_probe">Pencil Probe</string>
     <string name="debug_tools">Debug Tools</string>
     <string name="main_scene_hint">Open the menu to choose a scene.</string>
+    <string name="expr_scene">S-expression</string>
+    <string name="expr_source">Source</string>
+    <string name="expr_output">Output</string>
+    <string name="expr_resize">Resize source and output panels</string>
+    <string name="expr_parse">Parse</string>
+    <string name="expr_parsing">Parsing…</string>
+    <string name="expr_ok">S-expression ok (%1$d datum(s) parsed)</string>
+    <string name="theme_auto">Theme: Auto</string>
+    <string name="theme_light">Theme: Light</string>
+    <string name="theme_dark">Theme: Dark</string>
 </resources>
