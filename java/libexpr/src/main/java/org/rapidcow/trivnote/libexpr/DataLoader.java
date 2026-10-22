@@ -707,7 +707,7 @@ implements
 				Deque<Datum> q = new ArrayDeque<>();
 				Token o;
 				sg = 0;  /* stage */
-				while (( o = readDatum(v, depth + 1) ) != null) {
+				while (( o = readDatum(v, 1 + depth) ) != null) {
 					if (sg == 0) {
 						if (o == Token.DOT) {
 							if (q.isEmpty()) {
