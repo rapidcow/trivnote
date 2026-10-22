@@ -186,7 +186,7 @@ class WriterTest
 				for (long length = 0; length <= 3; length++) {
 					StringWriter out = new StringWriter();
 					DataDumper dumper = new DataDumper(out)
-						.useMaxDepth(depth).useMaxLength(length);
+						.useDepthLimit(depth).useLengthLimit(length);
 					DataLoader loader = new DataLoader(new StringReader(source))
 						.useDepthLimit(depth).useLengthLimit(length);
 					try {
@@ -208,17 +208,25 @@ class WriterTest
 	{
 		StringWriter out = new StringWriter();
 		DataDumper dumper = new DataDumper(out);
-		assertThrows(IllegalArgumentException.class, () -> dumper.useMaxDepth(-1));
-		assertThrows(IllegalArgumentException.class, () -> dumper.useMaxLength(-1));
-		dumper.useMaxDepth(1).useMaxLength(1);
+		assertThrows(IllegalArgumentException.class, () -> dumper.useDepthLimit(-1));
+		assertThrows(IllegalArgumentException.class, () -> dumper.useLengthLimit(-1));
+		dumper.useDepthLimit(1).useLengthLimit(1);
 		Datum nested = new DataLoader(new StringReader("((a))")).readDatum();
 		assertThrows(DataDumpingException.class, () -> dumper.writeDatum(nested));
 		out.getBuffer().setLength(0);
 		dumper.writeDatum(Nil.INSTANCE);
 		dumper.writeDatum(Nil.INSTANCE);
 		assertEquals("()()", out.toString());
-		dumper.useMaxDepth(Long.MAX_VALUE).useMaxLength(Long.MAX_VALUE);
+		dumper.noMaxDepth();
+		out.getBuffer().setLength(0);
 		dumper.writeDatum(nested);
+		assertEquals("((a))", out.toString());
+		Datum longer = new DataLoader(new StringReader("(a b)")).readDatum();
+		assertThrows(DataDumpingException.class, () -> dumper.writeDatum(longer));
+		dumper.noMaxLength();
+		out.getBuffer().setLength(0);
+		dumper.writeDatum(longer);
+		assertEquals("(a b)", out.toString());
 	}
 
 	@Test void testUnicode()

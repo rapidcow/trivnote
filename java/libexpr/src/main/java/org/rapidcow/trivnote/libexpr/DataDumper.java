@@ -40,13 +40,23 @@ class
 	 * @throws IllegalArgumentException if depth is negative
 	 */
 	public final DataDumper
-	useMaxDepth(long depth)
+	useDepthLimit(long depth)
 	{
 		if (depth < 0) {
 			throw new IllegalArgumentException("Negative depth");
 		}
 		maxDepth = depth;
 		return this;
+	}
+
+	/**
+	 * Removes the depth limit.  Limits otherwise persist across calls.
+	 * @return this
+	 */
+	public final DataDumper
+	noMaxDepth()
+	{
+		return useDepthLimit(Long.MAX_VALUE);
 	}
 
 	/**
@@ -58,13 +68,23 @@ class
 	 * @throws IllegalArgumentException if length is negative
 	 */
 	public final DataDumper
-	useMaxLength(long length)
+	useLengthLimit(long length)
 	{
 		if (length < 0) {
 			throw new IllegalArgumentException("Negative length");
 		}
 		maxLength = length;
 		return this;
+	}
+
+	/**
+	 * Removes the length limit.  Limits otherwise persist across calls.
+	 * @return this
+	 */
+	public final DataDumper
+	noMaxLength()
+	{
+		return useLengthLimit(Long.MAX_VALUE);
 	}
 
 	/**
