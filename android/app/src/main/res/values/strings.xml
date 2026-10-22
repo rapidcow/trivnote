@@ -2,5 +2,6 @@
     <string name="app_name">trivnote</string>
     <string name="open_menu">Open menu</string>
     <string name="pencil_probe">Pencil Probe</string>
-    <string name="pencil_probe_disabled">Pencil Probe is off. Enable it from the menu.</string>
+    <string name="debug_tools">Debug Tools</string>
+    <string name="main_scene_hint">Open the menu to choose a scene.</string>
 </resources>
