@@ -1,9 +1,7 @@
 # pack-refs with: peeled fully-peeled sorted 
-a58c35ed09aee34701bf1fe58c053ab0a5ab5288 refs/heads/ccr-ab11f8f8-msdy64
 35709b1b853f351a6cd5e7a112c9fc4b03bdefe3 refs/heads/libexpr/0.0.0
 92a884c74d89edc4018066cb52b65bb20e1a426a refs/heads/libexpr/0.1.0
 5a614dd8a61552a2d4b3e37ca7f5ef164c922e01 refs/heads/master
-28e130b2ba19ed73a55218530e98bdf66c7bbd61 refs/heads/wip
 161e32068a70b019e2546d692f9c8c6cbb28ebd2 refs/junk/oldtags/android/v0.0.0
 ^b6598bd05c5d5a91f12f8b13a230861a331bf9f9
 dc8aa3caad7d0cf315d83484884c99dd67f510b2 refs/junk/oldtags/libexpr/v0.0.0
