@@ -1,0 +1,99 @@
+misattribution of Claude cloud as native Claude Code
+(maybe at one point i will stop distinguishing the
+difference.... but this wasn't intentional in case
+anyone was wondering :x)
+
+$ ~/tree/utils/diff-range master 30 5a614dd8a61552a2d4b3e37ca7f5ef164c922e01
+ORIG = 8d6ce067b3508c4bc6905e83781f731d31b8eb4e (master)
+HEAD = 5a614dd8a61552a2d4b3e37ca7f5ef164c922e01
+ 0:  8d6ce06 =  0:  5a614dd Port S-expr debug-parser to Android
+ 1:  c20a50b =  1:  64b0185 Scene not toggle
+ 2:  d706c56 =  2:  d3c6d78 get rid of android/.idea
+ 3:  6e285fa =  3:  c039ff9 launch Android Studio
+ 4:  5da4317 =  4:  4d25d2e Move PencilProbe behind switchable menu
+ 5:  b5b21be =  5:  f3332a6 add dark theme
+ 6:  0d4a4f1 =  6:  6e53928 Merge libexpr/0.1.0
+ 7:  31f825e =  7:  92a884c Add no<Name>Limit
+ 8:  4c2a379 =  8:  70801cf rename silly
+ 9:  ea300aa =  9:  1d27d18 testLimits?
+10:  9cc471b = 10:  70cbb0a Merge libexpr/0.1.0
+11:  cf9acb0 ! 11:  1759a11 Write increased stack depth expression consistently
+--- a/cf9acb0bed0789a4946c34b2e63b67e8c30b7ff2	2026-10-22 01:27:03.000000000 +0000
++++ b/1759a11464288a40a36eaa85237552255d92854d	2026-10-22 01:27:03.000000000 +0000
+@@ -4,5 +4,5 @@
+ committer Ethan Meng <rapidcow@RCs-Mac-mini.local> 1792632423 -0500
+ 
+ Write increased stack depth expression consistently
+ 
+-... with b30f91e5b0c6006d4b33c5f361e1a216d14c9f10.
++... with 06d5149dcff2619033c6fa293346a138f3016897.
+12:  b30f91e = 12:  06d5149 flatten writeList
+13:  a9181f2 = 13:  1dd21bf Nil|Cons is just Datum.isList()
+14:  147cbf7 = 14:  34aa0d8 dumpingException(String) should be visible to subclasses
+15:  7226bd1 = 15:  7ae09df implement sane limits for Dumper
+16:  7be8a19 = 16:  405511d Link libexpr?
+17:  4b89b88 = 17:  5d0deba Link JavaFX
+18:  c400788 = 18:  f5759ba Change namespace; drop Guava dependency
+19:  a1f4b3c = 19:  1c7cf2c sort top-level files
+20:  fe6fd88 = 20:  95961ae init desktop/ project for JavaFX
+21:  5d54064 = 21:  5c21150 Explicitly opt-in to gradle ANSI on FreeBSD
+22:  11d4cd7 = 22:  a139121 These can be characters, actually
+23:  25bfd5d = 23:  12bcf77 be consistent with how we serialize octal octets
+24:  fa50940 = 24:  96b1a0c use Data::Dumper qq escapes
+25:  528a988 = 25:  2b02e69 rename ts
+26:  573dc03 = 26:  33f9692 i want a better example
+27:  43496ed = 27:  b183149 use escapes for nasty symbols on the way out too
+28:  6830832 = 28:  5c9d6b1 Merge libexpr/0.1.0
+29:  26c96ee = 29:  bb066d1 update change log to reflect this breaking change
+30:  5967021 = 30:  f3c3a2a Test |...| escapes
+31:  a99c6f2 = 31:  e938678 Extend |...| to recognize string-ish escapes
+32:  79e0d99 = 32:  3ad47f8 Factor out escape logic
+33:  211968f = 33:  a0e658f Share POSIX char class predicates
+34:  a315e8a = 34:  4982645 Implement better Atom dumping logic
+35:  b039489 = 35:  625fc60 Merge libexpr/0.1.0
+36:  5d203d8 = 36:  0693654 Re-gen NumberParser
+37:  b0491ec = 37:  fc697c6 re-throw number parsing exception as ours
+38:  41504bc ! 38:  4763fad Reject lone # at end of input
+--- a/41504bc63fbe64f8ea0d8a946a789a3330ed7a23	2026-10-20 17:35:24.000000000 +0000
++++ b/4763fadf81906316d53f9f1369b50c1479a95f14	2026-10-20 17:35:24.000000000 +0000
+@@ -1,7 +1,7 @@
+ tree 036b5214983ee20522453719c8b39f664cda0380
+ parent 8f652d0acaa9581dea1aa20bde47cde281fef4b8
+-author Claude Haiku 5.5 <claude@anthropic.com> 1792482444 -0000
++author Claude Haiku 5.5 (Cloud) <claude@anthropic.com> 1792482444 -0000
+ committer Ethan Meng <rapidcow@RCs-Mac-mini.local> 1792517724 -0500
+ 
+ Reject lone # at end of input
+ 
+$ ~/tree/utils/diff-range libexpr/0.1.0 9 92a884c74d89edc4018066cb52b65bb20e1a426a
+ORIG = 31f825e30eb30f1187a8d55fe48d7f424ae6ff21 (libexpr/0.1.0)
+HEAD = 92a884c74d89edc4018066cb52b65bb20e1a426a
+ 0:  31f825e =  0:  92a884c Add no<Name>Limit
+ 1:  cf9acb0 !  1:  1759a11 Write increased stack depth expression consistently
+--- a/cf9acb0bed0789a4946c34b2e63b67e8c30b7ff2	2026-10-22 01:27:03.000000000 +0000
++++ b/1759a11464288a40a36eaa85237552255d92854d	2026-10-22 01:27:03.000000000 +0000
+@@ -4,5 +4,5 @@
+ committer Ethan Meng <rapidcow@RCs-Mac-mini.local> 1792632423 -0500
+ 
+ Write increased stack depth expression consistently
+ 
+-... with b30f91e5b0c6006d4b33c5f361e1a216d14c9f10.
++... with 06d5149dcff2619033c6fa293346a138f3016897.
+ 2:  26c96ee =  2:  bb066d1 update change log to reflect this breaking change
+ 3:  5967021 =  3:  f3c3a2a Test |...| escapes
+ 4:  a99c6f2 =  4:  e938678 Extend |...| to recognize string-ish escapes
+ 5:  79e0d99 =  5:  3ad47f8 Factor out escape logic
+ 6:  5d203d8 =  6:  0693654 Re-gen NumberParser
+ 7:  b0491ec =  7:  fc697c6 re-throw number parsing exception as ours
+ 8:  41504bc !  8:  4763fad Reject lone # at end of input
+--- a/41504bc63fbe64f8ea0d8a946a789a3330ed7a23	2026-10-20 17:35:24.000000000 +0000
++++ b/4763fadf81906316d53f9f1369b50c1479a95f14	2026-10-20 17:35:24.000000000 +0000
+@@ -1,7 +1,7 @@
+ tree 036b5214983ee20522453719c8b39f664cda0380
+ parent 8f652d0acaa9581dea1aa20bde47cde281fef4b8
+-author Claude Haiku 5.5 <claude@anthropic.com> 1792482444 -0000
++author Claude Haiku 5.5 (Cloud) <claude@anthropic.com> 1792482444 -0000
+ committer Ethan Meng <rapidcow@RCs-Mac-mini.local> 1792517724 -0500
+ 
+ Reject lone # at end of input
+ 
