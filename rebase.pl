@@ -189,8 +189,8 @@ my $i = 1; foreach (@walk) {
 
 	if ($this eq '41504bc63fbe64f8ea0d8a946a789a3330ed7a23') {
 		replace_header($tempfh, \$mem,
-			'committer ' . q[Claude Haiku 5.5 <claude@anthropic.com> 1792482444 -0000],
-			'committer ' . q[Claude Haiku 5.5 (Cloud) <claude@anthropic.com> 1792482444 -0000]);
+			'author ' . q[Claude Haiku 5.5 <claude@anthropic.com> 1792482444 -0000],
+			'author ' . q[Claude Haiku 5.5 (Cloud) <claude@anthropic.com> 1792482444 -0000]);
 	}
 
 	my $content = get_all_content($tempfh);
