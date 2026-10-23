@@ -228,16 +228,19 @@ implements
 
 	/**
 	 * Removes the depth limit.  Limits otherwise persist across calls.
+	 *
 	 * @return this
+	 * @since 0.1.0
 	 */
 	public final DataLoader
-	noMaxDepth()
+	noDepthLimit()
 	{
 		return useDepthLimit(Long.MAX_VALUE);
 	}
 
 	/**
 	 * {@return the most levels of list nesting allowed}
+	 *
 	 * @since 0.1.0
 	 */
 	public final long
@@ -268,17 +271,20 @@ implements
 	}
 
 	/**
-	 * Removes the length limit.  Limits otherwise persist across calls.
+	 * Removes the length limit.
+	 * 
 	 * @return this
+	 * @since 0.1.0
 	 */
 	public final DataLoader
-	noMaxLength()
+	noLengthLimit()
 	{
 		return useLengthLimit(Long.MAX_VALUE);
 	}
 
 	/**
 	 * {@return the most elements per list allowed}
+	 *
 	 * @since 0.1.0
 	 */
 	public final long
