@@ -13,6 +13,7 @@ internal fun parseExpression(source: String): ExprResult {
         val output = StringWriter()
         val dumper = DataDumper(output)
         val loader = DataLoader(StringReader(source))
+            .useDepthLimit(128).useLengthLimit(128 * 128)
         var count = 0
         for (datum in loader) {
             dumper.writeDatum(datum)
