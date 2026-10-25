@@ -313,11 +313,11 @@ implements
 	}
 
 	/**
-	 * Creates a cons list singleton.
+	 * Creates a proper list containing one element.
 	 *
 	 * @param first  first element
 	 * @throws NullPointerException  if first is {@code null}
-	 * @return a cons list singleton
+	 * @return a nil-terminated singleton
 	 * @since 0.1.0
 	 */
 	public static Cons
@@ -327,13 +327,14 @@ implements
 	}
 
 	/**
-	 * Creates a cons list pair.
+	 * Creates a proper list containing two elements.
+	 * Both arguments are elements, even if they are nil or cons cells.
 	 *
 	 * @param first  first element
 	 * @param second  second element
 	 * @throws NullPointerException  if first or
 	 *    second is {@code null}
-	 * @return a cons list pair
+	 * @return a nil-terminated two-element list
 	 * @since 0.1.0
 	 */
 	public static Cons
