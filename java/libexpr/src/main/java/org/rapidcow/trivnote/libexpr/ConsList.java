@@ -43,7 +43,7 @@ extends
 	 * @see Cons#of(Deque, Cons)
 	 */
 	public
-	ConsList(Deque<Datum> q, Cons p)
+	ConsList(Deque<? extends Datum> q, Cons p)
 	{
 		Objects.requireNonNull(q, "q");
 		Objects.requireNonNull(p, "p");

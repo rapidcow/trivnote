@@ -61,15 +61,16 @@ extends
 			return;
 		}
 		for (Map.Entry<? extends Datum, ? extends Datum> e : map.entrySet()) {
-			Datum car = Objects.requireNonNull(e.getKey(), "key");
-			Datum cdr = Objects.requireNonNull(e.getValue(), "value");
+			Datum car = Objects.requireNonNull(e.getKey(), "map key");
+			Datum cdr = Objects.requireNonNull(e.getValue(), "map value");
 			q.push(Cons.of(car, cdr));
 		}
-		Datum p = Nil.INSTANCE;
-		while (!q.isEmpty()) {
-			p = Cons.of(q.pop(), p);
+		if (q.isEmpty()) {
+			head = Nil.INSTANCE;
+		} else {
+			Cons p = Cons.ofList(q.pop());
+			head = Cons.of(q, p);
 		}
-		head = p;
 	}
 
 	public final Datum

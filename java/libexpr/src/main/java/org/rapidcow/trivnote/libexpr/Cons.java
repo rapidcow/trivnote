@@ -330,7 +330,7 @@ extends
 	 * @since 0.1.0
 	 */
 	public static Cons
-	of(Deque<Datum> q, Cons p)
+	of(Deque<? extends Datum> q, Cons p)
 	{
 		Objects.requireNonNull(q, "q");
 		Objects.requireNonNull(p, "p");
