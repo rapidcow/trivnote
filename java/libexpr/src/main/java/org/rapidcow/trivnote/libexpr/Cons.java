@@ -311,7 +311,7 @@ implements
 	 * @return the transformed cons chain
 	 * @since 0.1.0
 	 */
-	public static ConsList
+	public static Cons
 	fromList(List<? extends Datum> list)
 	{
 		if (list.isEmpty()) {

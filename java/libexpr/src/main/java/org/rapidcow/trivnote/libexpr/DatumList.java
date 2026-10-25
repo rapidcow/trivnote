@@ -63,7 +63,7 @@ implements
 			tail = Nil.INSTANCE;
 			return;
 		}
-		ConsList cList = Cons.fromList(list);
+		ConsList cList = new ConsList(list);
 		head = cList;
 		size = cList.count();
 		tail = cList.tail();
