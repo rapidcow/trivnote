@@ -316,6 +316,25 @@ implements
 	}
 
 	/**
+	 * Chain a deque into a cons cell.
+	 *
+	 * @param q  the deque
+	 * @param p  the cons cell
+	 * @return the concatenated cons chain
+	 * @throws NullPointerException  if any argument or
+	 *    deque element is {@code null}
+	 * @since 0.1.0
+	 */
+	public static Cons
+	of(Deque<Datum> q, Cons p)
+	{
+		if (p.cdr() == Nil.INSTANCE && q.size() == 1) {
+			return new ConsCell(q.pop(), p);
+		}
+		return new ConsList(q, p);
+	}
+
+	/**
 	 * Creates a proper list containing one element.
 	 *
 	 * @param first  first element

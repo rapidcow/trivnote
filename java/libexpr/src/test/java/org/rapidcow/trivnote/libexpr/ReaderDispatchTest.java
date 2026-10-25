@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Deque;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -69,11 +70,18 @@ class ReaderDispatchTest
 		throws IOException
 	{
 		Reader reader = new StringReader("(:ieee754 1069547520)");
-		DataLoader loader = new DataLoader(reader)
-			.useDispatch(
-				Symbol.of(":ieee754"),
-				ReaderDispatchTest::dispatchIEEE754
-			);
+		DataLoader loader = new DataLoader(reader) {
+			@Override
+			public Cons
+			makeList(Deque<Datum> q, Cons p)
+			{
+				Cons t = Cons.of(q, p);
+				if (Symbol.of(":ieee754").equals(t.car())) {
+					return dispatchIEEE754(t);
+				}
+				return t;
+			}
+		};
 		Datum next = loader.readDatum();
 		IEEE754Float64 stuff = assertInstanceOf(
 			IEEE754Float64.class, next);

@@ -183,7 +183,7 @@ implements
 			q.push(node);
 		}
 		Datum s = q.pop();
-		return new DatumList(new ConsList(q, s, Nil.INSTANCE));
+		return new DatumList(new ConsList(q, new ConsTail(s)));
 	}
 
 	@Override

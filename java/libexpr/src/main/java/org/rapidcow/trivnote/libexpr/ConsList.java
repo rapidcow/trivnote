@@ -26,18 +26,33 @@ extends
 	private final Datum end;
 	private final long size;
 
-	/* Used by DataLoader makeList */
-	ConsList(Deque<Datum> q, Datum s, Datum e)
+	/**
+	 * Creates a cons chain prefixed with a deque.
+	 * This operation is drains the deque and is destructive.
+	 * <p>
+	 * It is recommended that caller ensures {@code q}
+	 * contains at least one element, or the storage gets
+	 * be a bit wasteful.
+	 *
+	 * @param q  the deque
+	 * @param p  the end
+	 * @throws NullPointerException if any argument or
+	 *    deque element is {@code null}
+	 * @see Cons#of(Deque, Cons)
+	 */
+	public
+	ConsList(Deque<Datum> q, Cons p)
 	{
-		size = 1L + q.size();
-		end = e;
-
-		Cons c = Cons.of(s, e);
+		DatumList list = new DatumList(p);
+		long n = list.count();
+		end = list.tail();
 		while (!q.isEmpty()) {
-			c = new ConsCell(q.pop(), c);
+			p = new ConsCell(q.pop(), p);
+			++n;
 		}
-		car = c.car();
-		cdr = c.cdr();
+		car = p.car();
+		cdr = p.cdr();
+		size = n;
 	}
 
 	/**

@@ -43,11 +43,6 @@ implements
 	private Map<String,Symbol> sym;
 
 	/**
-	 * Dispatch callbacks.
-	 */
-	private Map<Datum, Function<? super Cons, ? extends Cons>> cb;
-
-	/**
 	 * Most levels of list nesting, and most elements per list.
 	 */
 	private long maxDepth = Long.MAX_VALUE;
@@ -132,72 +127,6 @@ implements
 	getSymbolCache()
 	{
 		return Optional.ofNullable(sym);
-	}
-
-	/**
-	 * {@return the registered list dispatch hook for the given name}
-	 *
-	 * @param name  the given name
-	 * @since 0.1.0
-	 */
-	public final Optional <
-		Function<? super Cons, ? extends Cons>
-	> getDispatch(Datum name)
-	{
-		if (cb == null) {
-			return Optional.empty();
-		}
-		return Optional.ofNullable(cb.get(name));
-	}
-
-	/**
-	 * Register list dispatch hook for the given name.
-	 *
-	 * @param name  the given name
-	 * @param dispatch  callback function
-	 * @return this
-	 * @since 0.1.0
-	 */
-	public final DataLoader
-	useDispatch(
-		Datum name,
-		Function<? super Cons, ? extends Cons> dispatch
-	)
-	{
-		if (cb == null) {
-			cb = new HashMap<>();
-		}
-		cb.put(name, dispatch);
-		return this;
-	}
-
-	/**
-	 * Un-register list dispatch hook for the given name.
-	 *
-	 * @param name  the given name
-	 * @return this
-	 * @since 0.1.0
-	 */
-	public final DataLoader
-	noDispatch(Datum name)
-	{
-		if (cb != null) {
-			cb.remove(name);
-		}
-		return this;
-	}
-
-	/**
-	 * Un-register all list dispatch hooks
-	 *
-	 * @return this
-	 * @since 0.1.0
-	 */
-	public final DataLoader
-	clearDispatch()
-	{
-		cb = null;
-		return this;
 	}
 
 	/**
@@ -524,36 +453,14 @@ implements
 	 * Hook called to create a non-empty list.
 	 *
 	 * @param q  list contents
-	 * @param s  final list datum
-	 * @param e  list terminator
+	 * @param p  list trailer
 	 * @return a list
 	 * @since 0.1.0
 	 */
 	protected Cons
-	makeList(Deque<Datum> q, Datum s, Datum e)
+	makeList(Deque<Datum> q, Cons p)
 	{
-		if (cb != null) {
-			Function<? super Cons, ? extends Cons> dispatch;
-			Datum a = q.peekLast();
-			if (( dispatch = cb.get(a) ) != null) {
-				q.removeLast();
-				Cons p = new ConsCell(a, makePlainList(q, s, e));
-				return dispatch.apply(p);
-			}
-		}
-		return makePlainList(q, s, e);
-	}
-
-	private Cons
-	makePlainList(Deque<Datum> q, Datum s, Datum e)
-	{
-		if (q.isEmpty()) {
-			return Cons.of(s, e);
-		}
-		if (e == Nil.INSTANCE && q.size() == 1) {
-			return Cons.ofList(q.pop(), s);
-		}
-		return new ConsList(q, s, e);
+		return Cons.of(q, p);
 	}
 
 	/**
@@ -790,7 +697,8 @@ implements
 				if (q.isEmpty()) {
 					return new Token(e);
 				} else {
-					return new Token(makeList(q, q.pop(), e));
+					Cons p = Cons.of(q.pop(), e);
+					return new Token(makeList(q, p));
 				}
 			}
 
