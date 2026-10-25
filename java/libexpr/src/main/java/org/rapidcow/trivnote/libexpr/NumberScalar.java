@@ -64,13 +64,11 @@ package org.rapidcow.trivnote.libexpr;
  *
  * @since 0.1.0
  */
-public sealed
+public non-sealed
 abstract class
 	NumberScalar
 extends
 	Scalar
-permits
-	SimpleScalar
 {
 	/**
 	 * Default constructor.
