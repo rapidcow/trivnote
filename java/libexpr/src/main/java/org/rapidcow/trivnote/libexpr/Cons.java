@@ -9,6 +9,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * An immutable pair of {@link Datum}s.
@@ -326,7 +327,10 @@ implements
 	}
 
 	/**
-	 * Chain a deque into a cons cell.
+	 * Prepends a deque to a cons chain, draining the deque.
+	 * Elements are popped from the front and prepended one at a time,
+	 * so their order in the result is the reverse of deque iteration order.
+	 * An empty deque returns the supplied chain.
 	 *
 	 * @param q  the deque
 	 * @param p  the cons cell
@@ -338,6 +342,11 @@ implements
 	public static Cons
 	of(Deque<Datum> q, Cons p)
 	{
+		Objects.requireNonNull(q, "q");
+		Objects.requireNonNull(p, "p");
+		if (q.isEmpty()) {
+			return p;
+		}
 		if (p.cdr() == Nil.INSTANCE && q.size() == 1) {
 			return new ConsCell(q.pop(), p);
 		}

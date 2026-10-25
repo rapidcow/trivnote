@@ -28,11 +28,11 @@ extends
 
 	/**
 	 * Creates a cons chain prefixed with a deque.
-	 * This operation is drains the deque and is destructive.
+	 * Elements are popped from the front and prepended one at a time,
+	 * reversing their iteration order and draining the deque.
 	 * <p>
 	 * It is recommended that caller ensures {@code q}
-	 * contains at least one element, or the storage gets
-	 * be a bit wasteful.
+	 * contains at least one element, or the wrapper is unnecessary.
 	 *
 	 * @param q  the deque
 	 * @param p  the end
@@ -43,9 +43,18 @@ extends
 	public
 	ConsList(Deque<Datum> q, Cons p)
 	{
-		DatumList list = new DatumList(p);
-		long n = list.count();
-		end = list.tail();
+		Objects.requireNonNull(q, "q");
+		Objects.requireNonNull(p, "p");
+		Datum tail = p.cdr();
+		long n;
+		if (!(tail instanceof Cons)) {
+			n = 1;
+			end = tail;
+		} else {
+			DatumList list = new DatumList(p);
+			n = list.count();
+			end = list.tail();
+		}
 		while (!q.isEmpty()) {
 			p = new ConsCell(q.pop(), p);
 			++n;
