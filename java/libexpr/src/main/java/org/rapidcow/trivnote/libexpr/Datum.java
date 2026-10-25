@@ -35,11 +35,22 @@ import java.util.Map;
 public sealed
 interface
 	Datum
+extends
+	DatumView
 permits
 	Atom,
 	Cons,
 	Nil
 {
+	/**
+	 * {@return this}
+	 */
+	public default Datum
+	head()
+	{
+		return this;
+	}
+
 	/**
 	 * {@return whether the datum is an atom}
 	 * This method checks for more than {@link Atom}
