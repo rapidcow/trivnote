@@ -31,13 +31,6 @@ extends
 
 	@Override
 	public String
-	toString()
-	{
-		return "Scalar[value=" + value() + "]";
-	}
-
-	@Override
-	public String
 	prefix()
 	{
 		return result.getPrefix();
