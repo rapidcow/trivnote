@@ -258,22 +258,19 @@ permits
 	}
 
 	/**
-	 * Copies a map wrapped in an associative map view.
+	 * Copies a map into an alist.
 	 * Entries become cons pairs in the iteration order of
-	 * the source map’s entry set.  Chain this call with
-	 * <code>.{@linkplain AssocList#head() head()}</code>
-	 * if you just need the datum for serialization.
+	 * the source map’s entry set.
 	 *
 	 * @param map  the source map
-	 * @return a copy of the map wrapped in an
-	 *    associative map datum view
+	 * @return a copy of the map as an alist
 	 * @throws NullPointerException if the map,
 	 *    any key, or any value is {@code null}
 	 * @since 0.1.0
 	 */
-	public static AssocList
+	public static Datum
 	fromMap(Map<? extends Datum, ? extends Datum> map)
 	{
-		return new AssocList(map);
+		return new AssocList(map).head();
 	}
 }

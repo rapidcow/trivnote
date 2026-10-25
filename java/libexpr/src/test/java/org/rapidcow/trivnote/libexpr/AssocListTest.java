@@ -6,6 +6,7 @@
 package org.rapidcow.trivnote.libexpr;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -295,15 +296,14 @@ class AssocListTest
 	@Test void testFromDatumMap()
 	{
 		Map<Datum,Datum> map = abcMap();
-		for (AssocList alist : List.of(new AssocList(map), Datum.fromMap(map))) {
-			assertEquals(map, alist);
-			assertEquals(3, alist.size());
-			assertEquals(3L, alist.count());
-			assertTrue(alist.hasUniqueKeys());
-			/* Entries keep the map's iteration order */
-			assertEquals(List.copyOf(map.entrySet()), entriesOf(alist));
-			assertEquals(abc(), alist);
-		}
+		AssocList alist = new AssocList(map);
+		assertEquals(map, alist);
+		assertEquals(3, alist.size());
+		assertEquals(3L, alist.count());
+		assertTrue(alist.hasUniqueKeys());
+		/* Entries keep the map's iteration order */
+		assertEquals(List.copyOf(map.entrySet()), entriesOf(alist));
+		assertEquals(abc(), alist);
 	}
 
 	@Test void testFromSymbolMap()
@@ -311,34 +311,31 @@ class AssocListTest
 		Map<Symbol,Scalar> map = new LinkedHashMap<>();
 		map.put(Symbol.of("x"), Scalar.ofNumber("1"));
 		map.put(Symbol.of("y"), Scalar.ofNumber("2"));
-		for (AssocList alist : List.of(new AssocList(map), Datum.fromMap(map))) {
-			assertEquals(map, alist);
-			assertEquals(2, alist.size());
-			assertTrue(alist.hasUniqueKeys());
-			assertEquals(List.copyOf(map.entrySet()), entriesOf(alist));
-			assertSame(map.get(Symbol.of("x")), alist.get(Symbol.of("x")));
-		}
+		AssocList alist = new AssocList(map);
+		assertEquals(map, alist);
+		assertEquals(2, alist.size());
+		assertTrue(alist.hasUniqueKeys());
+		assertEquals(List.copyOf(map.entrySet()), entriesOf(alist));
+		assertSame(map.get(Symbol.of("x")), alist.get(Symbol.of("x")));
 	}
 
 	@Test void testFromSingletonMap()
 	{
-		for (AssocList alist : List.of(new AssocList(Map.of(A, B)), Datum.fromMap(Map.of(A, B)))) {
-			assertEquals(1, alist.size());
-			assertSame(B, alist.get(A));
-			assertEquals(List.of(Map.entry(A, B)), entriesOf(alist));
-		}
+		AssocList alist = new AssocList(Map.of(A, B));
+		assertEquals(1, alist.size());
+		assertSame(B, alist.get(A));
+		assertEquals(List.of(Map.entry(A, B)), entriesOf(alist));
 	}
 
 	@Test void testFromEmptyMap()
 	{
-		for (AssocList alist : List.of(new AssocList(Map.of()), Datum.fromMap(Map.of()))) {
-			assertEquals(0, alist.size());
-			assertEquals(0L, alist.count());
-			assertTrue(alist.hasUniqueKeys());
-			assertNull(alist.get(A));
-			assertEquals(List.of(), entriesOf(alist));
-			assertEquals(new AssocList(Nil.INSTANCE), alist);
-		}
+		AssocList alist = new AssocList(Map.of());
+		assertEquals(0, alist.size());
+		assertEquals(0L, alist.count());
+		assertTrue(alist.hasUniqueKeys());
+		assertNull(alist.get(A));
+		assertEquals(List.of(), entriesOf(alist));
+		assertEquals(new AssocList(Nil.INSTANCE), alist);
 	}
 
 	/* Values (and keys) may be anything, nil and structures included */
@@ -349,7 +346,7 @@ class AssocListTest
 		Map<Datum,Datum> map = new LinkedHashMap<>();
 		map.put(key, value);
 		map.put(Nil.INSTANCE, Nil.INSTANCE);
-		AssocList alist = Datum.fromMap(map);
+		AssocList alist = new AssocList(map);
 		assertSame(value, alist.get(Cons.ofList(A, B)));
 		assertSame(Nil.INSTANCE, alist.get(Nil.INSTANCE));
 		assertTrue(alist.containsKey(Nil.INSTANCE));
@@ -371,7 +368,7 @@ class AssocListTest
 	@Test void testMapIsNotRetained()
 	{
 		Map<Datum,Datum> map = abcMap();
-		AssocList alist = Datum.fromMap(map);
+		AssocList alist = new AssocList(map);
 		map.put(A, Z);
 		map.put(Z, A);
 		map.remove(B);
@@ -486,7 +483,7 @@ class AssocListTest
 	{
 		AssocList alist = counted(abc());
 		assertSame(alist, alist.withUniqueKeys());
-		AssocList empty = Datum.fromMap(Map.of());
+		AssocList empty = new AssocList(Collections.emptyMap());
 		assertSame(empty, empty.withUniqueKeys());
 	}
 
@@ -513,7 +510,7 @@ class AssocListTest
 		AssocList alist = abc();
 		assertSame(alist, alist.withUniqueKeys());
 		checkUnique(alist, 3);
-		AssocList fromMap = Datum.fromMap(abcMap());
+		AssocList fromMap = new AssocList(abcMap());
 		assertSame(fromMap, fromMap.withUniqueKeys());
 		checkUnique(fromMap, 3);
 	}
@@ -554,7 +551,7 @@ class AssocListTest
 		Map<Datum,Datum> map = new IdentityHashMap<>();
 		map.put(Cons.ofList(A, B), C);
 		map.put(Cons.ofList(A, B), Z);
-		AssocList alist = Datum.fromMap(map);
+		AssocList alist = new AssocList(map);
 		assertEquals(1, alist.size());
 		assertFalse(alist.hasUniqueKeys());
 		AssocList uniq = alist.withUniqueKeys();
