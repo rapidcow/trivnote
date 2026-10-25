@@ -12,12 +12,19 @@ Revision history of trivnote-libexpr
       un-escaped names or wait for a dedicated Scheme dumper...
     * DatumList as a real List<Datum>!
     *** Cons, Nil are no longer iterable; use Datum.asList.
-    *** Cons is split into to two concrete types: the pairs
-      (ConsCell) and the longer ones (ConsList as a singly
-      linked list); use Cons.of instead of new Cons!  (Use
-      Cons.ofList if you want an implicit Nil-terminator :)
+    *** Cons is split into three concrete types: the plain
+      pairs (ConsCell), the nil-terminated ones (ConsTail),
+      and the longer ones that know their length (ConsList);
+      use Cons.of instead of new Cons!  (Use Cons.ofList if
+      you want an implicit Nil-terminator :)  they pick the
+      cheapest one for you.
+    *** Datum is now a sealed abstract class, not an interface
+      (source-compatible, but recompile anything built on 0.0)
+    *** Nil is now a final class, not an enum; Nil.INSTANCE is
+      still the singleton, but no more switch/valueOf/EnumSet
     * AssocList as Map<Datum,Datum>!
     * Better Scalar hier
+    * NumberScalar can be subclassed for other numeric back ends
     * booleans?  (they're called TruthScalar for some reason.
       (not a reference to truth serum nuh-uh i don't do that))
 
