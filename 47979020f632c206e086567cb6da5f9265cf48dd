@@ -1,0 +1,9 @@
+i was a bit too naive with this.  with Java 25
+compressed ordinary object pointers (oops) it
+does seem to save 8 bytes, and with Android
+runtime (ART) it seems to save 8 bytes too.
+
+but because of the alignment, saving one member
+may not do as much... (considering that we already
+unconditionally keep a 4-byte cache for the hash
+on *every* Cons... right. >n>)
