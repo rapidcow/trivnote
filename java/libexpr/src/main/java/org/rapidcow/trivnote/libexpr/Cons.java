@@ -7,6 +7,7 @@ package org.rapidcow.trivnote.libexpr;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -240,8 +241,36 @@ implements
 		}
 	}
 
+	/*
+	 * These are not only handy shorthands, but they
+	 * also pick the optimal implementation! :o
+	 *
+	 * Namely, any proper list uses a ConsTail instead,
+	 * and binary lists (such as the symbol-string pair
+	 * in a Racket xexpr attribute) do not have their
+	 * length stored.
+	 */
+
 	/**
-	 * Creates a non-empty chain with the last datum as its tail.
+	 * Creates a cons cell.
+	 *
+	 * @param car  the car
+	 * @param cdr  the cdr
+	 * @throws NullPointerException  if car or
+	 *    cdr is {@code null}
+	 * @return a cons cell
+	 * @since 0.1.0
+	 */
+	public static Cons
+	of(Datum car, Datum cdr)
+	{
+		return (cdr == Nil.INSTANCE)
+			? new ConsTail(car)
+			: new ConsCell(car, cdr);
+	}
+
+	/**
+	 * Creates a non-empty cons chain with the last datum as its tail.
 	 *
 	 * @param car  first element
 	 * @param cdr  second element
@@ -255,9 +284,10 @@ implements
 	of(Datum car, Datum cdr, Datum... etc)
 	{
 		if (etc.length == 0) {
-			return (cdr == Nil.INSTANCE)
-				? new ConsTail(car)
-				: new ConsCell(car, cdr);
+			return Cons.of(car, cdr);
+		}
+		if (etc.length == 1 && etc[0] == Nil.INSTANCE) {
+			return Cons.ofList(car, cdr);
 		}
 		return new ConsList(car, cdr, etc);
 	}
@@ -266,7 +296,7 @@ implements
 	 * Creates a non-empty cons chain with the given tail.
 	 *
 	 * @param car  first element
-	 * @param etc  rest elements
+	 * @param etc  the rest
 	 * @param tail  list terminator
 	 * @throws NullPointerException if any argument or
 	 *    array element is {@code null}
@@ -283,22 +313,51 @@ implements
 	}
 
 	/**
+	 * Creates a cons list singleton.
+	 *
+	 * @param first  first element
+	 * @throws NullPointerException  if first is {@code null}
+	 * @return a cons list singleton
+	 * @since 0.1.0
+	 */
+	public static Cons
+	ofList(Datum first)
+	{
+		return new ConsTail(first);
+	}
+
+	/**
+	 * Creates a cons list pair.
+	 *
+	 * @param first  first element
+	 * @param second  second element
+	 * @throws NullPointerException  if first or
+	 *    second is {@code null}
+	 * @return a cons list pair
+	 * @since 0.1.0
+	 */
+	public static Cons
+	ofList(Datum first, Datum second)
+	{
+		return new ConsCell(first, new ConsTail(second));
+	}
+
+	/**
 	 * Creates a non-empty proper list.
 	 *
-	 * @param car  first element
-	 * @param etc  rest elements
-	 *
+	 * @param first  first element
+	 * @param etc  the rest
 	 * @throws NullPointerException if any argument or array element is null
 	 * @return the concatenated cons chain
 	 * @since 0.1.0
 	 */
 	public static Cons
-	ofList(Datum car, Datum... etc)
+	ofList(Datum first, Datum... etc)
 	{
 		if (etc.length == 0) {
-			return new ConsTail(car);
+			return new ConsTail(first);
 		}
-		return new ConsList(car, etc, Nil.INSTANCE);
+		return new ConsList(first, etc, Nil.INSTANCE);
 	}
 
 	/**
@@ -316,6 +375,16 @@ implements
 	{
 		if (list.isEmpty()) {
 			throw new IllegalArgumentException("Empty list");
+		}
+		int size = list.size();
+		if (size == 1) {
+			return Cons.ofList(list.get(0));
+		}
+		if (size == 2) {
+			Iterator<? extends Datum> walk = list.iterator();
+			Datum a = walk.next();
+			Datum b = walk.next();
+			return Cons.ofList(a, b);
 		}
 		return new ConsList(list);
 	}
