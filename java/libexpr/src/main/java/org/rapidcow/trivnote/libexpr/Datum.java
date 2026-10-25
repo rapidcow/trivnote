@@ -182,9 +182,7 @@ permits
 
 	/**
 	 * Copies a list wrapped in a list view.
-	 * The list is properly terminated with nil.  Chain this
-	 * call with <q><code>.{@linkplain DatumList#head() head()}</code></q>
-	 * if you just need the datum for serialization.
+	 * The list is properly terminated with nil.
 	 *
 	 * @param list  the source list
 	 * @return a copy of the list wrapped in a list datum view
