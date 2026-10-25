@@ -920,7 +920,7 @@ implements
 	throws
 		IOException
 	{
-		int v, w;
+		int v;
 		while (( v = readChar() ) != -1) {
 			if (v == '"') {
 				return;
