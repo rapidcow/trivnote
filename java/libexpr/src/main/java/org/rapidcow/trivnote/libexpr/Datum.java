@@ -35,8 +35,6 @@ import java.util.Map;
 public sealed
 interface
 	Datum
-extends
-	DatumView
 permits
 	Atom,
 	Cons,

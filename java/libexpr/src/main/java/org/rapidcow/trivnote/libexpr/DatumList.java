@@ -23,7 +23,6 @@ class
 extends
 	AbstractSequentialList<Datum>
 implements
-	DatumView,
 	Iterable<Datum>
 {
 	private final Datum head;
@@ -72,7 +71,6 @@ implements
 	/**
 	 * {@return the underlying source datum}
 	 */
-	@Override
 	public final Datum
 	head()
 	{

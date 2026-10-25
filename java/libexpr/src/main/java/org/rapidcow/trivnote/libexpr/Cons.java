@@ -28,16 +28,6 @@ implements
 	Datum
 {
 	/**
-	 * {@return this}
-	 */
-	@Override
-	public final Cons
-	head()
-	{
-		return this;
-	}
-
-	/**
 	 * {@return the car of this cons cell}  The return
 	 * value may not be an identical datum object, but
 	 * it must be equal.  car may not be null.

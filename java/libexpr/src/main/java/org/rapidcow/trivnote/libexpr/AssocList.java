@@ -22,8 +22,6 @@ class
 	AssocList
 extends
 	AbstractMap<Datum,Datum>
-implements
-	DatumView
 {
 	private final Datum head;
 	private final long size;
