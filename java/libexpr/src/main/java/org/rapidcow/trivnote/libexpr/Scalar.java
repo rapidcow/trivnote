@@ -31,7 +31,7 @@ package org.rapidcow.trivnote.libexpr;
 public sealed
 abstract class
 	Scalar
-implements
+extends
 	Atom
 permits
 	NumberScalar,

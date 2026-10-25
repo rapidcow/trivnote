@@ -34,6 +34,16 @@ extends
 	}
 
 	/**
+	 * {@return a string representation of this}
+	 */
+	@Override
+	public final String
+	toString()
+	{
+		return value ? "TRUE" : "FALSE";
+	}
+
+	/**
 	 * {@return the value of this atom}  This value is
 	 * suitable for serialization.
 	 */

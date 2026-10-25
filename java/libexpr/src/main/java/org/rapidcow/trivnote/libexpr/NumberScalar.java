@@ -79,6 +79,16 @@ extends
 	}
 
 	/**
+	 * {@return a string representation of this scalar}
+	 */
+	@Override
+	public String
+	toString()
+	{
+		return "Number[value=" + value() + "]";
+	}
+
+	/**
 	 * {@return the value of this atom}  This value is
 	 * suitable for serialization.
 	 */

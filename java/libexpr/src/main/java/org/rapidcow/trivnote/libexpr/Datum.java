@@ -23,23 +23,57 @@ import java.util.Map;
  * <q>{@linkplain #isList(Datum) list}</q>.
  *
  * <p>
- * {@code Datum} promises no interface methods explicitly,
- * though through being a sealed interface it limits the
- * classes that can implement it.  For that reason we can
- * guarantee that all datums implement
+ * Datums <em>must</em> implement
  * <code>{@linkplain Object#hashCode() hashCode()}</code> and
  * <code>{@linkplain Object#equals(Object) equals(Object)}</code>
  * in a way such that they are compared by value, not by
- * object identity.
+ * object identity.  Datums <em>should</em> implement
+ * a reasonably descriptive string representation by
+ * overriding {@link Object#toString()}, though this is not
+ * mandatory.
  */
 public sealed
-interface
+abstract class
 	Datum
 permits
 	Atom,
 	Cons,
 	Nil
 {
+	/**
+	 * Default constructor.
+	 * For subclasses only.
+	 */
+	protected Datum()
+	{
+		/* nothing to do. */
+	}
+
+	/**
+	 * Implements datum equality.  This method
+	 * must be consistent with {@link #hashCode()}.
+	 * In general, instances of different datum
+	 * classes should compare unequal (with
+	 * {@linkplain NumberScalar numeric scalars}
+	 * being the notable exception).
+	 *
+	 * @param o  operand
+	 * @return whether this equals {@code o}
+	 */
+	@Override
+	public abstract boolean
+	equals(Object o);
+
+	/**
+	 * Implements datum hash code.  This method must
+	 * be consistent with {@link #equals(Object)}.
+	 *
+	 * @return  hash code of this
+	 */
+	@Override
+	public abstract int
+	hashCode();
+
 	/**
 	 * {@return whether the datum is an atom}
 	 * This method checks for more than {@link Atom}

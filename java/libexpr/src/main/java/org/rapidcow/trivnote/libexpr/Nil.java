@@ -8,12 +8,47 @@ package org.rapidcow.trivnote.libexpr;
 /**
  * The atom devoid of value and the empty list.
  */
-public
-enum
+public final
+class
 	Nil
-implements
+extends
 	Datum
 {
 	/** The singleton that represents {@code nil}. */
-	INSTANCE;
+	public static final Nil INSTANCE = new Nil();
+
+	private
+	Nil()
+	{
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final boolean
+	equals(Object o)
+	{
+		return this == o;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final int
+	hashCode()
+	{
+		return System.identityHashCode(this);
+	}
+
+	/**
+	 * {@return a string representation of nil}
+	 */
+	@Override
+	public final String
+	toString()
+	{
+		return "()";
+	}
 }
