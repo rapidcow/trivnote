@@ -39,7 +39,13 @@ extends
 	public final int
 	hashCode()
 	{
-		return System.identityHashCode(this);
+		/*
+		 * Collections.emptyList().hashCode() is 1.
+		 *
+		 * Our Cons is based on that, and nil is the
+		 * empty list; so it seems fair to do this :]
+		 */
+		return 1;
 	}
 
 	/**
