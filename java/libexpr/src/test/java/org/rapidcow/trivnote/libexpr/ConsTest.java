@@ -6,7 +6,9 @@
 package org.rapidcow.trivnote.libexpr;
 
 import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * API tests for ConsList and the Cons/Datum factories.
@@ -48,6 +51,62 @@ class ConsTest
 		checkSpine(actual, tail, elements);
 		assertEquals(elements.length, actual.size());
 		assertSame(tail, actual.tail());
+	}
+
+	@Test void testDequePrefixOrderAndSingleCellSuffix()
+	{
+		for (Datum tail : List.of(Nil.INSTANCE, Z)) {
+			for (List<Datum> prefix : List.of(List.<Datum>of(), List.of(A), List.of(A, B))) {
+				Deque<Datum> q = new ArrayDeque<>();
+				for (Datum element : prefix) {
+					q.push(element);
+				}
+				List<Datum> elements = new ArrayList<>(prefix);
+				elements.add(C);
+				Datum[] expected = elements.toArray(Datum[]::new);
+				Cons suffix = Cons.of(C, tail);
+				checkList(new ConsList(new ArrayDeque<>(q), suffix), tail, expected);
+				Cons result = Cons.of(q, suffix);
+				checkSpine(result, tail, expected);
+				assertTrue(q.isEmpty());
+				assertEquals(expected.length, Datum.asList(result).count());
+				assertSame(tail, Datum.asList(result).tail());
+			}
+		}
+	}
+
+	@Test void testDequePrefixWithLongerSuffix()
+	{
+		for (Datum tail : List.of(Nil.INSTANCE, Z)) {
+			/* Exercise both a cached suffix and an ordinary cons chain. */
+			for (Cons suffix : List.of(
+				new ConsList(B, C, tail), Cons.of(B, Cons.of(C, tail)))) {
+				Deque<Datum> q = new ArrayDeque<>(List.of(A));
+				ConsList result = new ConsList(q, suffix);
+				checkList(result, tail, A, B, C);
+				assertTrue(q.isEmpty());
+			}
+		}
+	}
+
+	@Test void testEmptyDequePreservesSuffix()
+	{
+		Cons suffix = Cons.of(A, Z);
+		assertSame(suffix, Cons.of(new ArrayDeque<>(), suffix));
+	}
+
+	@Test void testDequeConstructionRejectsNulls()
+	{
+		Cons suffix = Cons.ofList(A);
+		assertThrows(NullPointerException.class, () -> Cons.of((Deque<Datum>) null, suffix));
+		assertThrows(NullPointerException.class, () -> Cons.of(new ArrayDeque<>(), null));
+		assertThrows(NullPointerException.class, () -> new ConsList((Deque<Datum>) null, suffix));
+		assertThrows(NullPointerException.class, () -> new ConsList(new ArrayDeque<>(), null));
+		Deque<Datum> q = new LinkedList<>();
+		q.add(null);
+		assertThrows(NullPointerException.class, () -> Cons.of(q, suffix));
+		q.add(null);
+		assertThrows(NullPointerException.class, () -> new ConsList(q, suffix));
 	}
 
 	@Test void testConsOfFixedArityPreservesBothHalves()
