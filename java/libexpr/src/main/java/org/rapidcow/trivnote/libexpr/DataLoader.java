@@ -537,9 +537,21 @@ implements
 			Datum a = q.peekLast();
 			if (( dispatch = cb.get(a) ) != null) {
 				q.removeLast();
-				Cons p = new ConsCell(a, new ConsList(q, s, e));
+				Cons p = new ConsCell(a, makePlainList(q, s, e));
 				return dispatch.apply(p);
 			}
+		}
+		return makePlainList(q, s, e);
+	}
+
+	private Cons
+	makePlainList(Deque<Datum> q, Datum s, Datum e)
+	{
+		if (q.isEmpty()) {
+			return Cons.of(s, e);
+		}
+		if (e == Nil.INSTANCE && q.size() == 1) {
+			return Cons.ofList(q.pop(), s);
 		}
 		return new ConsList(q, s, e);
 	}
