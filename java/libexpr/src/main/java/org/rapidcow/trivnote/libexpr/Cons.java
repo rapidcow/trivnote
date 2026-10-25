@@ -255,7 +255,9 @@ implements
 	of(Datum car, Datum cdr, Datum... etc)
 	{
 		if (etc.length == 0) {
-			return new ConsCell(car, cdr);
+			return (cdr == Nil.INSTANCE)
+				? new ConsTail(car)
+				: new ConsCell(car, cdr);
 		}
 		return new ConsList(car, cdr, etc);
 	}
@@ -294,7 +296,7 @@ implements
 	ofList(Datum car, Datum... etc)
 	{
 		if (etc.length == 0) {
-			return new ConsCell(car, Nil.INSTANCE);
+			return new ConsTail(car);
 		}
 		return new ConsList(car, etc, Nil.INSTANCE);
 	}

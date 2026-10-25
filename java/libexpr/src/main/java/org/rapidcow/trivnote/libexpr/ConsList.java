@@ -11,7 +11,7 @@ import java.util.ListIterator;
 import java.util.Objects;
 
 /**
- * Cons cells with a known length.
+ * Cons cell with a known length.
  *
  * @since 0.1.0
  */
@@ -32,7 +32,7 @@ extends
 		size = 1 + q.size();
 		end = e;
 
-		Cons c = new ConsCell(s, e);
+		Cons c = Cons.of(s, e);
 		while (!q.isEmpty()) {
 			c = new ConsCell(q.pop(), c);
 		}
@@ -63,10 +63,10 @@ extends
 		}
 		Cons c;
 		if (etc.length == 1) {
-			c = new ConsCell(second, etc[0]);
+			c = Cons.of(second, etc[0]);
 		}
 		else {
-			c = new ConsCell(etc[etc.length - 2], etc[etc.length - 1]);
+			c = Cons.of(etc[etc.length - 2], etc[etc.length - 1]);
 			for (int i = etc.length - 2; i > 0; --i) {
 				c = new ConsCell(etc[i - 1], c);
 			}
@@ -97,7 +97,7 @@ extends
 			final int I = i;
 			Objects.requireNonNull(etc[i], () -> "etc[" + I + "]");
 		}
-		Cons c = new ConsCell(etc[etc.length - 1], tail);
+		Cons c = Cons.of(etc[etc.length - 1], tail);
 		for (int i = etc.length - 1; i > 0; --i) {
 			c = new ConsCell(etc[i - 1], c);
 		}
@@ -144,7 +144,7 @@ extends
 			() -> "list[" + (size - 1) + "]"
 		);
 		int i = sz - 1;
-		c = new ConsCell(p, Nil.INSTANCE);
+		c = new ConsTail(p);
 		while (iter.hasPrevious()) {
 			final int I = i;
 			p = Objects.requireNonNull(
