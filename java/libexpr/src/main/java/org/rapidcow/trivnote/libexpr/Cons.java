@@ -307,7 +307,10 @@ implements
 	of(Datum car, Datum[] etc, Datum tail)
 	{
 		if (etc.length == 0) {
-			return new ConsCell(car, tail);
+			return Cons.of(car, tail);
+		}
+		if (etc.length == 1 && tail == Nil.INSTANCE) {
+			return Cons.ofList(car, etc[0]);
 		}
 		return new ConsList(car, etc, tail);
 	}
@@ -356,7 +359,10 @@ implements
 	ofList(Datum first, Datum... etc)
 	{
 		if (etc.length == 0) {
-			return new ConsTail(first);
+			return Cons.ofList(first);
+		}
+		if (etc.length == 1) {
+			return Cons.ofList(first, etc[0]);
 		}
 		return new ConsList(first, etc, Nil.INSTANCE);
 	}
