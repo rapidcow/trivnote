@@ -67,7 +67,8 @@ extends
 	/**
 	 * Creates a non-empty chain with the last datum as its tail.
 	 *
-	 * @throws NullPointerException if any argument or array element is null
+	 * @throws NullPointerException if any argument or
+	 *    array element is {@code null}
 	 */
 	public
 	ConsList(Datum first, Datum second, Datum... etc)
@@ -103,7 +104,8 @@ extends
 	/**
 	 * Creates a non-empty chain with the given tail.
 	 *
-	 * @throws NullPointerException if any argument or array element is null
+	 * @throws NullPointerException if any argument or
+	 *    array element is {@code null}
 	 */
 	public
 	ConsList(Datum first, Datum[] etc, Datum tail)
@@ -131,8 +133,10 @@ extends
 	/**
 	 * Creates a cons from a non-empty list.
 	 *
-	 * @throws IllegalArgumentException if {@code list} is empty
-	 * @throws NullPointerException if {@code list} or any element is null
+	 * @throws IllegalArgumentException if {@code list}
+	 *    is empty
+	 * @throws NullPointerException if {@code list} or
+	 *    any element is {@code null}
 	 */
 	public
 	ConsList(List<? extends Datum> list)

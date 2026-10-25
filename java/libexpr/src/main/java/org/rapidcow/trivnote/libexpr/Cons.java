@@ -30,7 +30,7 @@ extends
 	/**
 	 * {@return the car of this cons cell}  The return
 	 * value may not be an identical datum object, but
-	 * it must be equal.  car may not be null.
+	 * it must be equal.  car may not be {@code null}.
 	 */
 	public abstract Datum
 	car();
@@ -38,7 +38,7 @@ extends
 	/**
 	 * {@return the cdr of this cons cell}  The return
 	 * value may not be an identical datum object, but
-	 * it must be equal.  cdr may not be null.
+	 * it must be equal.  cdr may not be {@code null}.
 	 */
 	public abstract Datum
 	cdr();
@@ -379,7 +379,8 @@ extends
 	 *
 	 * @param first  first element
 	 * @param etc  the rest
-	 * @throws NullPointerException if any argument or array element is null
+	 * @throws NullPointerException if any argument or
+	 *    array element is {@code null}
 	 * @return the concatenated cons chain
 	 * @since 0.1.0
 	 */
@@ -400,8 +401,10 @@ extends
 	 * possibly empty, use {@link Datum#fromList(List)}.
 	 *
 	 * @param list  list of origin
-	 * @throws IllegalArgumentException if {@code list} is empty
-	 * @throws NullPointerException if {@code list} or any element is null
+	 * @throws IllegalArgumentException if {@code list}
+	 *    is empty
+	 * @throws NullPointerException if {@code list} or
+	 *    any element is {@code null}
 	 * @return the transformed cons chain
 	 * @since 0.1.0
 	 */

@@ -220,7 +220,8 @@ permits
 	 *
 	 * @param list  the source list
 	 * @return a copy of the list as a datum
-	 * @throws NullPointerException if the list or any element is null
+	 * @throws NullPointerException if the list or
+	 *    any element is {@code null}
 	 * @since 0.1.0
 	 * @see Cons#fromList(List)
 	 */
@@ -246,7 +247,8 @@ permits
 	 * @throws IllegalArgumentException if the list
 	 *    is not a proper list, or the list consists
 	 *    of any non-cons datum
-	 * @throws NullPointerException if {@code node} is null
+	 * @throws NullPointerException if {@code node} is
+	 *    {@code null}
 	 * @since 0.1.0
 	 */
 	public static AssocList
@@ -263,8 +265,10 @@ permits
 	 * if you just need the datum for serialization.
 	 *
 	 * @param map  the source map
-	 * @return a copy of the map wrapped in an associative map datum view
-	 * @throws NullPointerException if the map, any key, or any value is null
+	 * @return a copy of the map wrapped in an
+	 *    associative map datum view
+	 * @throws NullPointerException if the map,
+	 *    any key, or any value is {@code null}
 	 * @since 0.1.0
 	 */
 	public static AssocList
