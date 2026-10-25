@@ -16,4 +16,14 @@ implements
 {
 	/** The singleton that represents {@code nil}. */
 	INSTANCE;
+
+	/**
+	 * {@return this}
+	 */
+	@Override
+	public final Nil
+	head()
+	{
+		return this;
+	}
 }

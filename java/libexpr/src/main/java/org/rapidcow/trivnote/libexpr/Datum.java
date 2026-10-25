@@ -43,15 +43,6 @@ permits
 	Nil
 {
 	/**
-	 * {@return this}
-	 */
-	public default Datum
-	head()
-	{
-		return this;
-	}
-
-	/**
 	 * {@return whether the datum is an atom}
 	 * This method checks for more than {@link Atom}
 	 * class: namely, nil is an atom devoid of value.

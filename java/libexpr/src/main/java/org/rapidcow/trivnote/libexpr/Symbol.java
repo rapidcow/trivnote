@@ -36,6 +36,16 @@ implements
 	}
 
 	/**
+	 * {@return this}
+	 */
+	@Override
+	public final Symbol
+	head()
+	{
+		return this;
+	}
+
+	/**
 	 * {@return the value of this symbol}
 	 */
 	@Override

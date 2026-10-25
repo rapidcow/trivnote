@@ -47,6 +47,16 @@ permits
 	}
 
 	/**
+	 * {@return this}
+	 */
+	@Override
+	public final Scalar
+	head()
+	{
+		return this;
+	}
+
+	/**
 	 * {@return an immutable numeric scalar atom}
 	 *
 	 * <p>
