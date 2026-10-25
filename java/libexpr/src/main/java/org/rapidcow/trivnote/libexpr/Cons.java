@@ -257,8 +257,8 @@ extends
 	 *
 	 * @param car  the car
 	 * @param cdr  the cdr
-	 * @throws NullPointerException  if car or
-	 *    cdr is {@code null}
+	 * @throws NullPointerException on null {@code car}
+	 *    or {@code cdr}
 	 * @return a cons cell
 	 * @since 0.1.0
 	 */
@@ -298,7 +298,7 @@ extends
 	 *
 	 * @param car  first element
 	 * @param etc  the rest
-	 * @param tail  list terminator
+	 * @param tail list terminator
 	 * @throws NullPointerException if any argument or
 	 *    array element is {@code null}
 	 * @return the concatenated cons chain
@@ -317,15 +317,15 @@ extends
 	}
 
 	/**
-	 * Prepends a deque to a cons chain, draining the deque.
-	 * Elements are popped from the front and prepended one at a time,
-	 * so their order in the result is the reverse of deque iteration order.
-	 * An empty deque returns the supplied chain.
+	 * Prepends a deque to a cons chain.
+	 * Elements are popped from the front and prepended
+	 * one at a time, reversing their iteration order.
+	 * This drains the deque and is thus destructive!
 	 *
 	 * @param q  the deque
 	 * @param p  the cons cell
 	 * @return the concatenated cons chain
-	 * @throws NullPointerException  if any argument or
+	 * @throws NullPointerException if any argument or
 	 *    deque element is {@code null}
 	 * @since 0.1.0
 	 */
@@ -344,10 +344,10 @@ extends
 	}
 
 	/**
-	 * Creates a proper list containing one element.
+	 * Creates a proper list of one element.
 	 *
 	 * @param first  first element
-	 * @throws NullPointerException  if first is {@code null}
+	 * @throws NullPointerException on null {@code first}
 	 * @return a nil-terminated singleton
 	 * @since 0.1.0
 	 */
@@ -358,13 +358,12 @@ extends
 	}
 
 	/**
-	 * Creates a proper list containing two elements.
-	 * Both arguments are elements, even if they are nil or cons cells.
+	 * Creates a proper list of two elements.
 	 *
 	 * @param first  first element
-	 * @param second  second element
-	 * @throws NullPointerException  if first or
-	 *    second is {@code null}
+	 * @param second second element
+	 * @throws NullPointerException on null {@code first}
+	 *    or {@code second}
 	 * @return a nil-terminated two-element list
 	 * @since 0.1.0
 	 */
@@ -401,8 +400,8 @@ extends
 	 * possibly empty, use {@link Datum#fromList(List)}.
 	 *
 	 * @param list  list of origin
-	 * @throws IllegalArgumentException if {@code list}
-	 *    is empty
+	 * @throws IllegalArgumentException on an empty
+	 *    {@code list}
 	 * @throws NullPointerException if {@code list} or
 	 *    any element is {@code null}
 	 * @return the transformed cons chain

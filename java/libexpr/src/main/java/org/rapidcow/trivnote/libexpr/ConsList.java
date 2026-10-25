@@ -28,11 +28,13 @@ extends
 
 	/**
 	 * Creates a cons chain prefixed with a deque.
-	 * Elements are popped from the front and prepended one at a time,
-	 * reversing their iteration order and draining the deque.
+	 * Elements are popped from the front and prepended
+	 * one at a time, reversing their iteration order.
+	 * This drains the deque and is thus destructive!
 	 * <p>
 	 * It is recommended that caller ensures {@code q}
-	 * contains at least one element, or the wrapper is unnecessary.
+	 * contains at least one element, or the wrapper
+	 * becomes a bit useless. :(
 	 *
 	 * @param q  the deque
 	 * @param p  the end
