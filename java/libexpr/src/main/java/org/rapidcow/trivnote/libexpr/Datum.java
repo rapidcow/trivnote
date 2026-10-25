@@ -215,11 +215,11 @@ permits
 	}
 
 	/**
-	 * Copies a list wrapped in a list view.
+	 * Copies a list wrapped as a cons list.
 	 * The list is properly terminated with nil.
 	 *
 	 * @param list  the source list
-	 * @return a copy of the list wrapped in a list datum view
+	 * @return a copy of the list as a datum
 	 * @throws NullPointerException if the list or any element is null
 	 * @since 0.1.0
 	 * @see Cons#fromList(List)
