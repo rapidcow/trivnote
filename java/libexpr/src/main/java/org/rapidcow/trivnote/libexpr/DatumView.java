@@ -6,10 +6,14 @@
 package org.rapidcow.trivnote.libexpr;
 
 /**
- * View of a datum.  A view exposes its underlying datum through
- * {@link #head()}, allowing it to be used for serialization or traversal.
- * A {@link Datum} is its own view; other implementations can compose
- * domain-specific behavior on top of a datum.
+ * View of a datum.  These classes compose on top of
+ * a datum, but are otherwise not a datum themselves.
+ * So they are not serializable.  Conversely though,
+ * all datum views are fully represented by the datum
+ * it encloses, which you <em>can</em> serialize.
+ * This can be useful when the view was itself created
+ * from scratch: taking the {@link #head()} gives you
+ * a complete, serializable form to work with.
  *
  * @since 0.1.0
  */
