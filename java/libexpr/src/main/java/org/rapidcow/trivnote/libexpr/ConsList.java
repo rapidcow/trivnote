@@ -29,7 +29,7 @@ extends
 	/* Used by DataLoader makeList */
 	ConsList(Deque<Datum> q, Datum s, Datum e)
 	{
-		size = 1 + q.size();
+		size = 1L + q.size();
 		end = e;
 
 		Cons c = Cons.of(s, e);
@@ -51,7 +51,7 @@ extends
 		Objects.requireNonNull(first, "first");
 		Objects.requireNonNull(second, "second");
 		car = first;
-		size = 1 + etc.length;
+		size = 1L + etc.length;
 		if (etc.length == 0) {
 			cdr = second;
 			end = second;
@@ -88,7 +88,7 @@ extends
 		Objects.requireNonNull(tail, "tail");
 		car = first;
 		end = tail;
-		size = 1 + etc.length;
+		size = 1L + etc.length;
 		if (etc.length == 0) {
 			cdr = tail;
 			return;
