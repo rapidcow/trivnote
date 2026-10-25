@@ -272,7 +272,7 @@ implements
 
 	/**
 	 * Removes the length limit.
-	 * 
+	 *
 	 * @return this
 	 * @since 0.1.0
 	 */
