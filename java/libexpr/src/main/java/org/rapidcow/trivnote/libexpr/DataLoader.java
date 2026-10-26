@@ -438,7 +438,7 @@ implements
 	 * @since 0.1.0
 	 */
 	protected Scalar
-	makeSimple(String value)
+	makeNumber(String value)
 	{
 		try {
 			return Scalar.ofNumber(value);
@@ -579,7 +579,7 @@ implements
 						if (( w = readPlain(sb) ) != -1) {
 							unreadChar(w);
 						}
-						return new Token(makeSimple(sb.toString()));
+						return new Token(makeNumber(sb.toString()));
 					}
 					unreadChar(w);
 				}
@@ -626,7 +626,7 @@ implements
 						if (sb.isEmpty()) {
 							throw loadingException("Empty " + prefix + " number");
 						}
-						return new Token(makeSimple(prefix + sb.toString()));
+						return new Token(makeNumber(prefix + sb.toString()));
 					default:
 						throw loadingException(
 							"Unimplemented reader dispatch "
@@ -724,7 +724,7 @@ implements
 				if (( v = readPlain(sb) ) != -1) {
 					unreadChar(v);
 				}
-				return new Token(makeSimple(sb.toString()));
+				return new Token(makeNumber(sb.toString()));
 			}
 			else if (v == '-' || v == '+') {
 				if (( w = readChar() ) != -1) {
@@ -734,7 +734,7 @@ implements
 						if (( v = readPlain(sb) ) != -1) {
 							unreadChar(v);
 						}
-						return new Token(makeSimple(sb.toString()));
+						return new Token(makeNumber(sb.toString()));
 					}
 					if (w == '.') {
 						sb.append((char) v);
@@ -746,7 +746,7 @@ implements
 								if (( v = readPlain(sb) ) != -1) {
 									unreadChar(v);
 								}
-								return new Token(makeSimple(sb.toString()));
+								return new Token(makeNumber(sb.toString()));
 							}
 							unreadChar(w);
 						}
@@ -776,7 +776,7 @@ implements
 			if (v != '|' && ( "+nan.0".equals(word) || "-nan.0".equals(word)
 				|| "+inf.0".equals(word) || "-inf.0".equals(word) ))
 			{
-				return new Token(makeSimple(word));
+				return new Token(makeNumber(word));
 			}
 			/* The only way we have more is if v was a bar. */
 			if (v == '|') {
