@@ -8,6 +8,7 @@ package org.rapidcow.trivnote.libexpr;
 /*
  * Note: these imports are for javadoc
  */
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
@@ -232,6 +233,27 @@ permits
 			return Nil.INSTANCE;
 		}
 		return Cons.fromList(list);
+	}
+
+	/**
+	 * Constructs a list from a deque.
+	 * Elements are popped from the front and prepended
+	 * one at a time, reversing their iteration order.
+	 * This drains the deque and is thus destructive!
+	 *
+	 * @param q  the deque
+	 * @return a copy of the deque as a datum
+	 * @throws NullPointerException if {@code q} or
+	 *    any deque element is {@code null}
+	 * @since 0.1.0
+	 */
+	public static Datum
+	ofDeque(Deque<? extends Datum> q)
+	{
+		if (q.isEmpty()) {
+			return Nil.INSTANCE;
+		}
+		return Cons.of(q, Cons.ofList(q.pop()));
 	}
 
 	/**
