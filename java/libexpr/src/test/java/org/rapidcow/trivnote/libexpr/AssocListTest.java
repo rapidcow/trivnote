@@ -377,6 +377,30 @@ class AssocListTest
 		assertNull(alist.get(Z));
 	}
 
+	/* Just like Datum.fromList, an empty map is nil */
+	@Test void testDatumFromEmptyMapIsNil()
+	{
+		assertSame(Nil.INSTANCE, Datum.fromMap(Map.of()));
+		assertSame(Nil.INSTANCE, Datum.fromMap(new AssocList(Nil.INSTANCE)));
+	}
+
+	@Test void testDatumFromMap()
+	{
+		Map<Datum,Datum> map = abcMap();
+		Datum alist = Datum.fromMap(map);
+		/* Entries keep the map's iteration order */
+		assertEquals(abc().head(), alist);
+		assertEquals(new AssocList(map).head(), alist);
+		assertEquals(Cons.ofList(pair(A, B)), Datum.fromMap(Map.of(A, B)));
+	}
+
+	@Test void testDatumFromMapRoundTrip()
+	{
+		for (Map<Datum,Datum> map : List.<Map<Datum,Datum>>of(Map.of(), Map.of(A, B), abcMap())) {
+			assertEquals(map, Datum.asAlist(Datum.fromMap(map)));
+		}
+	}
+
 	@Test void testNullMapIsRejected()
 	{
 		assertThrows(NullPointerException.class,
