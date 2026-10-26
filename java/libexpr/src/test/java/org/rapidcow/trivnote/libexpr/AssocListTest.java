@@ -339,7 +339,7 @@ class AssocListTest
 	}
 
 	/* Values (and keys) may be anything, nil and structures included */
-	@Test void testFromMapOfStructures()
+	@Test void testConstructorStructures()
 	{
 		Cons key = Cons.ofList(A, B);
 		Cons value = Cons.of(B, C);
@@ -546,7 +546,7 @@ class AssocListTest
 	}
 
 	/* A map's keys are only unique by its own idea of equality */
-	@Test void testFromMapDoesNotTrustMapUniqueness()
+	@Test void testConstructorDoesNotTrustMapUniqueness()
 	{
 		Map<Datum,Datum> map = new IdentityHashMap<>();
 		map.put(Cons.ofList(A, B), C);
