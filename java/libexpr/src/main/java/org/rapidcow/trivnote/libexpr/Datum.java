@@ -8,6 +8,7 @@ package org.rapidcow.trivnote.libexpr;
 /*
  * Note: these imports are for javadoc
  */
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
@@ -215,7 +216,7 @@ permits
 	}
 
 	/**
-	 * Copies a list wrapped as a cons list.
+	 * Copies a proper list from a {@link List}.
 	 * The list is properly terminated with nil.
 	 *
 	 * @param list  the source list
@@ -235,7 +236,28 @@ permits
 	}
 
 	/**
-	 * {@return the datum as an associative list}
+	 * Constructs a proper list from a {@link Deque}.
+	 * Elements are popped from the front and prepended
+	 * one at a time, reversing their iteration order.
+	 * This drains the deque and is thus destructive!
+	 *
+	 * @param q  the deque
+	 * @return a copy of the deque as a datum
+	 * @throws NullPointerException if {@code q} or
+	 *    any deque element is {@code null}
+	 * @since 0.1.0
+	 */
+	public static Datum
+	ofDeque(Deque<? extends Datum> q)
+	{
+		if (q.isEmpty()) {
+			return Nil.INSTANCE;
+		}
+		return Cons.of(q, Cons.ofList(q.pop()));
+	}
+
+	/**
+	 * Returns the datum as an associative list (alist).
 	 *
 	 * The returned view conforms to the interface
 	 * <code>{@linkplain Map Map}&lt;{@linkplain Datum Datum},{@linkplain Datum Datum}&gt;</code>.
@@ -244,6 +266,7 @@ permits
 	 * and whose cdr is the value.  First car-key wins.
 	 *
 	 * @param node  datum
+	 * @return the datum as an alist
 	 * @throws IllegalArgumentException if the list
 	 *    is not a proper list, or the list consists
 	 *    of any non-cons datum
@@ -258,7 +281,7 @@ permits
 	}
 
 	/**
-	 * Copies a map into an alist.
+	 * Copies a {@link Map} into an alist.
 	 * Entries become cons pairs in the iteration order of
 	 * the source map’s entry set.
 	 *

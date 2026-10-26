@@ -65,12 +65,7 @@ extends
 			Datum cdr = Objects.requireNonNull(e.getValue(), "map value");
 			q.push(Cons.of(car, cdr));
 		}
-		if (q.isEmpty()) {
-			head = Nil.INSTANCE;
-		} else {
-			Cons p = Cons.ofList(q.pop());
-			head = Cons.of(q, p);
-		}
+		head = Cons.ofDeque(q);
 	}
 
 	public final Datum

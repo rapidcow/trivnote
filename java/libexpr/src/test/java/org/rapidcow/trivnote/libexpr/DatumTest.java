@@ -5,8 +5,16 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DatumTest
 {
@@ -40,5 +48,46 @@ class DatumTest
 			runit++;
 		}
 		assertEquals(1, runit);
+	}
+
+	@Test void testOfDequeEmptyIsNil()
+	{
+		Deque<Datum> q = new ArrayDeque<>();
+		assertSame(Nil.INSTANCE, Datum.ofDeque(q));
+		assertTrue(q.isEmpty());
+	}
+
+	@Test void testOfDequeSingleElement()
+	{
+		Datum a = Scalar.ofNumber("1");
+		Deque<Datum> q = new ArrayDeque<>(List.of(a));
+
+		Cons list = assertInstanceOf(Cons.class, Datum.ofDeque(q));
+		assertSame(a, list.car());
+		assertSame(Nil.INSTANCE, list.cdr());
+		assertTrue(q.isEmpty());
+	}
+
+	@Test void testOfDequeReversesIterationOrder()
+	{
+		Datum a = Scalar.ofNumber("1");
+		Datum b = Scalar.ofNumber("2");
+		Datum c = Scalar.ofNumber("3");
+		Deque<Datum> q = new ArrayDeque<>(List.of(a, b, c));
+
+		Datum[] expected = {c, b, a};
+		Datum rest = Datum.ofDeque(q);
+		for (Datum element : expected) {
+			Cons cell = assertInstanceOf(Cons.class, rest);
+			assertSame(element, cell.car());
+			rest = cell.cdr();
+		}
+		assertSame(Nil.INSTANCE, rest);
+		assertTrue(q.isEmpty());
+	}
+
+	@Test void testOfDequeRejectsNullDeque()
+	{
+		assertThrows(NullPointerException.class, () -> Datum.ofDeque(null));
 	}
 }
