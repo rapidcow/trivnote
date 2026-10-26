@@ -317,13 +317,13 @@ extends
 	}
 
 	/**
-	 * Prepends a deque to a cons chain.
+	 * Prefixes a cons chain with a deque.
 	 * Elements are popped from the front and prepended
 	 * one at a time, reversing their iteration order.
 	 * This drains the deque and is thus destructive!
 	 *
 	 * @param q  the deque
-	 * @param p  the cons cell
+	 * @param p  base cons chain
 	 * @return the concatenated cons chain
 	 * @throws NullPointerException if any argument or
 	 *    deque element is {@code null}

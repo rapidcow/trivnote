@@ -37,7 +37,7 @@ extends
 	 * becomes a bit useless. :(
 	 *
 	 * @param q  the deque
-	 * @param p  the end
+	 * @param p  base cons chain
 	 * @throws NullPointerException if any argument or
 	 *    deque element is {@code null}
 	 * @see Cons#of(Deque, Cons)
