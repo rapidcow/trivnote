@@ -21,7 +21,7 @@ package org.rapidcow.trivnote.libexpr;
  * represented by {@link #value()}.
  */
 public sealed
-interface
+abstract class
 	Atom
 extends
 	Datum
@@ -30,6 +30,14 @@ permits
 	Symbol
 {
 	/**
+	 * Default constructor.
+	 * For subclasses only.
+	 */
+	protected Atom()
+	{
+	}
+
+	/**
 	 * {@return the value of this atom}
 	 * The value may not be null.
 	 *
@@ -37,5 +45,6 @@ permits
 	 * The return value may change across calls,
 	 * but it should be equal under string equality.
 	 */
-	String value();
+	public abstract String
+	value();
 }

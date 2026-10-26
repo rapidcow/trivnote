@@ -6,7 +6,10 @@
 package org.rapidcow.trivnote.libexpr;
 
 import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * API tests for ConsList and the Cons/Datum factories.
@@ -47,6 +51,165 @@ class ConsTest
 		checkSpine(actual, tail, elements);
 		assertEquals(elements.length, actual.size());
 		assertSame(tail, actual.tail());
+	}
+
+	@Test void testDequePrefixOrderAndSingleCellSuffix()
+	{
+		for (Datum tail : List.of(Nil.INSTANCE, Z)) {
+			for (List<Datum> prefix : List.of(List.<Datum>of(), List.of(A), List.of(A, B))) {
+				Deque<Datum> q = new ArrayDeque<>();
+				for (Datum element : prefix) {
+					q.push(element);
+				}
+				List<Datum> elements = new ArrayList<>(prefix);
+				elements.add(C);
+				Datum[] expected = elements.toArray(Datum[]::new);
+				Cons suffix = Cons.of(C, tail);
+				checkList(new ConsList(new ArrayDeque<>(q), suffix), tail, expected);
+				Cons result = Cons.of(q, suffix);
+				checkSpine(result, tail, expected);
+				assertTrue(q.isEmpty());
+				assertEquals(expected.length, Datum.asList(result).count());
+				assertSame(tail, Datum.asList(result).tail());
+			}
+		}
+	}
+
+	@Test void testDequePrefixWithLongerSuffix()
+	{
+		for (Datum tail : List.of(Nil.INSTANCE, Z)) {
+			/* Exercise both a cached suffix and an ordinary cons chain. */
+			for (Cons suffix : List.of(
+				new ConsList(B, C, tail), Cons.of(B, Cons.of(C, tail)))) {
+				Deque<Datum> q = new ArrayDeque<>(List.of(A));
+				ConsList result = new ConsList(q, suffix);
+				checkList(result, tail, A, B, C);
+				assertTrue(q.isEmpty());
+			}
+		}
+	}
+
+	@Test void testEmptyDequePreservesSuffix()
+	{
+		Cons suffix = Cons.of(A, Z);
+		assertSame(suffix, Cons.of(new ArrayDeque<>(), suffix));
+	}
+
+	@Test void testDequeConstructionRejectsNulls()
+	{
+		Cons suffix = Cons.ofList(A);
+		assertThrows(NullPointerException.class, () -> Cons.of((Deque<Datum>) null, suffix));
+		assertThrows(NullPointerException.class, () -> Cons.of(new ArrayDeque<>(), null));
+		assertThrows(NullPointerException.class, () -> new ConsList((Deque<Datum>) null, suffix));
+		assertThrows(NullPointerException.class, () -> new ConsList(new ArrayDeque<>(), null));
+		Deque<Datum> q = new LinkedList<>();
+		q.add(null);
+		assertThrows(NullPointerException.class, () -> Cons.of(q, suffix));
+		q.add(null);
+		assertThrows(NullPointerException.class, () -> new ConsList(q, suffix));
+	}
+
+	@Test void testConsOfFixedArityPreservesBothHalves()
+	{
+		Cons nested = Cons.ofList(B, C);
+		for (Datum car : List.of(A, Nil.INSTANCE, nested)) {
+			for (Datum cdr : List.of(Z, Nil.INSTANCE, nested)) {
+				Cons fixed = Cons.of(car, cdr);
+				checkSpine(fixed, cdr, car);
+				/* An explicit array selects the original varargs signature. */
+				Cons varargs = Cons.of(car, cdr, new Datum[0]);
+				checkSpine(varargs, cdr, car);
+				assertEquals(fixed, varargs);
+				assertEquals(varargs, fixed);
+				assertEquals(fixed.hashCode(), varargs.hashCode());
+			}
+		}
+	}
+
+	@Test void testOfListFixedSingletonMatchesExplicitArray()
+	{
+		Cons nested = Cons.ofList(B, C);
+		for (Datum first : List.of(A, Nil.INSTANCE, nested)) {
+			Cons fixed = Cons.ofList(first);
+			Cons varargs = Cons.ofList(first, new Datum[0]);
+			checkSpine(fixed, Nil.INSTANCE, first);
+			checkSpine(varargs, Nil.INSTANCE, first);
+			assertEquals(fixed, varargs);
+			assertEquals(varargs, fixed);
+			assertEquals(fixed.hashCode(), varargs.hashCode());
+			DatumList view = Datum.asProperList(fixed);
+			assertEquals(1L, view.count());
+			assertEquals(List.of(first), view);
+		}
+	}
+
+	@Test void testOfListFixedPairMatchesExplicitArray()
+	{
+		Cons nested = Cons.ofList(B, C);
+		for (Datum first : List.of(A, Nil.INSTANCE, nested)) {
+			for (Datum second : List.of(B, Nil.INSTANCE, nested)) {
+				Cons fixed = Cons.ofList(first, second);
+				Cons varargs = Cons.ofList(first, new Datum[] { second });
+				checkSpine(fixed, Nil.INSTANCE, first, second);
+				checkSpine(varargs, Nil.INSTANCE, first, second);
+				assertEquals(fixed, varargs);
+				assertEquals(varargs, fixed);
+				assertEquals(fixed.hashCode(), varargs.hashCode());
+				DatumList view = Datum.asProperList(fixed);
+				assertEquals(2L, view.count());
+				assertEquals(List.of(first, second), view);
+			}
+		}
+	}
+
+	@Test void testConsOfExplicitShortVarargsPreservesTail()
+	{
+		Cons nested = Cons.ofList(B, C);
+		for (Datum tail : List.of(Nil.INSTANCE, Z, nested)) {
+			checkSpine(Cons.of(A, B, new Datum[] { tail }), tail, A, B);
+		}
+		Cons proper = Cons.of(A, B, Nil.INSTANCE);
+		assertEquals(Cons.ofList(A, B), proper);
+		assertEquals(List.of(A, B), Datum.asProperList(proper));
+	}
+
+	@Test void testShortFactoriesRejectNullElements()
+	{
+		assertThrows(NullPointerException.class, () -> Cons.of(null, Nil.INSTANCE));
+		assertThrows(NullPointerException.class, () -> Cons.of(null, Z, new Datum[0]));
+		assertThrows(NullPointerException.class, () -> Cons.of(A, (Datum) null, new Datum[0]));
+		assertThrows(NullPointerException.class, () -> Cons.of(null, B, Nil.INSTANCE));
+		assertThrows(NullPointerException.class, () -> Cons.of(A, (Datum) null, Nil.INSTANCE));
+		assertThrows(NullPointerException.class, () -> Cons.of(A, B, new Datum[] { null }));
+		assertThrows(NullPointerException.class, () -> Cons.ofList(null));
+		assertThrows(NullPointerException.class, () -> Cons.ofList(null, B));
+		assertThrows(NullPointerException.class, () -> Cons.ofList(A, (Datum) null));
+		assertThrows(NullPointerException.class, () -> Cons.ofList(null, new Datum[0]));
+		assertThrows(NullPointerException.class, () -> Cons.ofList(A, new Datum[] { null }));
+		for (Datum[] elements : new Datum[][] { { null }, { null, B }, { A, null } }) {
+			assertThrows(NullPointerException.class, () -> Cons.fromList(Arrays.asList(elements)));
+		}
+	}
+
+	@Test void testShortFromSequentialListsCopiesElements()
+	{
+		for (List<Datum> elements : List.of(List.of(A), List.of(A, B))) {
+			List<Datum> input = new LinkedList<>(elements);
+			Cons result = Cons.fromList(input);
+			input.clear();
+			checkSpine(result, Nil.INSTANCE, elements.toArray(Datum[]::new));
+			assertEquals(elements, Datum.asProperList(result));
+		}
+	}
+
+	@Test void testShortFromDatumListsDiscardsImproperTail()
+	{
+		for (Datum tail : List.of(Nil.INSTANCE, Z)) {
+			List<Datum> singleton = Datum.asList(Cons.of(A, tail));
+			List<Datum> pair = Datum.asList(Cons.of(A, B, tail));
+			checkSpine(Cons.fromList(singleton), Nil.INSTANCE, A);
+			checkSpine(Cons.fromList(pair), Nil.INSTANCE, A, B);
+		}
 	}
 
 	@Test void testConsOfVarargs()

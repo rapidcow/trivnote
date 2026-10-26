@@ -677,11 +677,11 @@ class ReaderTest
 	throws IOException
 	{
 		DataLoader loader = new DataLoader(new StringReader("((a)) (a b)"))
-			.useDepthLimit(0).useLengthLimit(1).noMaxDepth();
+			.useDepthLimit(0).useLengthLimit(1).noDepthLimit();
 		assertEquals(Long.MAX_VALUE, loader.getDepthLimit());
 		assertEquals(1, loader.getLengthLimit());
 		assertEquals(new DataLoader(new StringReader("((a))")).readDatum(), loader.readDatum());
-		loader.noMaxLength();
+		loader.noLengthLimit();
 		assertEquals(Long.MAX_VALUE, loader.getLengthLimit());
 		assertEquals(new DataLoader(new StringReader("(a b)")).readDatum(), loader.readDatum());
 	}

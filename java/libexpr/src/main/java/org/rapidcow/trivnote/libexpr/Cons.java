@@ -7,7 +7,9 @@ package org.rapidcow.trivnote.libexpr;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * An immutable pair of {@link Datum}s.
@@ -22,13 +24,13 @@ import java.util.List;
 public non-sealed
 abstract class
 	Cons
-implements
+extends
 	Datum
 {
 	/**
 	 * {@return the car of this cons cell}  The return
 	 * value may not be an identical datum object, but
-	 * it must be equal.  car may not be null.
+	 * it must be equal.  car may not be {@code null}.
 	 */
 	public abstract Datum
 	car();
@@ -36,7 +38,7 @@ implements
 	/**
 	 * {@return the cdr of this cons cell}  The return
 	 * value may not be an identical datum object, but
-	 * it must be equal.  cdr may not be null.
+	 * it must be equal.  cdr may not be {@code null}.
 	 */
 	public abstract Datum
 	cdr();
@@ -240,8 +242,36 @@ implements
 		}
 	}
 
+	/*
+	 * These are not only handy shorthands, but they
+	 * also pick the optimal implementation! :o
+	 *
+	 * Namely, any proper list uses a ConsTail instead,
+	 * and binary lists (such as the symbol-string pair
+	 * in a Racket xexpr attribute) do not have their
+	 * length stored.
+	 */
+
 	/**
-	 * Creates a non-empty chain with the last datum as its tail.
+	 * Creates a cons cell.
+	 *
+	 * @param car  the car
+	 * @param cdr  the cdr
+	 * @throws NullPointerException on null {@code car}
+	 *    or {@code cdr}
+	 * @return a cons cell
+	 * @since 0.1.0
+	 */
+	public static Cons
+	of(Datum car, Datum cdr)
+	{
+		return (cdr == Nil.INSTANCE)
+			? new ConsTail(car)
+			: new ConsCell(car, cdr);
+	}
+
+	/**
+	 * Creates a non-empty cons chain with the last datum as its tail.
 	 *
 	 * @param car  first element
 	 * @param cdr  second element
@@ -255,7 +285,10 @@ implements
 	of(Datum car, Datum cdr, Datum... etc)
 	{
 		if (etc.length == 0) {
-			return new ConsCell(car, cdr);
+			return Cons.of(car, cdr);
+		}
+		if (etc.length == 1 && etc[0] == Nil.INSTANCE) {
+			return Cons.ofList(car, cdr);
 		}
 		return new ConsList(car, cdr, etc);
 	}
@@ -264,8 +297,8 @@ implements
 	 * Creates a non-empty cons chain with the given tail.
 	 *
 	 * @param car  first element
-	 * @param etc  rest elements
-	 * @param tail  list terminator
+	 * @param etc  the rest
+	 * @param tail list terminator
 	 * @throws NullPointerException if any argument or
 	 *    array element is {@code null}
 	 * @return the concatenated cons chain
@@ -275,28 +308,91 @@ implements
 	of(Datum car, Datum[] etc, Datum tail)
 	{
 		if (etc.length == 0) {
-			return new ConsCell(car, tail);
+			return Cons.of(car, tail);
+		}
+		if (etc.length == 1 && tail == Nil.INSTANCE) {
+			return Cons.ofList(car, etc[0]);
 		}
 		return new ConsList(car, etc, tail);
 	}
 
 	/**
+	 * Prefixes a cons chain with a deque.
+	 * Elements are popped from the front and prepended
+	 * one at a time, reversing their iteration order.
+	 * This drains the deque and is thus destructive!
+	 *
+	 * @param q  the deque
+	 * @param p  base cons chain
+	 * @return the concatenated cons chain
+	 * @throws NullPointerException if any argument or
+	 *    deque element is {@code null}
+	 * @since 0.1.0
+	 */
+	public static Cons
+	of(Deque<? extends Datum> q, Cons p)
+	{
+		Objects.requireNonNull(q, "q");
+		Objects.requireNonNull(p, "p");
+		if (q.isEmpty()) {
+			return p;
+		}
+		if (p.cdr() == Nil.INSTANCE && q.size() == 1) {
+			return new ConsCell(q.pop(), p);
+		}
+		return new ConsList(q, p);
+	}
+
+	/**
+	 * Creates a proper list of one element.
+	 *
+	 * @param first  first element
+	 * @throws NullPointerException on null {@code first}
+	 * @return a nil-terminated singleton
+	 * @since 0.1.0
+	 */
+	public static Cons
+	ofList(Datum first)
+	{
+		return new ConsTail(first);
+	}
+
+	/**
+	 * Creates a proper list of two elements.
+	 *
+	 * @param first  first element
+	 * @param second second element
+	 * @throws NullPointerException on null {@code first}
+	 *    or {@code second}
+	 * @return a nil-terminated two-element list
+	 * @since 0.1.0
+	 */
+	public static Cons
+	ofList(Datum first, Datum second)
+	{
+		return new ConsCell(first, new ConsTail(second));
+	}
+
+	/**
 	 * Creates a non-empty proper list.
 	 *
-	 * @param car  first element
-	 * @param etc  rest elements
-	 *
-	 * @throws NullPointerException if any argument or array element is null
+	 * @param first  first element
+	 * @param etc  the rest
+	 * @throws NullPointerException if any argument or
+	 *    array element is {@code null}
 	 * @return the concatenated cons chain
 	 * @since 0.1.0
 	 */
 	public static Cons
-	ofList(Datum car, Datum... etc)
+	ofList(Datum first, Datum... etc)
 	{
 		if (etc.length == 0) {
-			return new ConsCell(car, Nil.INSTANCE);
+			return Cons.ofList(first);
 		}
-		return new ConsList(car, etc, Nil.INSTANCE);
+		if (etc.length == 1) {
+			return Cons.ofList(first, etc[0]);
+		}
+		return new ConsList(first, etc, Nil.INSTANCE);
 	}
 
 	/**
@@ -304,16 +400,28 @@ implements
 	 * possibly empty, use {@link Datum#fromList(List)}.
 	 *
 	 * @param list  list of origin
-	 * @throws IllegalArgumentException if {@code list} is empty
-	 * @throws NullPointerException if {@code list} or any element is null
+	 * @throws IllegalArgumentException on an empty
+	 *    {@code list}
+	 * @throws NullPointerException if {@code list} or
+	 *    any element is {@code null}
 	 * @return the transformed cons chain
 	 * @since 0.1.0
 	 */
-	public static ConsList
+	public static Cons
 	fromList(List<? extends Datum> list)
 	{
 		if (list.isEmpty()) {
 			throw new IllegalArgumentException("Empty list");
+		}
+		int size = list.size();
+		if (size == 1) {
+			return Cons.ofList(list.get(0));
+		}
+		if (size == 2) {
+			Iterator<? extends Datum> walk = list.iterator();
+			Datum a = walk.next();
+			Datum b = walk.next();
+			return Cons.ofList(a, b);
 		}
 		return new ConsList(list);
 	}

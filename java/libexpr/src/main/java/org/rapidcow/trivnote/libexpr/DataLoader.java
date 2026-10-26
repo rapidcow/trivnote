@@ -15,12 +15,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * S-expression reader.
@@ -41,11 +39,6 @@ implements
 	 * Symbol cache.
 	 */
 	private Map<String,Symbol> sym;
-
-	/**
-	 * Dispatch callbacks.
-	 */
-	private Map<Datum, Function<? super Cons, ? extends Cons>> cb;
 
 	/**
 	 * Most levels of list nesting, and most elements per list.
@@ -135,72 +128,6 @@ implements
 	}
 
 	/**
-	 * {@return the registered list dispatch hook for the given name}
-	 *
-	 * @param name  the given name
-	 * @since 0.1.0
-	 */
-	public final Optional <
-		Function<? super Cons, ? extends Cons>
-	> getDispatch(Datum name)
-	{
-		if (cb == null) {
-			return Optional.empty();
-		}
-		return Optional.ofNullable(cb.get(name));
-	}
-
-	/**
-	 * Register list dispatch hook for the given name.
-	 *
-	 * @param name  the given name
-	 * @param dispatch  callback function
-	 * @return this
-	 * @since 0.1.0
-	 */
-	public final DataLoader
-	useDispatch(
-		Datum name,
-		Function<? super Cons, ? extends Cons> dispatch
-	)
-	{
-		if (cb == null) {
-			cb = new HashMap<>();
-		}
-		cb.put(name, dispatch);
-		return this;
-	}
-
-	/**
-	 * Un-register list dispatch hook for the given name.
-	 *
-	 * @param name  the given name
-	 * @return this
-	 * @since 0.1.0
-	 */
-	public final DataLoader
-	noDispatch(Datum name)
-	{
-		if (cb != null) {
-			cb.remove(name);
-		}
-		return this;
-	}
-
-	/**
-	 * Un-register all list dispatch hooks
-	 *
-	 * @return this
-	 * @since 0.1.0
-	 */
-	public final DataLoader
-	clearDispatch()
-	{
-		cb = null;
-		return this;
-	}
-
-	/**
 	 * Limit how deeply lists may nest.  A top-level atom has depth
 	 * 0, and each enclosing list adds 1, so {@code (a (b))} needs a
 	 * limit of at least 2.  A limit of 0 allows no lists at all.
@@ -272,7 +199,7 @@ implements
 
 	/**
 	 * Removes the length limit.
-	 * 
+	 *
 	 * @return this
 	 * @since 0.1.0
 	 */
@@ -511,7 +438,7 @@ implements
 	 * @since 0.1.0
 	 */
 	protected Scalar
-	makeSimple(String value)
+	makeNumber(String value)
 	{
 		try {
 			return Scalar.ofNumber(value);
@@ -524,24 +451,14 @@ implements
 	 * Hook called to create a non-empty list.
 	 *
 	 * @param q  list contents
-	 * @param s  final list datum
-	 * @param e  list terminator
+	 * @param p  list trailer
 	 * @return a list
 	 * @since 0.1.0
 	 */
 	protected Cons
-	makeList(Deque<Datum> q, Datum s, Datum e)
+	makeList(Deque<Datum> q, Cons p)
 	{
-		if (cb != null) {
-			Function<? super Cons, ? extends Cons> dispatch;
-			Datum a = q.peekLast();
-			if (( dispatch = cb.get(a) ) != null) {
-				q.removeLast();
-				Cons p = new ConsCell(a, new ConsList(q, s, e));
-				return dispatch.apply(p);
-			}
-		}
-		return new ConsList(q, s, e);
+		return Cons.of(q, p);
 	}
 
 	/**
@@ -662,7 +579,7 @@ implements
 						if (( w = readPlain(sb) ) != -1) {
 							unreadChar(w);
 						}
-						return new Token(makeSimple(sb.toString()));
+						return new Token(makeNumber(sb.toString()));
 					}
 					unreadChar(w);
 				}
@@ -709,7 +626,7 @@ implements
 						if (sb.isEmpty()) {
 							throw loadingException("Empty " + prefix + " number");
 						}
-						return new Token(makeSimple(prefix + sb.toString()));
+						return new Token(makeNumber(prefix + sb.toString()));
 					default:
 						throw loadingException(
 							"Unimplemented reader dispatch "
@@ -778,7 +695,8 @@ implements
 				if (q.isEmpty()) {
 					return new Token(e);
 				} else {
-					return new Token(makeList(q, q.pop(), e));
+					Cons p = Cons.of(q.pop(), e);
+					return new Token(makeList(q, p));
 				}
 			}
 
@@ -806,7 +724,7 @@ implements
 				if (( v = readPlain(sb) ) != -1) {
 					unreadChar(v);
 				}
-				return new Token(makeSimple(sb.toString()));
+				return new Token(makeNumber(sb.toString()));
 			}
 			else if (v == '-' || v == '+') {
 				if (( w = readChar() ) != -1) {
@@ -816,7 +734,7 @@ implements
 						if (( v = readPlain(sb) ) != -1) {
 							unreadChar(v);
 						}
-						return new Token(makeSimple(sb.toString()));
+						return new Token(makeNumber(sb.toString()));
 					}
 					if (w == '.') {
 						sb.append((char) v);
@@ -828,7 +746,7 @@ implements
 								if (( v = readPlain(sb) ) != -1) {
 									unreadChar(v);
 								}
-								return new Token(makeSimple(sb.toString()));
+								return new Token(makeNumber(sb.toString()));
 							}
 							unreadChar(w);
 						}
@@ -858,7 +776,7 @@ implements
 			if (v != '|' && ( "+nan.0".equals(word) || "-nan.0".equals(word)
 				|| "+inf.0".equals(word) || "-inf.0".equals(word) ))
 			{
-				return new Token(makeSimple(word));
+				return new Token(makeNumber(word));
 			}
 			/* The only way we have more is if v was a bar. */
 			if (v == '|') {
@@ -1002,7 +920,7 @@ implements
 	throws
 		IOException
 	{
-		int v, w;
+		int v;
 		while (( v = readChar() ) != -1) {
 			if (v == '"') {
 				return;

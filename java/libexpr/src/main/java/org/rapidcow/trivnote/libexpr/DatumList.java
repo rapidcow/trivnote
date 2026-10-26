@@ -23,7 +23,6 @@ class
 extends
 	AbstractSequentialList<Datum>
 implements
-	DatumView,
 	Iterable<Datum>
 {
 	private final Datum head;
@@ -63,7 +62,7 @@ implements
 			tail = Nil.INSTANCE;
 			return;
 		}
-		ConsList cList = Cons.fromList(list);
+		ConsList cList = new ConsList(list);
 		head = cList;
 		size = cList.count();
 		tail = cList.tail();
@@ -72,7 +71,6 @@ implements
 	/**
 	 * {@return the underlying source datum}
 	 */
-	@Override
 	public final Datum
 	head()
 	{
@@ -183,7 +181,7 @@ implements
 			q.push(node);
 		}
 		Datum s = q.pop();
-		return new DatumList(new ConsList(q, s, Nil.INSTANCE));
+		return new DatumList(new ConsList(q, new ConsTail(s)));
 	}
 
 	@Override

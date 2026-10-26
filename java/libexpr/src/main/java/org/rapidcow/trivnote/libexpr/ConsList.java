@@ -11,7 +11,7 @@ import java.util.ListIterator;
 import java.util.Objects;
 
 /**
- * Cons cells with a known length.
+ * Cons cell with a known length.
  *
  * @since 0.1.0
  */
@@ -26,24 +26,51 @@ extends
 	private final Datum end;
 	private final long size;
 
-	/* Used by DataLoader makeList */
-	ConsList(Deque<Datum> q, Datum s, Datum e)
+	/**
+	 * Creates a cons chain prefixed with a deque.
+	 * Elements are popped from the front and prepended
+	 * one at a time, reversing their iteration order.
+	 * This drains the deque and is thus destructive!
+	 * <p>
+	 * It is recommended that caller ensures {@code q}
+	 * contains at least one element, or the wrapper
+	 * becomes a bit useless. :(
+	 *
+	 * @param q  the deque
+	 * @param p  base cons chain
+	 * @throws NullPointerException if any argument or
+	 *    deque element is {@code null}
+	 * @see Cons#of(Deque, Cons)
+	 */
+	public
+	ConsList(Deque<? extends Datum> q, Cons p)
 	{
-		size = 1 + q.size();
-		end = e;
-
-		Cons c = new ConsCell(s, e);
-		while (!q.isEmpty()) {
-			c = new ConsCell(q.pop(), c);
+		Objects.requireNonNull(q, "q");
+		Objects.requireNonNull(p, "p");
+		Datum tail = p.cdr();
+		long n;
+		if (!(tail instanceof Cons)) {
+			n = 1;
+			end = tail;
+		} else {
+			DatumList list = new DatumList(p);
+			n = list.count();
+			end = list.tail();
 		}
-		car = c.car();
-		cdr = c.cdr();
+		while (!q.isEmpty()) {
+			p = new ConsCell(q.pop(), p);
+			++n;
+		}
+		car = p.car();
+		cdr = p.cdr();
+		size = n;
 	}
 
 	/**
 	 * Creates a non-empty chain with the last datum as its tail.
 	 *
-	 * @throws NullPointerException if any argument or array element is null
+	 * @throws NullPointerException if any argument or
+	 *    array element is {@code null}
 	 */
 	public
 	ConsList(Datum first, Datum second, Datum... etc)
@@ -51,7 +78,7 @@ extends
 		Objects.requireNonNull(first, "first");
 		Objects.requireNonNull(second, "second");
 		car = first;
-		size = 1 + etc.length;
+		size = 1L + etc.length;
 		if (etc.length == 0) {
 			cdr = second;
 			end = second;
@@ -63,10 +90,10 @@ extends
 		}
 		Cons c;
 		if (etc.length == 1) {
-			c = new ConsCell(second, etc[0]);
+			c = Cons.of(second, etc[0]);
 		}
 		else {
-			c = new ConsCell(etc[etc.length - 2], etc[etc.length - 1]);
+			c = Cons.of(etc[etc.length - 2], etc[etc.length - 1]);
 			for (int i = etc.length - 2; i > 0; --i) {
 				c = new ConsCell(etc[i - 1], c);
 			}
@@ -79,7 +106,8 @@ extends
 	/**
 	 * Creates a non-empty chain with the given tail.
 	 *
-	 * @throws NullPointerException if any argument or array element is null
+	 * @throws NullPointerException if any argument or
+	 *    array element is {@code null}
 	 */
 	public
 	ConsList(Datum first, Datum[] etc, Datum tail)
@@ -88,7 +116,7 @@ extends
 		Objects.requireNonNull(tail, "tail");
 		car = first;
 		end = tail;
-		size = 1 + etc.length;
+		size = 1L + etc.length;
 		if (etc.length == 0) {
 			cdr = tail;
 			return;
@@ -97,7 +125,7 @@ extends
 			final int I = i;
 			Objects.requireNonNull(etc[i], () -> "etc[" + I + "]");
 		}
-		Cons c = new ConsCell(etc[etc.length - 1], tail);
+		Cons c = Cons.of(etc[etc.length - 1], tail);
 		for (int i = etc.length - 1; i > 0; --i) {
 			c = new ConsCell(etc[i - 1], c);
 		}
@@ -107,8 +135,10 @@ extends
 	/**
 	 * Creates a cons from a non-empty list.
 	 *
-	 * @throws IllegalArgumentException if {@code list} is empty
-	 * @throws NullPointerException if {@code list} or any element is null
+	 * @throws IllegalArgumentException if {@code list}
+	 *    is empty
+	 * @throws NullPointerException if {@code list} or
+	 *    any element is {@code null}
 	 */
 	public
 	ConsList(List<? extends Datum> list)
@@ -144,7 +174,7 @@ extends
 			() -> "list[" + (size - 1) + "]"
 		);
 		int i = sz - 1;
-		c = new ConsCell(p, Nil.INSTANCE);
+		c = new ConsTail(p);
 		while (iter.hasPrevious()) {
 			final int I = i;
 			p = Objects.requireNonNull(

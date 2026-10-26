@@ -23,23 +23,57 @@ import java.util.Map;
  * <q>{@linkplain #isList(Datum) list}</q>.
  *
  * <p>
- * {@code Datum} promises no interface methods explicitly,
- * though through being a sealed interface it limits the
- * classes that can implement it.  For that reason we can
- * guarantee that all datums implement
+ * Datums <em>must</em> implement
  * <code>{@linkplain Object#hashCode() hashCode()}</code> and
  * <code>{@linkplain Object#equals(Object) equals(Object)}</code>
  * in a way such that they are compared by value, not by
- * object identity.
+ * object identity.  Datums <em>should</em> implement
+ * a reasonably descriptive string representation by
+ * overriding {@link Object#toString()}, though this is not
+ * mandatory.
  */
 public sealed
-interface
+abstract class
 	Datum
 permits
 	Atom,
 	Cons,
 	Nil
 {
+	/**
+	 * Default constructor.
+	 * For subclasses only.
+	 */
+	protected Datum()
+	{
+		/* nothing to do. */
+	}
+
+	/**
+	 * Implements datum equality.  This method
+	 * must be consistent with {@link #hashCode()}.
+	 * In general, instances of different datum
+	 * classes should compare unequal (with
+	 * {@linkplain NumberScalar numeric scalars}
+	 * being the notable exception).
+	 *
+	 * @param o  operand
+	 * @return whether this equals {@code o}
+	 */
+	@Override
+	public abstract boolean
+	equals(Object o);
+
+	/**
+	 * Implements datum hash code.  This method must
+	 * be consistent with {@link #equals(Object)}.
+	 *
+	 * @return  hash code of this
+	 */
+	@Override
+	public abstract int
+	hashCode();
+
 	/**
 	 * {@return whether the datum is an atom}
 	 * This method checks for more than {@link Atom}
@@ -181,14 +215,13 @@ permits
 	}
 
 	/**
-	 * Copies a list wrapped in a list view.
-	 * The list is properly terminated with nil.  Chain this
-	 * call with <q><code>.{@linkplain DatumList#head() head()}</code></q>
-	 * if you just need the datum for serialization.
+	 * Copies a list wrapped as a cons list.
+	 * The list is properly terminated with nil.
 	 *
 	 * @param list  the source list
-	 * @return a copy of the list wrapped in a list datum view
-	 * @throws NullPointerException if the list or any element is null
+	 * @return a copy of the list as a datum
+	 * @throws NullPointerException if the list or
+	 *    any element is {@code null}
 	 * @since 0.1.0
 	 * @see Cons#fromList(List)
 	 */
@@ -214,7 +247,8 @@ permits
 	 * @throws IllegalArgumentException if the list
 	 *    is not a proper list, or the list consists
 	 *    of any non-cons datum
-	 * @throws NullPointerException if {@code node} is null
+	 * @throws NullPointerException if {@code node} is
+	 *    {@code null}
 	 * @since 0.1.0
 	 */
 	public static AssocList
@@ -224,20 +258,19 @@ permits
 	}
 
 	/**
-	 * Copies a map wrapped in an associative map view.
+	 * Copies a map into an alist.
 	 * Entries become cons pairs in the iteration order of
-	 * the source map’s entry set.  Chain this call with
-	 * <code>.{@linkplain AssocList#head() head()}</code>
-	 * if you just need the datum for serialization.
+	 * the source map’s entry set.
 	 *
 	 * @param map  the source map
-	 * @return a copy of the map wrapped in an associative map datum view
-	 * @throws NullPointerException if the map, any key, or any value is null
+	 * @return a copy of the map as an alist
+	 * @throws NullPointerException if the map,
+	 *    any key, or any value is {@code null}
 	 * @since 0.1.0
 	 */
-	public static AssocList
+	public static Datum
 	fromMap(Map<? extends Datum, ? extends Datum> map)
 	{
-		return new AssocList(map);
+		return new AssocList(map).head();
 	}
 }

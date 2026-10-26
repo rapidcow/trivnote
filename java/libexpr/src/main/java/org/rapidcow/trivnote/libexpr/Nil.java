@@ -8,12 +8,53 @@ package org.rapidcow.trivnote.libexpr;
 /**
  * The atom devoid of value and the empty list.
  */
-public
-enum
+public final
+class
 	Nil
-implements
+extends
 	Datum
 {
 	/** The singleton that represents {@code nil}. */
-	INSTANCE;
+	public static final Nil INSTANCE = new Nil();
+
+	private
+	Nil()
+	{
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final boolean
+	equals(Object o)
+	{
+		return this == o;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final int
+	hashCode()
+	{
+		/*
+		 * Collections.emptyList().hashCode() is 1.
+		 *
+		 * Our Cons is based on that, and nil is the
+		 * empty list; so it seems fair to do this :]
+		 */
+		return 1;
+	}
+
+	/**
+	 * {@return a string representation of nil}
+	 */
+	@Override
+	public final String
+	toString()
+	{
+		return "()";
+	}
 }

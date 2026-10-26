@@ -64,13 +64,11 @@ package org.rapidcow.trivnote.libexpr;
  *
  * @since 0.1.0
  */
-public sealed
+public non-sealed
 abstract class
 	NumberScalar
 extends
 	Scalar
-permits
-	SimpleScalar
 {
 	/**
 	 * Default constructor.
@@ -78,6 +76,16 @@ permits
 	protected NumberScalar()
 	{
 		/* nothing to do. */
+	}
+
+	/**
+	 * {@return a string representation of this scalar}
+	 */
+	@Override
+	public String
+	toString()
+	{
+		return "Number[value=" + value() + "]";
 	}
 
 	/**

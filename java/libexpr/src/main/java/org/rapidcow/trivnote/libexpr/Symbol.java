@@ -14,8 +14,9 @@ import java.util.Objects;
 public final
 class
 	Symbol
+extends
+	Atom
 implements
-	Atom,
 	Comparable<Symbol>
 {
 	private final String value;
