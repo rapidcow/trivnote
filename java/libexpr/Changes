@@ -1,6 +1,37 @@
 Revision history of trivnote-libexpr
 
 
+0.2.0
+    *** Scalar and Atom are GONE! Datum.value() with them.
+      Please dispatch accordingly and take what you need. :(
+      (The primary motivation is that it's virtually impossible
+       to do anything with one type of scalar without "ripping
+       out" the internal implementation---making encapsulation
+       useless.  Another reason is that, like Datum, there is
+       no good interface method to provide a uniform abstraction
+       over the concrete types.  The ONLY difference is that we
+       need Datum as a type bound---but who bre we to judge if
+       Booleans are like other scalars or not! :/  Or if every-
+       thing non-Cons should implement Atom...  (I have had the
+       same struggle with deciding an abstract Vector category
+       over #( ... ) and #u8( ... ), which, despite both being
+       vectors, the latter holds bytes while the former holds
+       datums.... and bytes aren't datums for sure.)
+    *** Scalar.ofNumber/ofString are now NumberScalar.of and
+      StringScalar.of.  StringScalar is a plain abstract class
+      now---that means you can extend StringScalar for lazy
+      string generation as well! ;P
+    *** TruthScalar renamed to BoolScalar.  It has no value();
+      use booleanValue().
+    *** SimpleScalar renamed to SimpleNumberScalar.
+    * Datum.asNumber and Datum.asString: cast or throw
+      IllegalArgumentException (like Datum.asList and friends).
+    * DataDumper.writeString/writeNumber/writeBool/writeSymbol
+      are public, so you can write a single leaf without a Datum.
+    * better Bool and Cons toString (Bool[value=true], Cons@1b2c3d).
+
+    PLANNED: DatumVector and OctetVector (new types, new syntax).
+
 0.1.0
     *** DataLoader.ParseException renamed to DataLoadingException
     *** DataLoader.eio() renamed to DataLoader.lastIOException()
