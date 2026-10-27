@@ -19,10 +19,10 @@ import java.awt.geom.AffineTransform;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import org.rapidcow.trivnote.libexpr.Atom;
 import org.rapidcow.trivnote.libexpr.Cons;
 import org.rapidcow.trivnote.libexpr.DataLoader;
 import org.rapidcow.trivnote.libexpr.Datum;
+import org.rapidcow.trivnote.libexpr.NumberScalar;
 import org.rapidcow.trivnote.libexpr.Symbol;
 
 public class PreviewAppleNotesDrawing
@@ -134,8 +134,8 @@ public class PreviewAppleNotesDrawing
 		for (Datum node : tagged("stroke", strokesNode)) {
 			Map<Datum,Datum> fields = Datum.asAlist(node).requireUniqueKeys();
 			Clock sortId = loadClock(fields.get(getSymbol("sort-id")));
-			String uuid = Datum.value(first(fields.get(getSymbol("uuid"))));
-			Ink ink = kit.get(Integer.parseInt(Datum.value(first(fields.get(getSymbol("ink-index"))))));
+			String uuid = Datum.asString(first(fields.get(getSymbol("uuid")))).value();
+			Ink ink = kit.get(Integer.parseInt(Datum.asNumber(first(fields.get(getSymbol("ink-index")))).value()));
 			AffineTransform map = loadTransformOrIdentity(fields.get(getSymbol("transform")), fields.get(getSymbol("substrokes")));
 			AffineTransform inkMap = loadTransformOrIdentity(fields.get(getSymbol("ink-transform")), null);
 			strokes.add(new Stroke(sortId, uuid, ink, map, inkMap, loadPoints(fields.get(getSymbol("points")))));
@@ -198,7 +198,7 @@ public class PreviewAppleNotesDrawing
 	/** {@return the numeric value of a decimal, hex-float, or rational scalar} */
 	private static double num(Datum d)
 	{
-		if (!(d instanceof Atom a)) { throw up( "not a number: " + d ); }
+		if (!(d instanceof NumberScalar a)) { throw up( "not a number: " + d ); }
 		String s = a.value();
 		int slash = s.indexOf('/');
 		if (slash < 0) { return Double.parseDouble(s); }
@@ -219,7 +219,7 @@ public class PreviewAppleNotesDrawing
 				throw up( "wrong arity" );
 			}
 			for (Datum c : colorList) {
-				chan[i++] = Float.parseFloat(Datum.value(c));
+				chan[i++] = Float.parseFloat(Datum.asNumber(c).value());
 			}
 			brushKit.add(new Ink(new Color(chan[0], chan[1], chan[2], chan[3])));
 		}
@@ -235,7 +235,7 @@ public class PreviewAppleNotesDrawing
 			throw up( "wrong arity" );
 		}
 		for (Datum d : list) {
-			args[i++] = Integer.parseInt(Datum.value(d));
+			args[i++] = Integer.parseInt(Datum.asNumber(d).value());
 		}
 		return new Clock(args[0], args[1], args[2]);
 	}
@@ -274,7 +274,7 @@ public class PreviewAppleNotesDrawing
 			throw up( "wrong arity" );
 		}
 		for (Datum d : list) {
-			args[i++] = Float.parseFloat(Datum.value(d));
+			args[i++] = Float.parseFloat(Datum.asNumber(d).value());
 		}
 		return new AffineTransform(args);
 	}
