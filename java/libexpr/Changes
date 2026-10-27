@@ -27,6 +27,10 @@ Revision history of trivnote-libexpr
       - right now numeric scalars are pretty barebones.
         if you need compact storage now, extend NumberScalar
         and bring your own backend! >:o
+        + the NumberScalar contract is not as clear; it's a good-
+          enough implementation for round-tripping now though in
+          the not-so-far-future i will tighten the interface.
+          (... maybe wait for a bit for the API to mature...?)
     * booleans?  (they're called TruthScalar for some reason.
       (not a reference to truth serum nuh-uh i don't do that))
     * DataLoader callbacks (experimental-ish?)
