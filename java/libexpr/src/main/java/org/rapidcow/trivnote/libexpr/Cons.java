@@ -242,6 +242,18 @@ implements
 		}
 	}
 
+	/**
+	 * {@return a string representation for this cons cell}
+	 * This is unique and doesn't grow with the length of the
+	 * cons cell.
+	 */
+	@Override
+	public String
+	toString()
+	{
+		return "Cons@" + Integer.toHexString(hashCode());
+	}
+
 	/*
 	 * These are not only handy shorthands, but they
 	 * also pick the optimal implementation! :o

@@ -40,7 +40,7 @@ implements
 	public final String
 	toString()
 	{
-		return value ? "TRUE" : "FALSE";
+		return "Bool[value=" + value + "]";
 	}
 
 	/**
