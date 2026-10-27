@@ -9,14 +9,14 @@ import java.util.Objects;
 
 final
 class
-	SimpleScalar
+	SimpleNumberScalar
 extends
 	NumberScalar
 {
 	private final NumberParser result;
 
 	public
-	SimpleScalar(String value)
+	SimpleNumberScalar(String value)
 	{
 		Objects.requireNonNull(value);
 		result = new NumberParser(value);

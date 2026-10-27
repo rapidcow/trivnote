@@ -30,7 +30,7 @@ class DatumTest
 		/*
 		 * N.B. JUnit puts "expect" before "actual"
 		 */
-		assertEquals(true, Datum.isAtom(car = Scalar.ofNumber("7273")));
+		assertEquals(true, Datum.isAtom(car = NumberScalar.of("7273")));
 		assertEquals(true, Datum.isAtom(cdr = Nil.INSTANCE));
 		assertEquals(false, Datum.isAtom(list = Cons.of(car, cdr)));
 
@@ -59,7 +59,7 @@ class DatumTest
 
 	@Test void testOfDequeSingleElement()
 	{
-		Datum a = Scalar.ofNumber("1");
+		Datum a = NumberScalar.of("1");
 		Deque<Datum> q = new ArrayDeque<>(List.of(a));
 
 		Cons list = assertInstanceOf(Cons.class, Datum.ofDeque(q));
@@ -70,9 +70,9 @@ class DatumTest
 
 	@Test void testOfDequeReversesIterationOrder()
 	{
-		Datum a = Scalar.ofNumber("1");
-		Datum b = Scalar.ofNumber("2");
-		Datum c = Scalar.ofNumber("3");
+		Datum a = NumberScalar.of("1");
+		Datum b = NumberScalar.of("2");
+		Datum c = NumberScalar.of("3");
 		Deque<Datum> q = new ArrayDeque<>(List.of(a, b, c));
 
 		Datum[] expected = {c, b, a};

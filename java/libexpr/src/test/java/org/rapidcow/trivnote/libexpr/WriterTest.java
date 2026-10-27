@@ -23,7 +23,7 @@ class WriterTest
 		IOException
 	{
 		Symbol hello = Symbol.of("hello");
-		Scalar world = Scalar.ofString("world");
+		Datum world = StringScalar.of("world");
 		Cons rootNode = Cons.of(hello, world);
 		StringWriter ws = new StringWriter();
 		DataDumper dd = new DataDumper(ws);
@@ -132,9 +132,9 @@ class WriterTest
 	throws
 		IOException
 	{
-		assertDumps("17/29", Scalar.ofNumber("17/29"));
-		assertDumps("-1.5e3", Scalar.ofNumber("-1.5e3"));
-		assertDumps("+inf.0", Scalar.ofNumber("+inf.0"));
+		assertDumps("17/29", NumberScalar.of("17/29"));
+		assertDumps("-1.5e3", NumberScalar.of("-1.5e3"));
+		assertDumps("+inf.0", NumberScalar.of("+inf.0"));
 		assertDumps("#t", BoolScalar.TRUE);
 		assertDumps("#f", BoolScalar.FALSE);
 	}
@@ -144,12 +144,12 @@ class WriterTest
 	throws
 		IOException
 	{
-		assertDumps("\"\"", Scalar.ofString(""));
-		assertDumps("\"hello world\"", Scalar.ofString("hello world"));
-		assertDumps("\"a\\\"b\"", Scalar.ofString("a\"b"));
-		assertDumps("\"a\\\\b\"", Scalar.ofString("a\\b"));
-		assertDumps("\"a\\\\\"", Scalar.ofString("a\\"));
-		assertDumps("\"|;()\"", Scalar.ofString("|;()"));
+		assertDumps("\"\"", StringScalar.of(""));
+		assertDumps("\"hello world\"", StringScalar.of("hello world"));
+		assertDumps("\"a\\\"b\"", StringScalar.of("a\"b"));
+		assertDumps("\"a\\\\b\"", StringScalar.of("a\\b"));
+		assertDumps("\"a\\\\\"", StringScalar.of("a\\"));
+		assertDumps("\"|;()\"", StringScalar.of("|;()"));
 	}
 
 	@DisplayName("Strings with control characters")
@@ -158,11 +158,11 @@ class WriterTest
 		IOException
 	{
 		assertDumps("\"\\a\\b\\t\\n\\v\\f\\r\\e\"",
-			Scalar.ofString("\007\010\011\012\013\014\015\033"));
-		assertDumps("\"\\0\"", Scalar.ofString("\0"));
-		assertDumps("\"\\37\"", Scalar.ofString("\037"));
-		assertDumps("\"\\177\"", Scalar.ofString("\177"));
-		assertDumps("\"\\0001\"", Scalar.ofString("\0001"));
+			StringScalar.of("\007\010\011\012\013\014\015\033"));
+		assertDumps("\"\\0\"", StringScalar.of("\0"));
+		assertDumps("\"\\37\"", StringScalar.of("\037"));
+		assertDumps("\"\\177\"", StringScalar.of("\177"));
+		assertDumps("\"\\0001\"", StringScalar.of("\0001"));
 	}
 
 	@DisplayName("Strings with non-ASCII characters")
@@ -170,10 +170,10 @@ class WriterTest
 	throws
 		IOException
 	{
-		assertDumps("\"caf\\351\"", Scalar.ofString("caf\u00e9"));
-		assertDumps("\"\\x{4e2d}\\x{6587}\"", Scalar.ofString("\u4e2d\u6587"));
+		assertDumps("\"caf\\351\"", StringScalar.of("caf\u00e9"));
+		assertDumps("\"\\x{4e2d}\\x{6587}\"", StringScalar.of("\u4e2d\u6587"));
 		/* a supplementary character is one escape, not two */
-		assertDumps("\"\\x{1f600}\"", Scalar.ofString("\uD83D\uDE00"));
+		assertDumps("\"\\x{1f600}\"", StringScalar.of("\uD83D\uDE00"));
 	}
 
 	@DisplayName("Test load/dump limit congruency")
@@ -233,7 +233,7 @@ class WriterTest
 	throws IOException
 	{
 		for (Datum node : new Datum[] {
-			Scalar.ofString("café 記憶 😀\n\u0085\"\\"),
+			StringScalar.of("café 記憶 😀\n\u0085\"\\"),
 			Symbol.of("café 記憶 😀\n\u0085|\\")
 		}) {
 			StringWriter out = new StringWriter();

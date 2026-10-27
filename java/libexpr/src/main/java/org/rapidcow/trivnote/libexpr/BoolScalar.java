@@ -13,8 +13,8 @@ package org.rapidcow.trivnote.libexpr;
 public final
 class
 	BoolScalar
-extends
-	Scalar
+implements
+	Datum
 {
 	/**
 	 * True.  Represented as <q>{@code #t}</q>.
@@ -41,17 +41,6 @@ extends
 	toString()
 	{
 		return value ? "TRUE" : "FALSE";
-	}
-
-	/**
-	 * {@return the value of this atom}  This value is
-	 * suitable for serialization.
-	 */
-	@Override
-	public final String
-	value()
-	{
-		return value ? "#t" : "#f";
 	}
 
 	/**

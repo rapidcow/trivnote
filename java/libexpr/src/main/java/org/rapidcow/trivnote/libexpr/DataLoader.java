@@ -420,10 +420,10 @@ implements
 	 * @return a string scalar by default
 	 * @since 0.1.0
 	 */
-	protected Scalar
+	protected StringScalar
 	makeString(String value)
 	{
-		return Scalar.ofString(value);
+		return StringScalar.of(value);
 	}
 
 	/**
@@ -437,11 +437,11 @@ implements
 	 * @return a plain scalar by default
 	 * @since 0.1.0
 	 */
-	protected Scalar
+	protected NumberScalar
 	makeNumber(String value)
 	{
 		try {
-			return Scalar.ofNumber(value);
+			return NumberScalar.of(value);
 		} catch (IllegalArgumentException e) {
 			throw loadingException("Bad number scalar", e);
 		}

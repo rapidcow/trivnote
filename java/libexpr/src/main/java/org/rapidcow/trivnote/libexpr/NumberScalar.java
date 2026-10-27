@@ -5,7 +5,7 @@ package org.rapidcow.trivnote.libexpr;
  * symbolically, without regards to the numeric value.
  *
  * <p>
- * Use {@link Scalar#ofNumber(String)} to parse and
+ * Use {@link #of(String)} to parse and
  * construct a numeric scalar.
  *
  * <p>The syntax is mostly based on Racket’s grammar.
@@ -67,8 +67,8 @@ package org.rapidcow.trivnote.libexpr;
 public non-sealed
 abstract class
 	NumberScalar
-extends
-	Scalar
+implements
+	Datum
 {
 	/**
 	 * Default constructor.
@@ -79,13 +79,21 @@ extends
 	}
 
 	/**
-	 * {@return a string representation of this scalar}
+	 * {@return an immutable numeric scalar atom}
+	 *
+	 * <p>
+	 * Usage:
+	 * <pre>{@code Datum v = NumberScalar.of("17/29");}</pre>
+	 *
+	 * @param value  the given value
+	 * @throws NullPointerException on null {@code value}
+	 * @throws IllegalArgumentException on illegal number format
+	 * @since 0.1.0
 	 */
-	@Override
-	public String
-	toString()
+	public static NumberScalar
+	of(String value)
 	{
-		return "Number[value=" + value() + "]";
+		return new SimpleNumberScalar(value);
 	}
 
 	/**
@@ -101,6 +109,50 @@ extends
 		 * it should be identical to:
 		 */
 		return prefix() + number();
+	}
+
+	/**
+	 * {@return a string representation of this scalar}
+	 */
+	@Override
+	public String
+	toString()
+	{
+		return "Number[value=" + value() + "]";
+	}
+
+	/**
+	 * Compares this scalar against {@code o} for equality.
+	 * Two scalars are equal if and only if they agree on
+	 * {@link #value()}; the concrete class is otherwise
+	 * irrelevant.
+	 *
+	 * @param o  the object to compare against
+	 * @return whether {@code o} is an equal scalar
+	 */
+	@Override
+	public final boolean
+	equals(Object o)
+	{
+		if (this == o) {
+			return true;
+		}
+		if (o instanceof NumberScalar atom) {
+			return value().equals(atom.value());
+		}
+		return false;
+	}
+
+	/**
+	 * {@return hash code for this scalar}
+	 * This implementation is consistent with
+	 * {@link #equals(Object)}.
+	 */
+	@Override
+	public final int
+	hashCode()
+	{
+		return value().hashCode();
 	}
 
 	/**

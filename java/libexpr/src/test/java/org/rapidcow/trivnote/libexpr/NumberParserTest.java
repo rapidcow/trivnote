@@ -22,7 +22,7 @@ class NumberParserTest
 				for (String prefix : new String[] {
 					radices[r] + exactness[e], exactness[e] + radices[r]}) {
 					String token = prefix + "-01";
-					NumberScalar n = Scalar.ofNumber(token);
+					NumberScalar n = NumberScalar.of(token);
 					assertEquals(token, n.value());
 					assertEquals(prefix, n.prefix());
 					assertEquals("-01", n.number());
@@ -47,7 +47,7 @@ class NumberParserTest
 			{"#b10p-12", "", "10", "p-12"}
 		};
 		for (String[] c : cases) {
-			NumberScalar n = Scalar.ofNumber(c[0]);
+			NumberScalar n = NumberScalar.of(c[0]);
 			assertEquals(c[0], n.value());
 			assertEquals(c[1], n.sign());
 			assertEquals(c[2], n.mantissa());
@@ -61,7 +61,7 @@ class NumberParserTest
 			"", "#", "#x", "#e", "#q1", "#e#i1", "#x#d1",
 			"#b2", "#o8", "abc1", "1abc", "1/", "1/2junk",
 			"1e", "1e+", "1.2.3", " 1", "1 ", "+nan.0junk"}) {
-			assertThrows(IllegalArgumentException.class, () -> Scalar.ofNumber(token), token);
+			assertThrows(IllegalArgumentException.class, () -> NumberScalar.of(token), token);
 		}
 	}
 
@@ -70,12 +70,12 @@ class NumberParserTest
 		for (String token : new String[] {
 			"+nan.0", "-nan.0", "+inf.0", "-inf.0",
 			"#i+NaN.0", "#D#I-INF.0", "+0.0", "-0.0"}) {
-			NumberScalar n = (NumberScalar) Scalar.ofNumber(token);
+			NumberScalar n = (NumberScalar) NumberScalar.of(token);
 			assertEquals(token, n.value());
 			assertEquals("", n.exponent());
 		}
-		assertNotEquals(Scalar.ofNumber("+0.0"), Scalar.ofNumber("-0.0"));
-		assertNotEquals(Scalar.ofNumber("#xA"), Scalar.ofNumber("#Xa"));
-		assertNotEquals(Scalar.ofNumber("#e#x1"), Scalar.ofNumber("#x#e1"));
+		assertNotEquals(NumberScalar.of("+0.0"), NumberScalar.of("-0.0"));
+		assertNotEquals(NumberScalar.of("#xA"), NumberScalar.of("#Xa"));
+		assertNotEquals(NumberScalar.of("#e#x1"), NumberScalar.of("#x#e1"));
 	}
 }

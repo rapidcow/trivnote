@@ -8,15 +8,14 @@ package org.rapidcow.trivnote.libexpr;
 import java.util.Objects;
 
 /**
- * Special {@link Atom} that tends to repeat itself in many
+ * Special {@link Datum} that tends to repeat itself in many
  * places.  It is unquoted in wire S-expression representation.
  */
 public final
 class
 	Symbol
-extends
-	Atom
 implements
+	Datum,
 	Comparable<Symbol>
 {
 	private final String value;
@@ -39,7 +38,6 @@ implements
 	/**
 	 * {@return the value of this symbol}
 	 */
-	@Override
 	public final String
 	value()
 	{

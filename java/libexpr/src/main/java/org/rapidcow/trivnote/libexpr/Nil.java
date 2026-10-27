@@ -11,7 +11,7 @@ package org.rapidcow.trivnote.libexpr;
 public final
 class
 	Nil
-extends
+implements
 	Datum
 {
 	/** The singleton that represents {@code nil}. */

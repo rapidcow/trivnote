@@ -5,48 +5,51 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
-import java.util.Objects;
-
 /**
  * The string scalar type.  The only method
  * of use here is {@code value()}, which is
- * specified by {@link Atom#value()}.
+ * specified by {@link #value()}.
  *
  * @since 0.1.0
  */
-public final
-class
+public non-sealed
+abstract class
 	StringScalar
-extends
-	Scalar
+implements
+	Datum
 {
-	private final String value;
+	/**
+	 * Default constructor.
+	 */
+	protected StringScalar()
+	{
+		/* nothing to do. */
+	}
 
 	/**
-	 * Constructs a new string scalar.
-	 * <b>Do not depend on this.</b>  Use {@link
-	 * Scalar#ofString(String)}.
+	 * {@return an immutable string scalar atom}
+	 *
+	 * <p>
+	 * Usage:
+	 * <pre>{@code Datum v = StringScalar.of("abc");}</pre>
 	 *
 	 * @param value  the given value
+	 * @throws NullPointerException on null {@code value}
+	 * @since 0.1.0
 	 */
-	public
-	StringScalar(String value)
+	public static StringScalar
+	of(String value)
 	{
-		this.value = Objects.requireNonNull(value);
+		return new SimpleStringScalar(value);
 	}
 
 	/**
-	 * Returns the value of this atom.
-	 * The value is always non-null.
-	 *
-	 * @return {@inheritDoc}
+	 * {@return the value of this scalar}
+	 * The return value may change across calls,
+	 * but it should be equal under string equality.
 	 */
-	@Override
-	public final String
-	value()
-	{
-		return value;
-	}
+	public abstract String
+	value();
 
 	/**
 	 * {@return a good-enough string representation of this scalar}
@@ -55,6 +58,40 @@ extends
 	public String
 	toString()
 	{
-		return "String[value=" + value + "]";
+		return "String[value=" + value() + "]";
+	}
+
+	/**
+	 * Compares this scalar against {@code o}.
+	 * {@code o} is considered equal if and only if
+	 * {@code o} is also a string scalar with an
+	 * equal value.
+	 *
+	 * @param o  the object to compare against
+	 * @return whether {@code o} is an equal scalar
+	 */
+	@Override
+	public final boolean
+	equals(Object o)
+	{
+		if (this == o) {
+			return true;
+		}
+		if (o instanceof StringScalar fren) {
+			return value().equals(fren.value());
+		}
+		return false;
+	}
+
+	/**
+	 * {@return hash code for this scalar}
+	 * This implementation is consistent with
+	 * {@link #equals(Object)}.
+	 */
+	@Override
+	public final int
+	hashCode()
+	{
+		return value().hashCode();
 	}
 }
