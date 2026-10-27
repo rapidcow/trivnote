@@ -14,14 +14,12 @@ import java.util.Map;
 
 /**
  * Basic unit of an S-expression.
- * A datum is either an {@link Atom}, a {@link Cons},
- * or {@link Nil}.
+ * A datum is either {@link Nil}, {@link Cons},
+ * {@link Scalar}, or {@link Symbol}
  *
  * <p>
  * Note that {@link Nil} is both an <q>{@linkplain #isAtom(Datum) atom}</q>
- * (to be distinguished from the {@link Atom} class, which is
- * exclusively atoms with a {@linkplain Atom#value() value}) and a
- * <q>{@linkplain #isList(Datum) list}</q>.
+ * and a <q>{@linkplain #isList(Datum) list}</q>.
  *
  * <p>
  * Datums <em>must</em> implement
@@ -34,51 +32,20 @@ import java.util.Map;
  * mandatory.
  */
 public sealed
-abstract class
+interface
 	Datum
 permits
-	Atom,
-	Cons,
-	Nil
+	Cons,           /* non-sealed */
+//	DatumVector
+	Nil,
+	NumberScalar,   /* non-sealed */
+//	OctetVector
+	StringScalar,
+	Symbol,
+	TruthScalar
 {
 	/**
-	 * Default constructor.
-	 * For subclasses only.
-	 */
-	protected Datum()
-	{
-		/* nothing to do. */
-	}
-
-	/**
-	 * Implements datum equality.  This method
-	 * must be consistent with {@link #hashCode()}.
-	 * In general, instances of different datum
-	 * classes should compare unequal (with
-	 * {@linkplain NumberScalar numeric scalars}
-	 * being the notable exception).
-	 *
-	 * @param o  operand
-	 * @return whether this equals {@code o}
-	 */
-	@Override
-	public abstract boolean
-	equals(Object o);
-
-	/**
-	 * Implements datum hash code.  This method must
-	 * be consistent with {@link #equals(Object)}.
-	 *
-	 * @return  hash code of this
-	 */
-	@Override
-	public abstract int
-	hashCode();
-
-	/**
 	 * {@return whether the datum is an atom}
-	 * This method checks for more than {@link Atom}
-	 * class: namely, nil is an atom devoid of value.
 	 *
 	 * @param node  the datum
 	 */
@@ -106,7 +73,7 @@ permits
 	public static boolean
 	isList(Datum node)
 	{
-		return !(node instanceof Atom);
+		return node == Nil.INSTANCE || node instanceof Cons;
 	}
 
 	/**
@@ -195,24 +162,6 @@ permits
 			return cell.cdr();
 		}
 		throw new IllegalArgumentException("not a cons");
-	}
-
-	/**
-	 * {@return the value of the given datum}
-	 *
-	 * @param node  the given datum
-	 * @throws IllegalArgumentException if {@code node} is not an
-	 *    {@link Atom} instance; nil has no value
-	 * @since 0.1.0
-	 * @see Atom#value()
-	 */
-	public static String
-	value(Datum node)
-	{
-		if (node instanceof Atom atom) {
-			return atom.value();
-		}
-		throw new IllegalArgumentException("not an atom");
 	}
 
 	/**

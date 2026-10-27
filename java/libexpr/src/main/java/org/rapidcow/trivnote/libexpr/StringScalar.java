@@ -14,35 +14,18 @@ import java.util.Objects;
  *
  * @since 0.1.0
  */
-public final
-class
+public non-sealed
+abstract class
 	StringScalar
-extends
-	Scalar
+implements
+	Datum
 {
-	private final String value;
-
 	/**
-	 * Constructs a new string scalar.
-	 * <b>Do not depend on this.</b>  Use {@link
-	 * Scalar#ofString(String)}.
-	 *
-	 * @param value  the given value
+	 * {@return the value of this atom}
+	 * The return value may change across calls,
+	 * but it should be equal under string equality.
 	 */
-	public
-	StringScalar(String value)
-	{
-		this.value = Objects.requireNonNull(value);
-	}
-
-	/**
-	 * Returns the value of this atom.
-	 * The value is always non-null.
-	 *
-	 * @return {@inheritDoc}
-	 */
-	@Override
-	public final String
+	public abstract String
 	value()
 	{
 		return value;

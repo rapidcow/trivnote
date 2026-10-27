@@ -24,7 +24,7 @@ import java.util.Objects;
 public non-sealed
 abstract class
 	Cons
-extends
+implements
 	Datum
 {
 	/**

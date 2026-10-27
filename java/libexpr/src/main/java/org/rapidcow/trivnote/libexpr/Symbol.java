@@ -14,9 +14,8 @@ import java.util.Objects;
 public final
 class
 	Symbol
-extends
-	Atom
 implements
+	Datum,
 	Comparable<Symbol>
 {
 	private final String value;

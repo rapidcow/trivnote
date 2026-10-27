@@ -67,8 +67,8 @@ package org.rapidcow.trivnote.libexpr;
 public non-sealed
 abstract class
 	NumberScalar
-extends
-	Scalar
+implements
+	Datum
 {
 	/**
 	 * Default constructor.
