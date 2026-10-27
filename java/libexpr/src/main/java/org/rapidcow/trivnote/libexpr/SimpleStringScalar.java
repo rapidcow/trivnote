@@ -1,3 +1,11 @@
+/*
+ * Copyright 2026 rapidcow!
+ *
+ * SPDX-License-Identifier: LGPL-3.0-or-later
+ */
+package org.rapidcow.trivnote.libexpr;
+
+import java.util.Objects;
 
 /**
  * A simple string scalar is only backed by a native Java string.
@@ -22,10 +30,7 @@ extends
 	}
 
 	/**
-	 * Returns the value of this atom.
-	 * The value is always non-null.
-	 *
-	 * @return {@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	public final String
@@ -33,13 +38,4 @@ extends
 	{
 		return value;
 	}
-
-	@Override
-	public final boolean
-	equals()
-	{
-	}
-
-	@Override
-	public final
 }

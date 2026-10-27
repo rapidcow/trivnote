@@ -38,7 +38,6 @@ implements
 	/**
 	 * {@return the value of this symbol}
 	 */
-	@Override
 	public final String
 	value()
 	{

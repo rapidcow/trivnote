@@ -35,14 +35,14 @@ public sealed
 interface
 	Datum
 permits
+	BoolScalar,
 	Cons,           /* non-sealed */
 //	DatumVector
 	Nil,
 	NumberScalar,   /* non-sealed */
 //	OctetVector
 	StringScalar,
-	Symbol,
-	TruthScalar
+	Symbol
 {
 	/**
 	 * {@return whether the datum is an atom}
