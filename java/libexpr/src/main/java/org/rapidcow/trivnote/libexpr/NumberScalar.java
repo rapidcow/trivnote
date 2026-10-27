@@ -92,15 +92,16 @@ extends
 	 * {@return the value of this atom}  This value is
 	 * suitable for serialization.
 	 */
-	public abstract String
-	value();
-
-	/**
-	 * {@return the prefixes of this scalar}
-	 * This should be returned in the original casing and order.
-	 */
-	public abstract String
-	prefix();
+	public String
+	value()
+	{
+		/*
+		 * A subclass may choose to compute this more
+		 * optimally (or even cache it), but otherwise
+		 * it should be identical to:
+		 */
+		return prefix() + number();
+	}
 
 	/**
 	 * {@return the exactness of this scalar}
@@ -117,10 +118,60 @@ extends
 	radix();
 
 	/**
+	 * {@return the prefixes of this scalar}
+	 * This should be returned in the original
+	 * casing and order, if they are preserved.
+	 */
+	public String
+	prefix()
+	{
+		/*
+		 * Subclasses which do not care about the
+		 * order in which exactness and radix are
+		 * specified may leave the default imple-
+		 * mentation untouched.
+		 */
+		StringBuffer sb = new StringBuffer();
+		Exactness exact = exactness();
+		int base = radix();
+		switch (exact) {
+		case EXACT:
+			sb.append("#e");
+			break;
+		case LOSSY:
+			sb.append("#i");
+			break;
+		}
+		switch (base) {
+		case 2:
+			sb.append("#b");
+			break;
+		case 8:
+			sb.append("#o");
+			break;
+		case 10:
+			/* nothing; decimal is the default */
+			break;
+		case 16:
+			sb.append("#x");
+			break;
+		default:
+			throw new IllegalStateException("Bad radix: " + base);
+		}
+		return sb.toString();
+	}
+
+	/**
 	 * {@return the numeric portion of this scalar}
 	 */
-	public abstract String
-	number();
+	public String
+	number()
+	{
+		/*
+		 * Same case here.
+		 */
+		return sign() + mantissa() + exponent();
+	}
 
 	/**
 	 * {@return the sign of this scalar}
