@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Basic unit of an S-expression.
  * A datum is either {@link Nil}, {@link Cons}, {@link Symbol},
- * {@link BoolScalar}, {@link NumberScalar}, or {@link StringScalar}
+ * {@link BoolScalar}, {@link NumberScalar}, or {@link StringScalar}.
  *
  * <p>
  * Note that {@link Nil} is both an <q>{@linkplain #isAtom(Datum) atom}</q>
