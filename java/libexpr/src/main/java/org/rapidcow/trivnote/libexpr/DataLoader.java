@@ -876,13 +876,17 @@ implements
 	}
 
 	private int
-	readEscapeNumber(int radix, int limit, int v, boolean curly)
+	readEscapeNumber(int radix, int limit, int v)
 	throws
 		IOException
 	{
 		int value = 0;
 		int count = 0;
+		boolean curly = (limit == 0);
 		for (;;) {
+			if (isPOSIXspace(v) || v == '-' || v == '_') {
+				continue;
+			}
 			int digit = parseDigit(v, radix);
 			if (digit < 0) {
 				if (curly && v != '}') {
@@ -979,11 +983,11 @@ implements
 			}
 			boolean curly = (w == '{');
 			strictAppendCodePoint(sb, readEscapeNumber(v == 'x' ? 16 : 8,
-				curly ? -1 : 2, curly ? readChar() : w, curly));
+				curly ? 0 : 2, curly ? readChar() : w));
 			break;
 		case '0': case '1': case '2': case '3':
 		case '4': case '5': case '6': case '7':
-			strictAppendCodePoint(sb, readEscapeNumber(8, 3, v, false));
+			strictAppendCodePoint(sb, readEscapeNumber(8, 3, v));
 			break;
 		case ' ': case '\t': case '\r': case '\n':
 			/* XXX: I don't know what this case means? */
