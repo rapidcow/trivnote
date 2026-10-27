@@ -33,7 +33,7 @@ class ReaderDispatchTest
 			data = Float.intBitsToFloat(i32Data);
 		}
 
-		static IEEE754Float64 parse(Datum a, Scalar x)
+		static IEEE754Float64 parse(Datum a, NumberScalar x)
 		{
 			int f32Data = Integer.parseInt(x.value(), 10);
 			return new IEEE754Float64(a, f32Data);
@@ -60,7 +60,7 @@ class ReaderDispatchTest
 			return p;
 		}
 		Datum e = v.get(0);
-		if (!(e instanceof Scalar x)) {
+		if (!(e instanceof NumberScalar x)) {
 			return p;
 		}
 		return IEEE754Float64.parse(a, x);

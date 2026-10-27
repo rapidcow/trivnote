@@ -8,14 +8,15 @@ package org.rapidcow.trivnote.libexpr;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class ScalarTest
 {
-	@Test void testIsString()
+	@Test void testKind()
 	{
-		assertEquals(false, NumberScalar.of("1").isString());
-		assertEquals(true, StringScalar.of("1").isString());
+		assertInstanceOf(NumberScalar.class, NumberScalar.of("1"));
+		assertInstanceOf(StringScalar.class, StringScalar.of("1"));
 	}
 
 	@Test void testEqualsBySameKind()
@@ -30,8 +31,8 @@ class ScalarTest
 
 	@Test void testStringDistinctFromBare()
 	{
-		Scalar bare = NumberScalar.of("1");
-		Scalar quot = StringScalar.of("1");
+		Datum bare = NumberScalar.of("1");
+		Datum quot = StringScalar.of("1");
 
 		/* symmetric */
 		assertNotEquals(bare, quot);

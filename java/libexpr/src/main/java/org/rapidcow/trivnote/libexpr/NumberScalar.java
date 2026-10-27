@@ -5,7 +5,7 @@ package org.rapidcow.trivnote.libexpr;
  * symbolically, without regards to the numeric value.
  *
  * <p>
- * Use {@link Scalar#ofNumber(String)} to parse and
+ * Use {@link #of(String)} to parse and
  * construct a numeric scalar.
  *
  * <p>The syntax is mostly based on Racket’s grammar.
@@ -124,8 +124,8 @@ implements
 	/**
 	 * Compares this scalar against {@code o} for equality.
 	 * Two scalars are equal if and only if they agree on
-	 * both {@link #isString()} and {@link #value()}; the
-	 * concrete class is otherwise irrelevant.
+	 * {@link #value()}; the concrete class is otherwise
+	 * irrelevant.
 	 *
 	 * @param o  the object to compare against
 	 * @return whether {@code o} is an equal scalar

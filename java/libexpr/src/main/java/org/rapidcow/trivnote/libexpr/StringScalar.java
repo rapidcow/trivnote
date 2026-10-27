@@ -8,7 +8,7 @@ package org.rapidcow.trivnote.libexpr;
 /**
  * The string scalar type.  The only method
  * of use here is {@code value()}, which is
- * specified by {@link Atom#value()}.
+ * specified by {@link #value()}.
  *
  * @since 0.1.0
  */

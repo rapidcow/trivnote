@@ -23,7 +23,7 @@ class WriterTest
 		IOException
 	{
 		Symbol hello = Symbol.of("hello");
-		Scalar world = StringScalar.of("world");
+		Datum world = StringScalar.of("world");
 		Cons rootNode = Cons.of(hello, world);
 		StringWriter ws = new StringWriter();
 		DataDumper dd = new DataDumper(ws);

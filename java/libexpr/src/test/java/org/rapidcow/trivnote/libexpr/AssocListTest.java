@@ -308,7 +308,7 @@ class AssocListTest
 
 	@Test void testFromSymbolMap()
 	{
-		Map<Symbol,Scalar> map = new LinkedHashMap<>();
+		Map<Symbol,NumberScalar> map = new LinkedHashMap<>();
 		map.put(Symbol.of("x"), NumberScalar.of("1"));
 		map.put(Symbol.of("y"), NumberScalar.of("2"));
 		AssocList alist = new AssocList(map);

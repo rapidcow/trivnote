@@ -8,7 +8,7 @@ package org.rapidcow.trivnote.libexpr;
 import java.util.Objects;
 
 /**
- * Special {@link Atom} that tends to repeat itself in many
+ * Special {@link Datum} that tends to repeat itself in many
  * places.  It is unquoted in wire S-expression representation.
  */
 public final
