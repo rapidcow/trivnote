@@ -885,6 +885,7 @@ implements
 		boolean curly = (limit == 0);
 		for (;;) {
 			if (isPOSIXspace(v) || v == '-' || v == '_') {
+				v = readChar();
 				continue;
 			}
 			int digit = parseDigit(v, radix);
