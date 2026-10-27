@@ -210,7 +210,7 @@ class AssocListTest
 		assertEquals(n / 2, alist.size());
 		assertFalse(alist.hasUniqueKeys());
 		/* Key 0 appears at index 0 and n/2; the first one wins. */
-		assertEquals(NumberScalar.of("0"), alist.get(Scalar.ofNumber("0")));
+		assertEquals(NumberScalar.of("0"), alist.get(NumberScalar.of("0")));
 		assertEquals(NumberScalar.of(Integer.toString(n / 2 - 1)),
 			alist.get(NumberScalar.of(Integer.toString(n / 2 - 1))));
 	}

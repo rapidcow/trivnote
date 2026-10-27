@@ -20,12 +20,12 @@ class ScalarTest
 
 	@Test void testEqualsBySameKind()
 	{
-		assertEquals(NumberScalar.of("1"), Scalar.ofNumber("1"));
-		assertEquals(StringScalar.of("1"), Scalar.ofString("1"));
-		assertEquals(NumberScalar.of("1").hashCode(), Scalar.ofNumber("1").hashCode());
+		assertEquals(NumberScalar.of("1"), NumberScalar.of("1"));
+		assertEquals(StringScalar.of("1"), StringScalar.of("1"));
+		assertEquals(NumberScalar.of("1").hashCode(), NumberScalar.of("1").hashCode());
 		assertEquals(StringScalar.of("1").hashCode(),
 			StringScalar.of("1").hashCode());
-		assertNotEquals(NumberScalar.of("1"), Scalar.ofNumber("01"));
+		assertNotEquals(NumberScalar.of("1"), NumberScalar.of("01"));
 	}
 
 	@Test void testStringDistinctFromBare()

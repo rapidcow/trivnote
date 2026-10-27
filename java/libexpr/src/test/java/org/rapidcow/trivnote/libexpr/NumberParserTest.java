@@ -74,8 +74,8 @@ class NumberParserTest
 			assertEquals(token, n.value());
 			assertEquals("", n.exponent());
 		}
-		assertNotEquals(NumberScalar.of("+0.0"), Scalar.ofNumber("-0.0"));
-		assertNotEquals(NumberScalar.of("#xA"), Scalar.ofNumber("#Xa"));
-		assertNotEquals(NumberScalar.of("#e#x1"), Scalar.ofNumber("#x#e1"));
+		assertNotEquals(NumberScalar.of("+0.0"), NumberScalar.of("-0.0"));
+		assertNotEquals(NumberScalar.of("#xA"), NumberScalar.of("#Xa"));
+		assertNotEquals(NumberScalar.of("#e#x1"), NumberScalar.of("#x#e1"));
 	}
 }
