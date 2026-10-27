@@ -175,11 +175,19 @@ class
 			return;
 		}
 		if (node instanceof Symbol name) {
-			writeSymbol(name);
+			writeSymbol(name.value());
 			return;
 		}
-		if (node instanceof Scalar leaf) {
-			writeScalar(leaf);
+		if (node instanceof BoolScalar flag) {
+			writeBool(flag.booleanValue());
+			return;
+		}
+		if (node instanceof NumberScalar number) {
+			writeNumber(number);
+			return;
+		}
+		if (node instanceof StringScalar text) {
+			writeString(text.value());
 			return;
 		}
 		if (node instanceof Cons cell) {
@@ -211,12 +219,17 @@ class
 		throw new IllegalStateException();
 	}
 
-	private void
-	writeSymbol(Symbol name)
+	/**
+	 * Writes a symbol, quoted with {@code |...|} if the reader
+	 * would not otherwise read it back as the same symbol.
+	 * @param value name of the symbol
+	 * @throws IOException on output failure
+	 */
+	public void
+	writeSymbol(String value)
 	throws
 		IOException
 	{
-		String value = name.value();
 		if (!needsQuoting(value)) {
 			out.write(value);
 			return;
@@ -276,22 +289,38 @@ class
 		return i < value.length() && isPOSIXdigit(value.charAt(i));
 	}
 
-	private void
-	writeScalar(Scalar leaf)
+	/**
+	 * Writes a number as {@link NumberScalar#value()}.
+	 * @param number number to write
+	 * @throws IOException on output failure
+	 */
+	public void
+	writeNumber(NumberScalar number)
 	throws
 		IOException
 	{
-		if (!leaf.isString()) {
-			out.write(leaf.value());
-			return;
-		}
-		writeString(leaf.value());
+		out.write(number.value());
+	}
+
+	/**
+	 * Writes a boolean, as {@code #t} or {@code #f}.
+	 * @param value boolean to write
+	 * @throws IOException on output failure
+	 */
+	public void
+	writeBool(boolean value)
+	throws
+		IOException
+	{
+		out.write(value ? "#t" : "#f");
 	}
 
 	/**
 	 * Writes a quoted string.
+	 * @param value contents of the string
+	 * @throws IOException on output failure
 	 */
-	private void
+	public void
 	writeString(String value)
 	throws
 		IOException
