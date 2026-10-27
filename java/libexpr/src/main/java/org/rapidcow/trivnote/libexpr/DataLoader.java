@@ -868,9 +868,9 @@ implements
 	private static int
 	parseDigit(int v, int radix)
 	{
-		int d = v >= '0' && v <= '9' ? v - '0'
-			: v >= 'a' && v <= 'f' ? v - 'a' + 10
-			: v >= 'A' && v <= 'F' ? v - 'A' + 10
+		int d = (v >= '0' && v <= '9') ? v - '0'
+			: (v >= 'a' && v <= 'f') ? v - 'a' + 10
+			: (v >= 'A' && v <= 'F') ? v - 'A' + 10
 			: -1;
 		return d < radix ? d : -1;
 	}
