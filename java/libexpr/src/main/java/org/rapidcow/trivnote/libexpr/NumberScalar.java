@@ -83,7 +83,7 @@ implements
 	 *
 	 * <p>
 	 * Usage:
-	 * <pre>{@code Datum v = Scalar.ofNumber("17/29");}</pre>
+	 * <pre>{@code Datum v = NumberScalar.of("17/29");}</pre>
 	 *
 	 * @param value  the given value
 	 * @throws NullPointerException on null {@code value}

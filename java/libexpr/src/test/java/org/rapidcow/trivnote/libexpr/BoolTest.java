@@ -86,7 +86,7 @@ class BoolTest
 	@Test void testFollowedByDelimiterNoSpace()
 	{
 		assertIterableEquals(
-			List.of(BoolScalar.TRUE, Scalar.ofString("s")),
+			List.of(BoolScalar.TRUE, StringScalar.of("s")),
 			readList("(#t\"s\")"));
 		assertIterableEquals(
 			List.of(BoolScalar.FALSE, Symbol.of("a")),

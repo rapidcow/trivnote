@@ -348,7 +348,7 @@ class ConsTest
 	{
 		Datum list = tail;
 		for (int i = n - 1; i >= 0; --i) {
-			list = new ConsCell(Scalar.ofNumber(Integer.toString(i)), list);
+			list = new ConsCell(NumberScalar.of(Integer.toString(i)), list);
 		}
 		return list;
 	}
@@ -416,7 +416,7 @@ class ConsTest
 
 		@Override public Datum car()
 		{
-			return Scalar.ofNumber(Integer.toString(from));
+			return NumberScalar.of(Integer.toString(from));
 		}
 
 		@Override public Datum cdr()

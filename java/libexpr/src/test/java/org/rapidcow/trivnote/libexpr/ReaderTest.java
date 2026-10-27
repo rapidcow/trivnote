@@ -60,12 +60,12 @@ class ReaderTest
 		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
-				Scalar.ofNumber("2.719"),
-				Scalar.ofNumber("-0.898"),
-				Scalar.ofNumber(".67"),
-				Scalar.ofNumber("-.1"),
-				Scalar.ofString("1024"),
-				Scalar.ofString("abc")
+				NumberScalar.of("2.719"),
+				NumberScalar.of("-0.898"),
+				NumberScalar.of(".67"),
+				NumberScalar.of("-.1"),
+				StringScalar.of("1024"),
+				StringScalar.of("abc")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
@@ -100,7 +100,7 @@ class ReaderTest
 		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
-				Scalar.ofNumber("42")
+				NumberScalar.of("42")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
@@ -118,7 +118,7 @@ class ReaderTest
 		assertIterableEquals(
 			List.of(
 				Symbol.of("display"),
-				Scalar.ofString("c")
+				StringScalar.of("c")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
@@ -326,7 +326,7 @@ class ReaderTest
 		list = new ArrayList<>();
 		walk.forEachRemaining(list::add);
 		assertIterableEquals(List.of(Symbol.of("a")), list);
-		assertEquals(Scalar.ofString("b"), walk.rest());
+		assertEquals(StringScalar.of("b"), walk.rest());
 		assertNull(loader.lastIOException());
 	}
 
@@ -389,7 +389,7 @@ class ReaderTest
 		list = Datum.asList(token);
 		assertIterableEquals(
 			List.of(
-				Scalar.ofNumber("+inf.0"),
+				NumberScalar.of("+inf.0"),
 				Symbol.of("+inf.0"),
 				Symbol.of("+inf")
 			), list
@@ -402,7 +402,7 @@ class ReaderTest
 		for (String literal : List.of("+nan.0", "-nan.0", "+inf.0", "-inf.0")) {
 			/* The sentinel checks that the whole token was consumed. */
 			DataLoader bare = new DataLoader(new StringReader(literal + " sentinel"));
-			assertEquals(Scalar.ofNumber(literal), bare.next());
+			assertEquals(NumberScalar.of(literal), bare.next());
 			assertEquals(Symbol.of("sentinel"), bare.next());
 			assertEquals(false, bare.hasNext());
 
@@ -436,9 +436,9 @@ class ReaderTest
 		walk.forEachRemaining(list::add);
 		assertIterableEquals(
 			List.of(
-				Scalar.ofString("say \"hi\""),
-				Scalar.ofString("back\\slash"),
-				Scalar.ofString("line1\nline2")
+				StringScalar.of("say \"hi\""),
+				StringScalar.of("back\\slash"),
+				StringScalar.of("line1\nline2")
 			), list);
 		assertEquals(Nil.INSTANCE, walk.rest());
 		assertNull(loader.lastIOException());
@@ -447,7 +447,7 @@ class ReaderTest
 	private void checkStringEscape(String source, String expected)
 	{
 		DataLoader reader = new DataLoader(new StringReader("\"" + source + "\""));
-		assertEquals(Scalar.ofString(expected), reader.next(), source);
+		assertEquals(StringScalar.of(expected), reader.next(), source);
 		assertNull(reader.lastIOException());
 		assertEquals(false, reader.hasNext());
 	}
@@ -662,7 +662,7 @@ class ReaderTest
 		loader = new DataLoader(new StringReader("(length . (cm 5))"));
 		token = loader.next();
 		assertEquals(Cons.of(Symbol.of("length"),
-			Cons.ofList(Symbol.of("cm"), Scalar.ofNumber("5"))),
+			Cons.ofList(Symbol.of("cm"), NumberScalar.of("5"))),
 			token);
 		assertNull(loader.lastIOException());
 
