@@ -131,6 +131,38 @@ permits
 	}
 
 	/**
+	 * {@return the given datum as a number}
+	 *
+	 * @param node  the given datum
+	 * @throws IllegalArgumentException if not a number
+	 * @since %v
+	 */
+	public static NumberScalar
+	asNumber(Datum node)
+	{
+		if (node instanceof NumberScalar number) {
+			return number;
+		}
+		throw new IllegalArgumentException("not a number");
+	}
+
+	/**
+	 * {@return the given datum as a string}
+	 *
+	 * @param node  the given datum
+	 * @throws IllegalArgumentException if not a string
+	 * @since %v
+	 */
+	public static StringScalar
+	asString(Datum node)
+	{
+		if (node instanceof StringScalar text) {
+			return text;
+		}
+		throw new IllegalArgumentException("not a string");
+	}
+
+	/**
 	 * {@return the car of the given datum}
 	 *
 	 * @param node  the given datum

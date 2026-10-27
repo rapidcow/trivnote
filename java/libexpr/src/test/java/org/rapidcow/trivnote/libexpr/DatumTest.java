@@ -90,4 +90,16 @@ class DatumTest
 	{
 		assertThrows(NullPointerException.class, () -> Datum.ofDeque(null));
 	}
+
+	@Test void testAsNumberAndAsString()
+	{
+		Datum num = NumberScalar.of("1");
+		Datum str = StringScalar.of("1");
+		assertSame(num, Datum.asNumber(num));
+		assertSame(str, Datum.asString(str));
+		assertThrows(IllegalArgumentException.class, () -> Datum.asNumber(str));
+		assertThrows(IllegalArgumentException.class, () -> Datum.asNumber(Symbol.of("a")));
+		assertThrows(IllegalArgumentException.class, () -> Datum.asString(num));
+		assertThrows(IllegalArgumentException.class, () -> Datum.asString(BoolScalar.TRUE));
+	}
 }
