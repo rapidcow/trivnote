@@ -8,6 +8,7 @@ package org.rapidcow.trivnote.libexpr;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 /**
  * {@link org.rapidcow.trivnote.libexpr.DataLoader} test.
@@ -478,6 +480,16 @@ class ReaderTest
 		checkStringEscape("\\x{1F600}\\o{373000}", new String(Character.toChars(0x1f600)).repeat(2));
 		checkStringEscape("\\x{10ffff}\\o{4177777}", new String(Character.toChars(0x10ffff)).repeat(2));
 		checkStringEscape("\\x{000000000000000000000000000041}", "A");
+	}
+
+	/* Perl's \x{ 40} and \x{40 } have always been fine; this once hung. */
+	@Test void testStringBracedEscapeSpaces()
+	{
+		assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+			checkStringEscape("\\x{ 40}", "@");
+			checkStringEscape("\\x{40 }", "@");
+			checkStringEscape("\\o{ 101}\\o{101 }", "AA");
+		});
 	}
 
 	@Test void testStringControlEscapes()
