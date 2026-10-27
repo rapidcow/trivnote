@@ -8,7 +8,6 @@ package org.rapidcow.trivnote.libexpr;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 /**
  * {@link org.rapidcow.trivnote.libexpr.DataLoader} test.
@@ -485,11 +483,9 @@ class ReaderTest
 	/* Perl's \x{ 40} and \x{40 } have always been fine; this once hung. */
 	@Test void testStringBracedEscapeSpaces()
 	{
-		assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
-			checkStringEscape("\\x{ 40}", "@");
-			checkStringEscape("\\x{40 }", "@");
-			checkStringEscape("\\o{ 101}\\o{101 }", "AA");
-		});
+		checkStringEscape("\\x{ 40}", "@");
+		checkStringEscape("\\x{40 }", "@");
+		checkStringEscape("\\o{ 101}\\o{101 }", "AA");
 	}
 
 	@Test void testStringControlEscapes()

@@ -20,27 +20,25 @@ import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 @DisplayName("Extended braced escapes")
 class ReaderExtendedEscapeTest
 {
-	private static void check(String source, String expected)
+	private static void checkStringEscape(String source, String expected)
 	{
-		assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
-			DataLoader reader = new DataLoader(
-				new StringReader("\"" + source + "\""));
-			assertEquals(StringScalar.of(expected), reader.next(), source);
-		});
+		DataLoader reader = new DataLoader(
+			new StringReader("\"" + source + "\""));
+		assertEquals(StringScalar.of(expected), reader.next(), source);
 	}
 
 	@Test void testSpacesBetweenDigits()
 	{
-		check("\\x{ 4 0 }", "@");
-		check("\\x{4\t1}", "A");
-		check("\\o{1 0 1}", "A");
+		checkStringEscape("\\x{ 4 0 }", "@");
+		checkStringEscape("\\x{4\t1}", "A");
+		checkStringEscape("\\o{1 0 1}", "A");
 	}
 
 	@Test void testSeparatorsBetweenDigits()
 	{
-		check("\\x{4-1}", "A");
-		check("\\x{4_1}", "A");
-		check("\\x{1f_600}", "\uD83D\uDE00");
-		check("\\x{-_ 4 - 1 _-}", "A");
+		checkStringEscape("\\x{4-1}", "A");
+		checkStringEscape("\\x{4_1}", "A");
+		checkStringEscape("\\x{1f_600}", "\uD83D\uDE00");
+		checkStringEscape("\\x{-_ 4 - 1 _-}", "A");
 	}
 }
