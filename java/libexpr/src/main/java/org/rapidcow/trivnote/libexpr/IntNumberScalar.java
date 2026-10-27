@@ -105,6 +105,13 @@ extends
 
 	@Override
 	public OptionalInt
+	tryAsInt()
+	{
+		return OptionalInt.of(n);
+	}
+
+	@Override
+	public OptionalInt
 	tryCompareNumericTo(NumberScalar o)
 	{
 		if (o instanceof IntNumberScalar that) {

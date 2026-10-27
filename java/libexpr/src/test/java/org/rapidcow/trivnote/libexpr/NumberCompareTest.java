@@ -148,4 +148,31 @@ class NumberCompareTest
 			assertThrows(ArithmeticException.class, n::isZero);
 		}
 	}
+
+	@Test void testAsIntExact()
+	{
+		Object[][] cases = {
+			{"3", 3}, {"-3", -3}, {"#x10", 16}, {"#b-101", -5}, {"6/2", 3},
+			{"1e3", 1000}, {"4.0", 4}, {"#i4", 4}, {"#e4.", 4}, {"12#", 120},
+			{"-0", 0}, {"0e99999999", 0}, {"1p4", 16}, {"#x.8p1", 1},
+			{"2147483647", Integer.MAX_VALUE},
+			{"-2147483648", Integer.MIN_VALUE},
+		};
+		for (Object[] c : cases) {
+			NumberScalar n = NumberScalar.of((String) c[0]);
+			assertEquals(OptionalInt.of((Integer) c[1]), n.tryAsInt(), (String) c[0]);
+			assertEquals((Integer) c[1], n.asIntExact(), (String) c[0]);
+		}
+		for (String s : new String[] {"1/2", "4.5", "2147483648", "-2147483649",
+			"+nan.0", "+inf.0", "-inf.0", "1/0", "1e99999999999", "1e-3",
+			"1e10", "#x1p-1"}) {
+			NumberScalar n = NumberScalar.of(s);
+			assertEquals(OptionalInt.empty(), n.tryAsInt(), s);
+			assertThrows(ArithmeticException.class, n::asIntExact, s);
+		}
+		assertEquals(255, NumberScalar.of(255).asIntExact());
+		assertEquals(OptionalInt.of(5), new Opaque("5").tryAsInt());
+		assertEquals(OptionalInt.of(5), new Opaque("#x5").tryAsInt());
+		assertEquals(OptionalInt.empty(), new Opaque("5.5").tryAsInt());
+	}
 }

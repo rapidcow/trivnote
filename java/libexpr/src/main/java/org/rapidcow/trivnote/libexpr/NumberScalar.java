@@ -392,4 +392,45 @@ implements
 	{
 		return equalsNumeric(ZERO);
 	}
+
+	/**
+	 * Reads this scalar as an {@code int}, if it is exactly one.
+	 * The number qualifies if its value is a finite integer in the
+	 * range of {@code int}, however it is spelled: {@code 3},
+	 * {@code #x10}, {@code 6/2}, {@code 1e3} and {@code 4.0} all
+	 * qualify.  Exactness prefixes are ignored; {@code #i4} is 4.
+	 *
+	 * <p>
+	 * Unlike {@link #compareNumericTo}, this never throws for a
+	 * malformed value such as {@code 1/0} or {@code 1e99999999999}:
+	 * those are simply not ints.
+	 *
+	 * <p>
+	 * The default implementation re-reads {@link #value()} as the
+	 * built-in implementation.  Subclasses may override.
+	 *
+	 * @return the value, or empty if not an exact {@code int}
+	 * @since 0.2.0
+	 */
+	public OptionalInt
+	tryAsInt()
+	{
+		return NumberScalar.of(value()).tryAsInt();
+	}
+
+	/**
+	 * {@return this scalar as an {@code int}}
+	 *
+	 * @throws ArithmeticException if {@link #tryAsInt()} is empty
+	 * @since 0.2.0
+	 */
+	public int
+	asIntExact()
+	{
+		OptionalInt n = tryAsInt();
+		if (n.isEmpty()) {
+			throw new ArithmeticException("not an exact int: " + value());
+		}
+		return n.getAsInt();
+	}
 }

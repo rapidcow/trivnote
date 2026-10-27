@@ -36,6 +36,7 @@ Revision history of trivnote-libexpr
       equals() is symbolic): tryCompareNumericTo, compareNumericTo,
       compareNumeric, equalsNumeric, isZero, isNaN, isInfinite.
       Order follows Double.compare (NaN is greatest, equal to NaN).
+    * NumberScalar.tryAsInt/asIntExact (value-based; ignores exactness).
     * NumberScalar.ZERO and NumberScalar.of(int) (int-backed).
 
     PLANNED: DatumVector and OctetVector (new types, new syntax).

@@ -117,6 +117,27 @@ extends
 		);
 	}
 
+	@Override
+	public OptionalInt
+	tryAsInt()
+	{
+		Value v;
+		try {
+			v = parseValue();
+		} catch (ArithmeticException e) {
+			/* zero denominator, or an exponent we will not expand */
+			return OptionalInt.empty();
+		}
+		if (v.kind() != Value.FINITE) {
+			return OptionalInt.empty();
+		}
+		BigInteger[] qr = v.num().divideAndRemainder(v.den());
+		if (qr[1].signum() != 0 || qr[0].bitLength() > 31) {
+			return OptionalInt.empty();
+		}
+		return OptionalInt.of(qr[0].intValue());
+	}
+
 	/**
 	 * {@return the exact value, or {@code null} if we do not
 	 * know how to read {@code n}}
