@@ -30,6 +30,14 @@ Revision history of trivnote-libexpr
       are public, so you can write a single leaf without a Datum.
     * better Bool and Cons toString (Bool[value=true], Cons@1b2c3d).
 
+    NEW stuff!
+
+    * NumberScalar compares numerically (not Comparable, since
+      equals() is symbolic): tryCompareNumericTo, compareNumericTo,
+      compareNumeric, equalsNumeric, isZero, isNaN, isInfinite.
+      Order follows Double.compare (NaN is greatest, equal to NaN).
+    * NumberScalar.ZERO and NumberScalar.of(int) (int-backed).
+
     PLANNED: DatumVector and OctetVector (new types, new syntax).
 
 0.1.0

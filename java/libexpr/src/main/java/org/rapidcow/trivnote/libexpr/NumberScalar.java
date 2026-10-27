@@ -1,5 +1,7 @@
 package org.rapidcow.trivnote.libexpr;
 
+import java.util.OptionalInt;
+
 /**
  * Numeric scalar.  The scalar is stored and compared
  * symbolically, without regards to the numeric value.
@@ -79,6 +81,13 @@ implements
 	}
 
 	/**
+	 * The number zero; exactly {@code NumberScalar.of("0")}.
+	 *
+	 * @since %v
+	 */
+	public static final NumberScalar ZERO = NumberScalar.of("0");
+
+	/**
 	 * {@return an immutable numeric scalar atom}
 	 *
 	 * <p>
@@ -94,6 +103,19 @@ implements
 	of(String value)
 	{
 		return new SimpleNumberScalar(value);
+	}
+
+	/**
+	 * {@return an immutable, int-backed numeric scalar}
+	 * This is equal to {@code NumberScalar.of(Integer.toString(n))}.
+	 *
+	 * @param n  the given value
+	 * @since %v
+	 */
+	public static NumberScalar
+	of(int n)
+	{
+		return new IntNumberScalar(n);
 	}
 
 	/**
@@ -245,4 +267,129 @@ implements
 	 */
 	public abstract String
 	exponent();
+
+	/**
+	 * {@return whether this scalar is not-a-number}
+	 * Both {@code +nan.0} and {@code -nan.0} qualify.
+	 *
+	 * @since %v
+	 */
+	public boolean
+	isNaN()
+	{
+		return mantissa().equalsIgnoreCase("nan.0");
+	}
+
+	/**
+	 * {@return whether this scalar is positive or negative infinity}
+	 *
+	 * @since %v
+	 */
+	public boolean
+	isInfinite()
+	{
+		return mantissa().equalsIgnoreCase("inf.0");
+	}
+
+	/**
+	 * Attempts to compare this scalar numerically against {@code o}.
+	 *
+	 * <p>
+	 * This is deliberately not {@link Comparable}: {@link #equals(Object)}
+	 * is symbolic ({@code 1.0} and {@code 1} differ), and an ordering
+	 * that disagrees with it would invite misuse.
+	 *
+	 * <p>
+	 * A subclass returns empty for any type it does not know how to
+	 * read.  The concrete types of this package, however, must be able
+	 * to compare with one another, so for those the result is always
+	 * present.  The order matches {@link Double#compare}: negative
+	 * infinity, finite numbers, positive infinity, NaN; and NaN
+	 * compares equal to NaN.  Use {@link #equalsNumeric} for IEEE-style
+	 * equality.
+	 *
+	 * <p>
+	 * Implementations may throw {@link UnsupportedOperationException}
+	 * if the scalar has no real ordering (e.g. complex numbers).
+	 *
+	 * @param o  the other scalar
+	 * @return the sign of the comparison, or empty if unknown
+	 * @since %v
+	 */
+	public OptionalInt
+	tryCompareNumericTo(NumberScalar o)
+	{
+		return OptionalInt.empty();
+	}
+
+	/**
+	 * Compares this scalar numerically against {@code that}.
+	 *
+	 * @param that  the other scalar
+	 * @return negative, zero or positive as this is less than,
+	 *    numerically equal to, or greater than {@code that}
+	 * @see #tryCompareNumericTo(NumberScalar)
+	 * @since %v
+	 */
+	public int
+	compareNumericTo(NumberScalar that)
+	{
+		return compareNumeric(this, that);
+	}
+
+	/**
+	 * Compares two scalars numerically.  Each side is asked first;
+	 * if neither knows the other's type, both are re-read through
+	 * their {@link #value()} as the built-in implementation.
+	 *
+	 * @param a  the first scalar
+	 * @param b  the second scalar
+	 * @return negative, zero or positive as {@code a} is less than,
+	 *    numerically equal to, or greater than {@code b}
+	 * @since %v
+	 */
+	public static int
+	compareNumeric(NumberScalar a, NumberScalar b)
+	{
+		OptionalInt p;
+		p = a.tryCompareNumericTo(b);
+		if (p.isPresent()) {
+			return p.getAsInt();
+		}
+		p = b.tryCompareNumericTo(a);
+		if (p.isPresent()) {
+			return -Integer.signum(p.getAsInt());
+		}
+		NumberScalar aNum = (a instanceof SimpleNumberScalar)
+			? a : NumberScalar.of(a.value());
+		NumberScalar bNum = (b instanceof SimpleNumberScalar)
+			? b : NumberScalar.of(b.value());
+		return aNum.tryCompareNumericTo(bNum).getAsInt();
+	}
+
+	/**
+	 * {@return whether this and {@code that} are numerically equal}
+	 * Like IEEE-754 and unlike {@link #compareNumericTo}, NaN is
+	 * not equal to anything, itself included.
+	 *
+	 * @param that  the other scalar
+	 * @since %v
+	 */
+	public boolean
+	equalsNumeric(NumberScalar that)
+	{
+		return !this.isNaN() && !that.isNaN() && compareNumericTo(that) == 0;
+	}
+
+	/**
+	 * {@return whether this scalar is numerically zero}
+	 * This includes {@code -0.0} and {@code 0/5}.
+	 *
+	 * @since %v
+	 */
+	public boolean
+	isZero()
+	{
+		return equalsNumeric(ZERO);
+	}
 }
