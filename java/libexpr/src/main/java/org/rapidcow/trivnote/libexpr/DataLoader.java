@@ -1062,7 +1062,7 @@ implements
 		return v;
 	}
 
-	private TruthScalar
+	private BoolScalar
 	readBool(StringBuilder sb)
 	throws
 		IOException
@@ -1083,10 +1083,10 @@ implements
 		}
 		if (!sMore) {
 			if ("t".equalsIgnoreCase(word) || "true".equals(word)) {
-				return TruthScalar.TRUE;
+				return BoolScalar.TRUE;
 			}
 			if ("f".equalsIgnoreCase(word) || "false".equals(word)) {
-				return TruthScalar.FALSE;
+				return BoolScalar.FALSE;
 			}
 		}
 		throw loadingException(

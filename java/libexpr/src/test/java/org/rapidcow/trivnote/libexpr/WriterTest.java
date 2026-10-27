@@ -135,8 +135,8 @@ class WriterTest
 		assertDumps("17/29", Scalar.ofNumber("17/29"));
 		assertDumps("-1.5e3", Scalar.ofNumber("-1.5e3"));
 		assertDumps("+inf.0", Scalar.ofNumber("+inf.0"));
-		assertDumps("#t", TruthScalar.TRUE);
-		assertDumps("#f", TruthScalar.FALSE);
+		assertDumps("#t", BoolScalar.TRUE);
+		assertDumps("#f", BoolScalar.FALSE);
 	}
 
 	@DisplayName("Strings")

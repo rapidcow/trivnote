@@ -33,6 +33,7 @@ Revision history of trivnote-libexpr
           (... maybe wait for a bit for the API to mature...?)
     * booleans?  (they're called TruthScalar for some reason.
       (not a reference to truth serum nuh-uh i don't do that))
+       (they are not any more. womp)
     * DataLoader callbacks (experimental-ish?)
         (See ReaderDispatchTest.java for a demo)
 
