@@ -5,6 +5,7 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,6 +20,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 /**
  * S-expression reader.
@@ -448,6 +450,19 @@ implements
 	}
 
 	/**
+	 * Hook called when an octet vector has been read.
+	 *
+	 * @param octets  the octets, each from 0 to 255
+	 * @return an octet vector by default
+	 * @since %v
+	 */
+	protected OctetVector
+	makeOctets(ByteArrayOutputStream octets)
+	{
+		return OctetVector.of(octets);
+	}
+
+	/**
 	 * Hook called to create a non-empty list.
 	 *
 	 * @param q  list contents
@@ -607,6 +622,8 @@ implements
 							);
 						}
 						continue;
+					case 'u': case 'U':
+						return new Token(readOctets());
 					case 't': case 'f':
 					case 'T': case 'F':
 						/* a boolean? */
@@ -792,6 +809,49 @@ implements
 		} else {
 			throw loadingException("Unterminated `" + (char) bg + "' list");
 		}
+	}
+
+	/*
+	 * Reads the rest of a #u8( ... ) octet vector; the cursor is
+	 * just past the #u.  The elements are datums as in a list,
+	 * but must be integers from 0 to 255.  A vector holds no
+	 * nested data, so it does not count towards the depth limit.
+	 */
+	private OctetVector
+	readOctets()
+	throws
+		IOException
+	{
+		int v = readChar();
+		if (v != '8') {
+			throw loadingException("Expected `8' after `#u'");
+		}
+		int bg = readChar();
+		if (bg != '(' && bg != '[' && bg != '{') {
+			throw loadingException("Expected opening bracket after `#u8'");
+		}
+		ByteArrayOutputStream vec = new ByteArrayOutputStream();
+		Token o;
+		while (( o = readDatum(bg, 1) ) != null) {
+			if (o == Token.DOT) {
+				throw loadingException("Unexpected `.' in `#u8'");
+			}
+			if (!(o.value instanceof NumberScalar nv)) {
+				throw loadingException("Expected a number in `#u8'");
+			}
+			OptionalInt n = nv.tryAsInt();
+			if (n.isEmpty()) {
+				throw loadingException("Expected an integer in `#u8'");
+			}
+			if (n.getAsInt() < 0 || n.getAsInt() > 255) {
+				throw loadingException("Octet out of range 0 to 255 in `#u8'");
+			}
+			if (vec.size() >= maxLength) {
+				throw loadingException("List longer than " + maxLength);
+			}
+			vec.write(n.getAsInt());
+		}
+		return makeOctets(vec);
 	}
 
 	private void

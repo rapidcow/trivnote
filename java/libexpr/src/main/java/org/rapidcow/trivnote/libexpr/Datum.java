@@ -15,7 +15,8 @@ import java.util.Map;
 /**
  * Basic unit of an S-expression.
  * A datum is either {@link Nil}, {@link Cons}, {@link Symbol},
- * {@link BoolScalar}, {@link NumberScalar}, or {@link StringScalar}.
+ * {@link BoolScalar}, {@link NumberScalar}, {@link StringScalar},
+ * or {@link OctetVector}.
  *
  * <p>
  * Note that {@link Nil} is both an <q>{@linkplain #isAtom(Datum) atom}</q>
@@ -40,7 +41,7 @@ permits
 //	DatumVector
 	Nil,
 	NumberScalar,   /* non-sealed */
-//	OctetVector
+	OctetVector,
 	StringScalar,
 	Symbol
 {
@@ -160,6 +161,22 @@ permits
 			return text;
 		}
 		throw new IllegalArgumentException("not a string");
+	}
+
+	/**
+	 * {@return the given datum as an octet vector}
+	 *
+	 * @param node  the given datum
+	 * @throws IllegalArgumentException if not an octet vector
+	 * @since %v
+	 */
+	public static OctetVector
+	asOctets(Datum node)
+	{
+		if (node instanceof OctetVector octets) {
+			return octets;
+		}
+		throw new IllegalArgumentException("not an octet vector");
 	}
 
 	/**

@@ -190,6 +190,10 @@ class
 			writeString(text.value());
 			return;
 		}
+		if (node instanceof OctetVector octets) {
+			writeOctets(octets);
+			return;
+		}
 		if (node instanceof Cons cell) {
 			DatumWalk walk = new DatumWalk(cell);
 			Datum item;
@@ -300,6 +304,33 @@ class
 		IOException
 	{
 		out.write(number.value());
+	}
+
+	/**
+	 * Writes an octet vector, as {@code #u8(...)} with decimal octets.
+	 * The length limit applies; the depth limit does not, as a vector
+	 * holds no nested data.
+	 * @param octets octet vector to write
+	 * @throws IOException on output failure
+	 * @throws DataDumpingException if a configured limit is exceeded
+	 */
+	public void
+	writeOctets(OctetVector octets)
+	throws
+		IOException
+	{
+		int n = octets.length();
+		if (n > maxLength) {
+			throw dumpingException("Octet vector longer than " + maxLength);
+		}
+		out.write("#u8(");
+		for (int i = 0; i < n; i++) {
+			if (i > 0) {
+				out.write(" ");
+			}
+			out.write(Integer.toString(octets.get(i)));
+		}
+		out.write(")");
 	}
 
 	/**
