@@ -14,8 +14,8 @@ package org.rapidcow.trivnote.libexpr;
  *
  * <p>
  * A {@code Scalar} is one of three values: boolean,
- * {@code #t} ({@link TruthScalar#TRUE}) and {@code #f}
- * ({@link TruthScalar#FALSE}); free-form strings (via
+ * {@code #t} ({@link BoolScalar#TRUE}) and {@code #f}
+ * ({@link BoolScalar#FALSE}); free-form strings (via
  * {@link Scalar#ofString(String)}); and numbers (via
  * {@link Scalar#ofNumber(String)}).
  *
@@ -34,8 +34,8 @@ abstract class
 extends
 	Atom
 permits
+	BoolScalar,
 	NumberScalar,
-	TruthScalar,
 	StringScalar
 {
 	/**

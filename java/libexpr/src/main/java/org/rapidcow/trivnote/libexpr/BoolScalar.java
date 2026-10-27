@@ -12,23 +12,23 @@ package org.rapidcow.trivnote.libexpr;
  */
 public final
 class
-	TruthScalar
+	BoolScalar
 extends
 	Scalar
 {
 	/**
 	 * True.  Represented as <q>{@code #t}</q>.
 	 */
-	public static final TruthScalar TRUE = new TruthScalar(true);
+	public static final BoolScalar TRUE = new BoolScalar(true);
 	/**
 	 * False.  Represented as <q>{@code #f}</q>.
 	 */
-	public static final TruthScalar FALSE = new TruthScalar(false);
+	public static final BoolScalar FALSE = new BoolScalar(false);
 
 	private final boolean value;
 
 	private
-	TruthScalar(boolean value)
+	BoolScalar(boolean value)
 	{
 		this.value = value;
 	}
@@ -58,7 +58,7 @@ extends
 	 * {@return the boolean value of this scalar}
 	 */
 	public final boolean
-	truthValue()
+	booleanValue()
 	{
 		return value;
 	}
@@ -68,7 +68,7 @@ extends
 	 *
 	 * @param value  the given value
 	 */
-	public static TruthScalar
+	public static BoolScalar
 	of(boolean value)
 	{
 		return value ? TRUE : FALSE;

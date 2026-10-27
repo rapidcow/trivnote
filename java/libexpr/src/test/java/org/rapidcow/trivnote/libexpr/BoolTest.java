@@ -40,12 +40,12 @@ class BoolTest
 	{
 		assertIterableEquals(
 			List.of(
-				TruthScalar.TRUE,
-				TruthScalar.TRUE,
-				TruthScalar.TRUE,
-				TruthScalar.FALSE,
-				TruthScalar.FALSE,
-				TruthScalar.FALSE
+				BoolScalar.TRUE,
+				BoolScalar.TRUE,
+				BoolScalar.TRUE,
+				BoolScalar.FALSE,
+				BoolScalar.FALSE,
+				BoolScalar.FALSE
 			),
 			readList("(#t #T #true #f #F #false)")
 		);
@@ -53,43 +53,43 @@ class BoolTest
 
 	@Test void testTopLevel()
 	{
-		assertSame(TruthScalar.TRUE, readAll("#t").get(0));
-		assertSame(TruthScalar.FALSE, readAll("#false").get(0));
+		assertSame(BoolScalar.TRUE, readAll("#t").get(0));
+		assertSame(BoolScalar.FALSE, readAll("#false").get(0));
 		assertEquals(2, readAll("#t #f").size());
 	}
 
 	@Test void testTerminators()
 	{
-		assertIterableEquals(List.of(TruthScalar.TRUE), readList("(#t)"));
-		assertIterableEquals(List.of(TruthScalar.TRUE), readList("(#true)"));
-		assertIterableEquals(List.of(TruthScalar.FALSE), readList("[#false]"));
-		assertIterableEquals(List.of(TruthScalar.FALSE), readList("{#f}"));
-		assertIterableEquals(List.of(TruthScalar.TRUE), readList("(#t;comment\n)"));
+		assertIterableEquals(List.of(BoolScalar.TRUE), readList("(#t)"));
+		assertIterableEquals(List.of(BoolScalar.TRUE), readList("(#true)"));
+		assertIterableEquals(List.of(BoolScalar.FALSE), readList("[#false]"));
+		assertIterableEquals(List.of(BoolScalar.FALSE), readList("{#f}"));
+		assertIterableEquals(List.of(BoolScalar.TRUE), readList("(#t;comment\n)"));
 		assertIterableEquals(
-			List.of(TruthScalar.FALSE, Symbol.of("x")),
+			List.of(BoolScalar.FALSE, Symbol.of("x")),
 			readList("(#false\nx)"));
 	}
 
 	@Test void testFollowedBySpace()
 	{
 		assertIterableEquals(
-			List.of(TruthScalar.FALSE, Symbol.of("x")),
+			List.of(BoolScalar.FALSE, Symbol.of("x")),
 			readList("(#false x)"));
 		assertIterableEquals(
-			List.of(TruthScalar.TRUE, Symbol.of("x")),
+			List.of(BoolScalar.TRUE, Symbol.of("x")),
 			readList("(#true x)"));
 		assertIterableEquals(
-			List.of(TruthScalar.TRUE, TruthScalar.FALSE),
+			List.of(BoolScalar.TRUE, BoolScalar.FALSE),
 			readList("(#t #f)"));
 	}
 
 	@Test void testFollowedByDelimiterNoSpace()
 	{
 		assertIterableEquals(
-			List.of(TruthScalar.TRUE, Scalar.ofString("s")),
+			List.of(BoolScalar.TRUE, Scalar.ofString("s")),
 			readList("(#t\"s\")"));
 		assertIterableEquals(
-			List.of(TruthScalar.FALSE, Symbol.of("a")),
+			List.of(BoolScalar.FALSE, Symbol.of("a")),
 			readList("(#false|a|)"));
 	}
 
@@ -107,17 +107,17 @@ class BoolTest
 	@Test void testNotConfusedWithSymbols()
 	{
 		assertIterableEquals(
-			List.of(Symbol.of("t"), Symbol.of("true"), TruthScalar.TRUE),
+			List.of(Symbol.of("t"), Symbol.of("true"), BoolScalar.TRUE),
 			readList("(t true #t)"));
 	}
 
 	@Test void testCommentsStillWork()
 	{
 		assertIterableEquals(
-			List.of(TruthScalar.FALSE),
+			List.of(BoolScalar.FALSE),
 			readList("(#| #t |# #false)"));
 		assertIterableEquals(
-			List.of(TruthScalar.TRUE),
+			List.of(BoolScalar.TRUE),
 			readList("(#;#false #t)"));
 	}
 
