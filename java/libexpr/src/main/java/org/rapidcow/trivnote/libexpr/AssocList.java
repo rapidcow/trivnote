@@ -65,7 +65,7 @@ extends
 			Datum cdr = Objects.requireNonNull(e.getValue(), "map value");
 			q.push(Cons.of(car, cdr));
 		}
-		head = Cons.ofDeque(q);
+		head = Datum.ofDeque(q);
 	}
 
 	public final Datum
