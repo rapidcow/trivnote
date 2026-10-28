@@ -23,11 +23,12 @@ extends
 	 * Constructs a new octet vector from a copy of the array.
 	 *
 	 * @param octets  the given octets
+	 * @throws NullPointerException on null {@code octets}
 	 */
 	public
 	SimpleOctetVector(byte[] octets)
 	{
-		this.octets = octets.clone();
+		this.octets = Objects.requireNonNull(octets).clone();
 	}
 
 	/**
@@ -35,6 +36,7 @@ extends
 	 * the stream so far.
 	 *
 	 * @param octets  the given stream
+	 * @throws NullPointerException on null {@code octets}
 	 */
 	public
 	SimpleOctetVector(ByteArrayOutputStream octets)
@@ -46,8 +48,8 @@ extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final int
-	length()
+	public final long
+	count()
 	{
 		return octets.length;
 	}
@@ -57,9 +59,10 @@ extends
 	 */
 	@Override
 	public final int
-	get(int index)
+	get(long index)
 	{
-		return octets[index] & 0xff;
+		Objects.checkIndex(index, octets.length);
+		return octets[(int) index] & 0xff;
 	}
 
 	/**

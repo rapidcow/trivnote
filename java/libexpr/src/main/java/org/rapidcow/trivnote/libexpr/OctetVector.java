@@ -65,28 +65,59 @@ implements
 	/**
 	 * {@return the number of octets in this vector}
 	 */
-	public abstract int
-	length();
+	public abstract long
+	count();
+
+	/**
+	 * {@return the number of octets in this vector}
+	 * If the length exceeds the signed 32-bit maximum,
+	 * return {@link Integer#MAX_VALUE}.
+	 */
+	public int
+	length()
+	{
+		return (int) Math.min(count(), Integer.MAX_VALUE);
+	}
 
 	/**
 	 * {@return the octet at the given index, from 0 to 255}
 	 *
 	 * @param index  the given index
 	 * @throws IndexOutOfBoundsException if {@code index} is
-	 *   negative or not less than {@link #length()}
+	 *   negative or no less than {@link #count()}
 	 */
 	public abstract int
-	get(int index);
+	get(long index);
+
+	/**
+	 * {@return the octet at the given index, from 0 to 255}
+	 *
+	 * @param index  the given index
+	 * @throws IndexOutOfBoundsException if {@code index} is
+	 *   negative or no less than {@link #count()}
+	 */
+	public int
+	get(int index)
+	{
+		return get((long) index);
+	}
 
 	/**
 	 * {@return a new array holding the octets of this vector}
+	 *
+	 * @throws IllegalStateException if the vector is
+	 *   too large to fit within a Java array
 	 */
 	public byte[]
 	toByteArray()
 	{
-		int n = length();
-		byte[] octets = new byte[n];
-		for (int i = 0; i < n; i++) {
+		long size = count();
+		if (size > Integer.MAX_VALUE) {
+			throw new IllegalStateException("too large to fit in byte[]");
+		}
+		int sz = (int) size;
+		byte[] octets = new byte[sz];
+		for (int i = 0; i < sz; i++) {
 			octets[i] = (byte) get(i);
 		}
 		return octets;
@@ -120,11 +151,11 @@ implements
 			return true;
 		}
 		if (o instanceof OctetVector that) {
-			int n = length();
-			if (n != that.length()) {
+			long n = count();
+			if (n != that.count()) {
 				return false;
 			}
-			for (int i = 0; i < n; i++) {
+			for (long i = 0; i < n; i++) {
 				if (get(i) != that.get(i)) {
 					return false;
 				}
@@ -145,8 +176,8 @@ implements
 	hashCode()
 	{
 		int h = 1;
-		int n = length();
-		for (int i = 0; i < n; i++) {
+		long n = count();
+		for (long i = 0; i < n; i++) {
 			h = 31 * h + get(i);
 		}
 		return h;
