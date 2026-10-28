@@ -382,7 +382,7 @@ implements
 	makeNil(Nil e)
 	{
 		if (e.isAlternative()) {
-			throw loadingException("Vectors not implemented");
+			return Nil.ALT_PAREN;
 		}
 		return Nil.PAREN;
 	}
@@ -487,8 +487,14 @@ implements
 			throw loadingException("Vectors not implemented");
 		}
 		Datum e = p.cdr();
-		if (e instanceof Nil && e != Nil.PAREN) {
-			p = Cons.of(p.car(), Nil.PAREN);
+		if (e instanceof Nil ee) {
+			if (ee != Nil.PAREN && ee != Nil.ALT_PAREN) {
+				p = Cons.of(p.car(),
+					ee.isAlternative()
+					? Nil.ALT_PAREN
+					: Nil.PAREN
+				);
+			}
 		}
 		return Cons.of(q, p);
 	}
