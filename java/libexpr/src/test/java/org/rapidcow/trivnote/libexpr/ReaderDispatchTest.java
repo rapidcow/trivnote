@@ -73,7 +73,7 @@ class ReaderDispatchTest
 		DataLoader loader = new DataLoader(reader) {
 			@Override
 			public Cons
-			makeList(Deque<Datum> q, Cons p)
+			makeList(Nil d, Deque<Datum> q, Cons p)
 			{
 				Cons t = Cons.of(q, p);
 				if (Symbol.of(":ieee754").equals(t.car())) {

@@ -465,14 +465,18 @@ implements
 	/**
 	 * Hook called to create a non-empty list.
 	 *
+	 * @param d  delimiter
 	 * @param q  list contents
 	 * @param p  list trailer
 	 * @return a list
 	 * @since 0.1.0
 	 */
 	protected Cons
-	makeList(Deque<Datum> q, Cons p)
+	makeList(Nil d, Deque<Datum> q, Cons p)
 	{
+		if (d.isAlternative()) {
+			throw loadingException("Vectors not implemented");
+		}
 		return Cons.of(q, p);
 	}
 
@@ -522,7 +526,7 @@ implements
 	throws
 		IOException
 	{
-		Token tk = readDatum(-1, 0);
+		Token tk = readDatum(null, 0);
 		if (tk == null) {
 			return null;
 		}
@@ -533,33 +537,26 @@ implements
 	}
 
 	/*
-	 * bg is the opening bracket of the list being read (-1 if none),
+	 * d is the delimiter of the list being read (null if none),
 	 * and depth is how many lists enclose the datum being read.
 	 */
 	private Token
-	readDatum(int bg, long depth)
+	readDatum(Nil d, long depth)
 	throws
 		IOException
 	{
-		int v, w, eg, sg;
+		int bg, eg;
+		int v, w, sg;
 		Datum e;
 		StringBuilder sb;
+		boolean alt;
 
-		switch (bg) {
-		case -1:
+		if (d == null) {
+			bg = -1;
 			eg = -1;
-			break;
-		case '(':
-			eg = ')';
-			break;
-		case '[':
-			eg = ']';
-			break;
-		case '{':
-			eg = '}';
-			break;
-		default:
-			throw new RuntimeException("unreachable");
+		} else {
+			bg = d.openingDelimiter();
+			eg = d.closingDelimiter();
 		}
 
 		while (( v = readChar() ) != -1) {
@@ -609,6 +606,7 @@ implements
 				continue;
 			}
 
+			alt = false;
 			if (v == '#') {
 				if (( w = readChar() ) != -1) {
 					switch (w) {
@@ -616,7 +614,7 @@ implements
 						skipBlockComment();
 						continue;
 					case ';':
-						if (readDatum(-1, depth) == null) {
+						if (readDatum(null, depth) == null) {
 							throw loadingException(
 								"Expected datum following `#;'"
 							);
@@ -644,6 +642,11 @@ implements
 							throw loadingException("Empty " + prefix + " number");
 						}
 						return new Token(makeNumber(prefix + sb.toString()));
+					case '(': case '[': case '{':
+						v = w;
+						alt = true;
+						break;
+						/* fall through */
 					default:
 						throw loadingException(
 							"Unimplemented reader dispatch "
@@ -667,7 +670,10 @@ implements
 				Deque<Datum> q = new ArrayDeque<>();
 				Token o;
 				sg = 0;  /* stage */
-				while (( o = readDatum(v, 1 + depth) ) != null) {
+				Nil dIn = (v == '(') ? (alt ? Nil.ALT_PAREN : Nil.PAREN)
+					: (v == '[') ? (alt ? Nil.ALT_BRACK : Nil.BRACK)
+					: /* == '{' */ (alt ? Nil.ALT_CURLY : Nil.CURLY);
+				while (( o = readDatum(dIn, 1 + depth) ) != null) {
 					if (sg == 0) {
 						if (o == Token.DOT) {
 							if (q.isEmpty()) {
@@ -713,7 +719,7 @@ implements
 					return new Token(e);
 				} else {
 					Cons p = Cons.of(q.pop(), e);
-					return new Token(makeList(q, p));
+					return new Token(makeList(dIn, q, p));
 				}
 			}
 
@@ -827,12 +833,23 @@ implements
 			throw loadingException("Expected `8' after `#u'");
 		}
 		int bg = readChar();
-		if (bg != '(' && bg != '[' && bg != '{') {
+		Nil d;
+		switch (bg) {
+		case '(':
+			d = Nil.PAREN;
+			break;
+		case '[':
+			d = Nil.BRACK;
+			break;
+		case '{':
+			d = Nil.CURLY;
+			break;
+		default:
 			throw loadingException("Expected opening bracket after `#u8'");
 		}
 		ByteArrayOutputStream vec = new ByteArrayOutputStream();
 		Token o;
-		while (( o = readDatum(bg, 1) ) != null) {
+		while (( o = readDatum(d, 1) ) != null) {
 			if (o == Token.DOT) {
 				throw loadingException("Unexpected `.' in `#u8'");
 			}
