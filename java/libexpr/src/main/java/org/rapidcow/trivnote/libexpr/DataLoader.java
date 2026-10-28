@@ -378,6 +378,15 @@ implements
 		return eieio;
 	}
 
+	protected Nil
+	makeNil(Nil e)
+	{
+		if (e.isAlternative()) {
+			throw loadingException("Vectors not implemented");
+		}
+		return Nil.PAREN;
+	}
+
 	/**
 	 * Hook called when a symbol token has been read.
 	 * Subclasses may override this to validate or transform
@@ -476,6 +485,10 @@ implements
 	{
 		if (d.isAlternative()) {
 			throw loadingException("Vectors not implemented");
+		}
+		Datum e = p.cdr();
+		if (e instanceof Nil && e != Nil.PAREN) {
+			p = Cons.of(p.car(), Nil.PAREN);
 		}
 		return Cons.of(q, p);
 	}
@@ -707,7 +720,7 @@ implements
 					}
 				}
 				if (sg == 0) {
-					e = Nil.INSTANCE;
+					e = dIn;
 				} else if (sg == 2) {
 					e = q.pop();
 				} else {
@@ -716,7 +729,8 @@ implements
 					);
 				}
 				if (q.isEmpty()) {
-					return new Token(e);
+					/* Note: `e' must equal `dIn'. */
+					return new Token(makeNil(dIn));
 				} else {
 					Cons p = Cons.of(q.pop(), e);
 					return new Token(makeList(dIn, q, p));
