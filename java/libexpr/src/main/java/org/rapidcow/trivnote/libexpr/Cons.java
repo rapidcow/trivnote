@@ -39,9 +39,27 @@ implements
 	 * {@return the cdr of this cons cell}  The return
 	 * value may not be an identical datum object, but
 	 * it must be equal.  cdr may not be {@code null}.
+	 *
+	 * <p>
+	 * Note that structures that prefer a delimiter
+	 * that is not the conventional round parenthesis
+	 * must return a cdr with the same delimiter.
 	 */
 	public abstract Datum
 	cdr();
+
+	/**
+	 * Returns the preferred delimiter of the list
+	 * rooted at this cons cell.
+	 *
+	 * @return the preferred list delimiter
+	 * @since %v
+	 */
+	public Nil
+	delimiter()
+	{
+		return Nil.PAREN;
+	}
 
 	/*
 	 * Cached hash.  0 is a served sentinel value.  No thread
