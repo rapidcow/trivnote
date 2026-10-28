@@ -117,23 +117,23 @@ implements
 	}
 
 	/**
-	 * {@return opening group delimiter}
+	 * {@return opening list delimiter}
 	 *
 	 * @since %v
 	 */
 	public final int
-	openingGroup()
+	openingDelimiter()
 	{
 		return bg;
 	}
 
 	/**
-	 * {@return closing group delimiter}
+	 * {@return closing list delimiter}
 	 *
 	 * @since %v
 	 */
 	public final int
-	closingGroup()
+	closingDelimiter()
 	{
 		return eg;
 	}
