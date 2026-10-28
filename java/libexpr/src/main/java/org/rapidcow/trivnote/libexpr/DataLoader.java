@@ -839,17 +839,15 @@ implements
 			if (!(o.value instanceof NumberScalar nv)) {
 				throw loadingException("Expected a number in `#u8'");
 			}
-			OptionalInt n = nv.tryAsInt();
-			if (n.isEmpty()) {
+			OptionalInt r = nv.tryAsInt();
+			if (r.isEmpty()) {
 				throw loadingException("Expected an integer in `#u8'");
 			}
-			if (n.getAsInt() < 0 || n.getAsInt() > 255) {
-				throw loadingException("Octet out of range 0 to 255 in `#u8'");
+			int n = r.getAsInt();
+			if (n < 0 || n > 255) {
+				throw loadingException("Integer " + n + " out of range [0,256) in `#u8'");
 			}
-			if (vec.size() >= maxLength) {
-				throw loadingException("List longer than " + maxLength);
-			}
-			vec.write(n.getAsInt());
+			vec.write(n);
 		}
 		return makeOctets(vec);
 	}

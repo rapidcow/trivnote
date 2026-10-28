@@ -320,9 +320,6 @@ class
 		IOException
 	{
 		int n = octets.length();
-		if (n > maxLength) {
-			throw dumpingException("Octet vector longer than " + maxLength);
-		}
 		out.write("#u8(");
 		for (int i = 0; i < n; i++) {
 			if (i > 0) {

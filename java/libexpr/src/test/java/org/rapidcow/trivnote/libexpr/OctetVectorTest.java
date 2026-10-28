@@ -112,17 +112,6 @@ class OctetVectorTest
 		}
 	}
 
-	@Test void testLengthLimit()
-	throws
-		IOException
-	{
-		DataLoader reader = new DataLoader(new StringReader("#u8(1 2 3)")).useLengthLimit(3);
-		assertEquals(3, ((OctetVector) reader.readDatum()).length());
-		reader = new DataLoader(new StringReader("#u8(1 2 3)")).useLengthLimit(2);
-		DataLoader limited = reader;
-		assertThrows(DataLoadingException.class, limited::readDatum);
-	}
-
 	@Test void testDump()
 	throws
 		IOException
@@ -132,12 +121,5 @@ class OctetVectorTest
 		Datum nested = Cons.of(OctetVector.of((byte) 1), Nil.INSTANCE);
 		assertEquals("(#u8(1))", dump(nested));
 		assertEquals(nested, read(dump(nested)));
-	}
-
-	@Test void testDumpLengthLimit()
-	{
-		DataDumper dumper = new DataDumper(new StringWriter()).useLengthLimit(1);
-		assertThrows(DataDumpingException.class,
-			() -> dumper.writeDatum(OctetVector.of((byte) 1, (byte) 2)));
 	}
 }
