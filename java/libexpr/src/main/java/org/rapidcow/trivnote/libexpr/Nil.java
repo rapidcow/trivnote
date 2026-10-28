@@ -24,6 +24,8 @@ implements
 	 * The singleton that represents {@code nil}.
 	 * It is canonically represented by round
 	 * parentheses, though others may be used.
+	 *
+	 * @since %v
 	 */
 	PAREN(false, '(', ')'),
 	/**
@@ -65,6 +67,7 @@ implements
 
 	/**
 	 * The singleton that represents {@code nil}.
+	 * This is now an alias of {@link #PAREN}.
 	 */
 	public static final Nil INSTANCE = PAREN;
 
