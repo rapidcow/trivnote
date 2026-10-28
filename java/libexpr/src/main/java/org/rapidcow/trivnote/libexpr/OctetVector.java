@@ -27,6 +27,8 @@ abstract class
 implements
 	Datum
 {
+	private int hash;
+
 	/**
 	 * Default constructor.
 	 */
@@ -168,17 +170,24 @@ implements
 	/**
 	 * {@return hash code for this vector}
 	 * This is computed as in {@link java.util.List#hashCode()}
-	 * over the unsigned octets, and is consistent with
-	 * {@link #equals(Object)}.
+	 * over the unsigned octets, except it never returns 0.
+	 * It is nonetheless consistent with {@link #equals(Object)}.
 	 */
 	@Override
 	public final int
 	hashCode()
 	{
-		int h = 1;
-		long n = count();
-		for (long i = 0; i < n; i++) {
-			h = 31 * h + get(i);
+		int h = hash;
+		if (h == 0) {
+			h = 1;
+			long n = count();
+			for (long i = 0; i < n; i++) {
+				h = 31 * h + get(i);
+			}
+			if (h == 0) {
+				h = 1;
+			}
+			hash = h;
 		}
 		return h;
 	}
