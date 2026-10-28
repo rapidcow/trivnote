@@ -5,47 +5,90 @@
  */
 package org.rapidcow.trivnote.libexpr;
 
+import java.util.Objects;
+
 /**
  * The atom devoid of value and the empty list.
+ * Note that only {@link Nil#PAREN} is recognized
+ * as the empty list and the list terminator; you
+ * must extend your notion of list accordingly if
+ * you wish to use alternatives.
  */
-public final
-class
+public
+enum
 	Nil
 implements
 	Datum
 {
-	/** The singleton that represents {@code nil}. */
-	public static final Nil INSTANCE = new Nil();
+	/**
+	 * The singleton that represents {@code nil}.
+	 * It is canonically represented by round
+	 * parentheses, though others may be used.
+	 */
+	PAREN(false, '(', ')'),
+	/**
+	 * {@code nil} with square brackets.
+	 * This may be used to represent EDN vectors (arrays).
+	 *
+	 * @since %v
+	 */
+	BRACK(false, '[', ']'),
+	/**
+	 * {@code nil} with curly braces.
+	 * This may be used to represent EDN maps (hashes).
+	 *
+	 * @since %v
+	 */
+	CURLY(false, '{', '}'),
+
+	/**
+	 * Alternative {@code nil} with square brackets.
+	 * This may be used to represent Scheme vectors.
+	 *
+	 * @since %v
+	 */
+	ALT_PAREN(true, '(', ')'),
+	/**
+	 * Alternative {@code nil} with square brackets.
+	 * It is not known what this may represent.
+	 *
+	 * @since %v
+	 */
+	ALT_BRACK(true, '[', ']'),
+	/**
+	 * Alternative {@code nil} with curly braces.
+	 * This may be used to represent Clojure sets.
+	 *
+	 * @since %v
+	 */
+	ALT_CURLY(true, '{', '}');
+
+	/**
+	 * The singleton that represents {@code nil}.
+	 */
+	public static final Nil INSTANCE = PAREN;
+
+	private boolean v;
+	private int bg;
+	private int eg;
 
 	private
-	Nil()
+	Nil(boolean alt, int bg, int eg)
 	{
+		this.v = alt;
+		this.bg = bg;
+		this.eg = eg;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * {@return a string representation of nil}
+	 *
+	 * @since %v
 	 */
-	@Override
-	public final boolean
-	equals(Object o)
+	public final String
+	value()
 	{
-		return this == o;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final int
-	hashCode()
-	{
-		/*
-		 * Collections.emptyList().hashCode() is 1.
-		 *
-		 * Our Cons is based on that, and nil is the
-		 * empty list; so it seems fair to do this :]
-		 */
-		return 1;
+		return (v ? "#" : "") + (char) bg + (char) eg;
 	}
 
 	/**
@@ -55,6 +98,40 @@ implements
 	public final String
 	toString()
 	{
-		return "()";
+		return value();
+	}
+
+	/**
+	 * {@return whether this is an alternative form of nil}
+	 * Alternative forms start with the {@code #} character.
+	 *
+	 * @since %v
+	 */
+	public final boolean
+	isAlternative()
+	{
+		return v;
+	}
+
+	/**
+	 * {@return opening group delimiter}
+	 *
+	 * @since %v
+	 */
+	public final int
+	openingGroup()
+	{
+		return bg;
+	}
+
+	/**
+	 * {@return closing group delimiter}
+	 *
+	 * @since %v
+	 */
+	public final int
+	closingGroup()
+	{
+		return eg;
 	}
 }
