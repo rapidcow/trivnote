@@ -463,6 +463,7 @@ class ReaderTest
 		checkStringEscape("\\0z\\7z\\10z\\101\\7778\\1234", "\000z\007z\bzA\u01ff8S4");
 		checkStringEscape("\\1\\12\\123", "\001\nS");
 		checkStringEscape("\\7", "\007");
+		checkStringEscape("\\o\\o1", "\000\001");
 	}
 
 	@Test void testStringHexEscapes()
@@ -509,7 +510,7 @@ class ReaderTest
 	@Test void testStringInvalidEscapes()
 	{
 		for (String source : List.of(
-			"\\x{g}", "\\o{8}", "\\o1", "\\x{41", "\\o{101",
+			"\\x{g}", "\\o{8}", "\\o{1", "\\x{41", "\\o{101",
 			"\\x{80000000}", "\\o{20000000000}", "\\x{7fffffff}",
 			"\\o{17777777777}", "\\x{110000}", "\\o{4200000}",
 			"\\c\u0080", "\\ space")
@@ -613,6 +614,7 @@ class ReaderTest
 		checkSymbolEscape("\\101\\7", "A\007");
 		checkSymbolEscape("\\x41;\\xe9", "A;é");
 		checkSymbolEscape("\\x{41}\\x{E9}\\o{101}", "AéA");
+		checkSymbolEscape("\\o4\\o41", "\004!");
 		checkSymbolEscape("\\x{1F600}", new String(Character.toChars(0x1F600)));
 		checkSymbolEscape("\\cA\\c?", "\001\177");
 	}
@@ -640,7 +642,7 @@ class ReaderTest
 		loader = new DataLoader(new StringReader("|a\\x{41"));
 		assertThrows(DataLoadingException.class, () -> loader.next());
 
-		loader = new DataLoader(new StringReader("|\\o41|"));
+		loader = new DataLoader(new StringReader("|\\o{41|"));
 		assertThrows(DataLoadingException.class, () -> loader.next());
 	}
 

@@ -1116,11 +1116,6 @@ implements
 			break;
 		case 'x': case 'o':  /* queso... 😋 */
 			w = readChar();
-			if (v == 'o' && w != '{') {
-				throw loadingException(
-					"Expected opening brace "
-					+ "after octal escape");
-			}
 			curly = (w == '{');
 			strictAppendCodePoint(sb, readEscapeNumber(v == 'x' ? 16 : 8,
 				curly ? 0 : 2, curly ? readChar() : w));
