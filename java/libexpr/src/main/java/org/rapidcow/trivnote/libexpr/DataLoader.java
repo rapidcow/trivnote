@@ -494,7 +494,11 @@ implements
 			}
 		}
 		if (d.isAlternative()) {
-			return ConsVector.of(q, p);
+			try {
+				return ConsVector.of(q, p);
+			} catch (IllegalArgumentException cause) {
+				throw loadingException("illegal vector", cause);
+			}
 		}
 		return Cons.of(q, p);
 	}
