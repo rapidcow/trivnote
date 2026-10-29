@@ -1,0 +1,23 @@
+appears to be just cloud diff
+
+$ ~/tree/utils/diff-range bb066d15cc7dec99371e769d1447c71431fa3738 7 @{1}
+ORIG = bb066d15cc7dec99371e769d1447c71431fa3738
+HEAD = 26c96eeb01170fd479b085c0ac103c184c281b02 (@{1})
+ 0:  bb066d1 =  0:  26c96ee update change log to reflect this breaking change
+ 1:  f3c3a2a =  1:  5967021 Test |...| escapes
+ 2:  e938678 =  2:  a99c6f2 Extend |...| to recognize string-ish escapes
+ 3:  3ad47f8 =  3:  79e0d99 Factor out escape logic
+ 4:  0693654 =  4:  5d203d8 Re-gen NumberParser
+ 5:  fc697c6 =  5:  b0491ec re-throw number parsing exception as ours
+ 6:  4763fad !  6:  41504bc Reject lone # at end of input
+--- a/4763fadf81906316d53f9f1369b50c1479a95f14	2026-10-20 17:35:24.000000000 +0000
++++ b/41504bc63fbe64f8ea0d8a946a789a3330ed7a23	2026-10-20 17:35:24.000000000 +0000
+@@ -1,7 +1,7 @@
+ tree 036b5214983ee20522453719c8b39f664cda0380
+ parent 8f652d0acaa9581dea1aa20bde47cde281fef4b8
+-author Claude Haiku 5.5 (Cloud) <claude@anthropic.com> 1792482444 -0000
++author Claude Haiku 5.5 <claude@anthropic.com> 1792482444 -0000
+ committer Ethan Meng <rapidcow@RCs-Mac-mini.local> 1792517724 -0500
+ 
+ Reject lone # at end of input
+ 
