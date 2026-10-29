@@ -15,6 +15,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.Map;
@@ -643,6 +644,8 @@ implements
 							);
 						}
 						continue;
+					case '"':
+						return new Token(readByteString());
 					case 'u': case 'U':
 						return new Token(readOctets());
 					case 't': case 'f':
@@ -868,8 +871,11 @@ implements
 		case '{':
 			d = Nil.CURLY;
 			break;
+		case '"':
+			return readByteString();
 		default:
-			throw loadingException("Expected opening bracket after `#u8'");
+			throw loadingException(
+				"Expected opening bracket or quote after `#u8'");
 		}
 		ByteArrayOutputStream vec = new ByteArrayOutputStream();
 		Token o;
@@ -983,6 +989,11 @@ implements
 		int count = 0;
 		boolean curly = (limit == 0);
 		for (;;) {
+			if (curly && v == ';') {
+				skipLineComment();
+				v = readChar();
+				continue;
+			}
 			if (isPOSIXspace(v) || v == '-' || v == '_') {
 				v = readChar();
 				continue;
@@ -1041,6 +1052,160 @@ implements
 		}
 	}
 
+	/**
+	 * Skips the rest of the current line, including the line feed.
+	 * Used for {@code ;} comments inside braced escapes.
+	 */
+	private void
+	skipLineComment()
+	throws
+		IOException
+	{
+		int v;
+		while (( v = readChar() ) != -1 && v != '\n') {
+			/* Discard. */
+		}
+	}
+
+	/** Number of digits in the smallest group that can hold an octet. */
+	private static int
+	bundleWidth(int radix)
+	{
+		int n = 1;
+		for (int max = radix; max < 256; max *= radix) {
+			++n;
+		}
+		return n;
+	}
+
+	private void
+	appendOctet(ByteArrayOutputStream out, int value)
+	{
+		if (value < 0 || value > 255) {
+			throw loadingException(
+				"Octet " + value + " out of range [0,256)");
+		}
+		out.write(value);
+	}
+
+	/**
+	 * Writes one bundle of digits (each a digit value, not a
+	 * character) to {@code out}.  Up to {@code n} digits stand
+	 * for a single octet; more must come in whole groups of
+	 * {@code n}, each standing for its own octet.
+	 */
+	private void
+	flushBundle(ByteArrayOutputStream out, StringBuilder digits,
+		int radix, int n)
+	{
+		int count = digits.length();
+		if (count > n && count % n != 0) {
+			throw loadingException(
+				"Expected a multiple of " + n + " base-" + radix
+				+ " digits in octet escape, got " + count);
+		}
+		for (int i = 0; i < count; i += n) {
+			int value = 0;
+			for (int j = i; j < i + n && j < count; j++) {
+				value = value * radix + digits.charAt(j);
+			}
+			appendOctet(out, value);
+		}
+	}
+
+	/**
+	 * Reads the digits of {@code \x{...}} and friends in a byte
+	 * string, after the opening brace.  Digits are bundled as in
+	 * {@link #flushBundle}; {@code .} and {@code :} end a bundle.
+	 * Empty braces stand for a single zero octet.
+	 */
+	private void
+	readEscapeOctets(ByteArrayOutputStream out, int radix)
+	throws
+		IOException
+	{
+		int n = bundleWidth(radix);
+		StringBuilder digits = new StringBuilder();
+		boolean delimited = false;
+		int v;
+		for (;;) {
+			v = readChar();
+			if (v == -1) {
+				throw loadingException(
+					"Expected closing brace in escape");
+			}
+			if (v == '}' || v == '.' || v == ':') {
+				delimited |= (v != '}');
+				if (!digits.isEmpty()) {
+					flushBundle(out, digits, radix, n);
+				}
+				else if (v == '}' && !delimited) {
+					out.write(0);
+				}
+				else {
+					throw loadingException(
+						"Empty digit group in octet escape");
+				}
+				if (v == '}') {
+					return;
+				}
+				digits.setLength(0);
+				continue;
+			}
+			if (v == ';') {
+				skipLineComment();
+				continue;
+			}
+			if (isPOSIXspace(v) || v == '-' || v == '_') {
+				continue;
+			}
+			int digit = parseDigit(v, radix);
+			if (digit < 0) {
+				throw loadingException(
+					"Expected base-" + radix + " digit "
+					+ "or closing brace in escape");
+			}
+			digits.append((char) digit);
+		}
+	}
+
+	/**
+	 * Reads the body of {@code \B{...}} in a byte string, after the
+	 * escape letter.  All whitespace is ignored, {@code -_.} stand
+	 * for {@code +/=}, and padding is optional.
+	 */
+	private void
+	readEscapeBase64(ByteArrayOutputStream out)
+	throws
+		IOException
+	{
+		if (readChar() != '{') {
+			throw loadingException(
+				"Expected opening brace after base64 escape");
+		}
+		StringBuilder text = new StringBuilder();
+		int v;
+		while (( v = readChar() ) != '}') {
+			if (v == -1) {
+				throw loadingException(
+					"Expected closing brace in escape");
+			}
+			if (v == ';') {
+				skipLineComment();
+			}
+			else if (!isPOSIXspace(v)) {
+				text.append(v == '-' ? '+' : v == '_' ? '/'
+					: v == '.' ? '=' : (char) v);
+			}
+		}
+		try {
+			out.writeBytes(Base64.getDecoder().decode(text.toString()));
+		}
+		catch (IllegalArgumentException e) {
+			throw loadingException("Bad base64 in escape", e);
+		}
+	}
+
 	private void
 	strictAppendCodePoint(StringBuilder sb, int value)
 	{
@@ -1070,6 +1235,85 @@ implements
 			readEscape(sb, v);
 		}
 		throw loadingException("Unterminated quote \"...\"");
+	}
+
+	/**
+	 * Reads the rest of a {@code #"..."} or {@code #u8"..."} byte
+	 * string; the cursor is just past the opening quote.
+	 */
+	private OctetVector
+	readByteString()
+	throws
+		IOException
+	{
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		int v;
+		while (( v = readChar() ) != -1) {
+			if (v == '"') {
+				return makeOctets(out);
+			}
+			if (v != '\\') {
+				if (v > 127) {
+					throw loadingException(
+						"Non-ASCII character in byte string; "
+						+ "use an escape");
+				}
+				out.write(v);
+				continue;
+			}
+			if (( v = readChar() ) == -1) {
+				break;
+			}
+			readByteEscape(out, v);
+		}
+		throw loadingException("Unterminated byte string #\"...\"");
+	}
+
+	/**
+	 * Like {@link #readEscape}, but for byte strings: numeric
+	 * escapes stand for octets (see {@link #readEscapeOctets}),
+	 * {@code \B{...}} is base64, and {@code \N{...}} is not allowed.
+	 */
+	private void
+	readByteEscape(ByteArrayOutputStream out, int v)
+	throws
+		IOException
+	{
+		int w;
+		switch (v) {
+		case 'N':
+			throw loadingException(
+				"Name escape is not allowed in byte string");
+		case 'B':
+			readEscapeBase64(out);
+			break;
+		case 'x': case 'o': case 'd': case 'm':
+			int radix = (v == 'x') ? 16 : (v == 'd') ? 10
+				: (v == 'o') ? 8 : 2;
+			w = readChar();
+			if (w == '{') {
+				readEscapeOctets(out, radix);
+			} else {
+				appendOctet(out, readEscapeNumber(radix,
+					(v == 'd') ? 3 : (v == 'm') ? 8 : 2, w));
+			}
+			break;
+		case '0': case '1': case '2': case '3':
+		case '4': case '5': case '6': case '7':
+			appendOctet(out, readEscapeNumber(8, 3, v));
+			break;
+		default:
+			StringBuilder sb = new StringBuilder();
+			readEscape(sb, v);
+			for (int i = 0; i < sb.length(); i++) {
+				if (sb.charAt(i) > 127) {
+					throw loadingException(
+						"Non-ASCII character in byte string; "
+						+ "use an escape");
+				}
+				out.write(sb.charAt(i));
+			}
+		}
 	}
 
 	/**
