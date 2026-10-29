@@ -483,9 +483,6 @@ implements
 	protected Cons
 	makeList(Nil d, Deque<Datum> q, Cons p)
 	{
-		if (d.isAlternative()) {
-			return ConsVector.of(q, p);
-		}
 		Datum e = p.cdr();
 		if (e instanceof Nil ee) {
 			if (ee != Nil.PAREN && ee != Nil.ALT_PAREN) {
@@ -495,6 +492,9 @@ implements
 					: Nil.PAREN
 				);
 			}
+		}
+		if (d.isAlternative()) {
+			return ConsVector.of(q, p);
 		}
 		return Cons.of(q, p);
 	}
