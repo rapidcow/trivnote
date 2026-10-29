@@ -39,5 +39,16 @@
  *     also considered a list&mdash;namely the empty list.
  *   </li>
  * </ul>
+ *
+ * <p>Start with {@link DataLoader} to read
+ * datums. Use {@link Scalar} factories,
+ * {@link Symbol#of(String)}, and
+ * {@link Cons} factories to build them.
+ * {@link Datum#asProperList(Datum)} and
+ * {@link Datum#asAlist(Datum)} expose read-only
+ * Java collection views. Numeric values retain their spelling rather than
+ * comparing by arithmetic value. Datum {@code toString()} methods are
+ * diagnostic; {@link DataDumper} is currently
+ * a placeholder and cannot serialize datums.
  */
 package org.rapidcow.trivnote.libexpr;
