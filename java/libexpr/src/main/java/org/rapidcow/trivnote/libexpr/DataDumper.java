@@ -39,6 +39,8 @@ class
 	 *
 	 * @param file    output byte stream
 	 * @param charset character encoding
+	 * @throws NullPointerException on null {@code file}
+	 *    or {@code charset}
 	 */
 	public
 	DataDumper(OutputStream file, Charset charset)
@@ -51,6 +53,7 @@ class
 	 * character encoding, {@link StandardCharsets#UTF_8}.
 	 *
 	 * @param file  output byte stream
+	 * @throws NullPointerException on null {@code file}
 	 */
 	public
 	DataDumper(OutputStream file)
