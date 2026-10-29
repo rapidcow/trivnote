@@ -126,7 +126,7 @@ class OctetVectorTest
 		for (String source : List.of(
 			"#u", "#u7()", "#u8", "#u8 (1)", "#u8(1", "#u8(1]",
 			"#u8(256)", "#u8(-1)", "#u8(1.5)", "#u8(1/0)",
-			"#u8(a)", "#u8(\"1\")", "#u8((1))", "#u8(1 . 2)")
+			"#u8(a)", "#u8(\"\\x{D800}\")", "#u8((1))", "#u8(1 . 2)")
 		) {
 			DataLoader reader = new DataLoader(new StringReader(source));
 			assertThrows(DataLoadingException.class, reader::readDatum, source);

@@ -11,6 +11,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PushbackReader;
 import java.io.Reader;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
@@ -863,9 +866,10 @@ implements
 	/*
 	 * Reads the rest of a #u8( ... ) octet vector; the cursor is
 	 * just past the #u.  The elements are datums as in a list,
-	 * but must be integers from 0 to 255 or octet vectors, whose
-	 * contents are spliced in.  Nested vectors count towards the
-	 * depth limit.
+	 * but must be integers from 0 to 255, octet vectors (spliced
+	 * in), characters (their low 8 bits, as in ISO-8859-1), or
+	 * strings (spliced in as UTF-8).  Nested vectors count towards
+	 * the depth limit.
 	 */
 	private OctetVector
 	readOctets(long depth)
@@ -912,6 +916,19 @@ implements
 			if (o.value instanceof CharScalar c) {
 				/* Like ISO-8859-1: just the low 8 bits. */
 				vec.write(c.codePointValue() & 0xff);
+				continue;
+			}
+			if (o.value instanceof StringScalar text) {
+				try {
+					ByteBuffer bytes = StandardCharsets.UTF_8.newEncoder()
+						.encode(CharBuffer.wrap(text.value()));
+					vec.write(bytes.array(), bytes.arrayOffset(),
+						bytes.remaining());
+				}
+				catch (CharacterCodingException e) {
+					throw loadingException(
+						"Cannot encode string in `#u8'", e);
+				}
 				continue;
 			}
 			if (!(o.value instanceof NumberScalar nv)) {

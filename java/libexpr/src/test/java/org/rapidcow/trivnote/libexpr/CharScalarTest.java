@@ -162,6 +162,16 @@ class CharScalarTest
 			read("#u8( #\\x{1F600} #\\x{D841} )"));
 	}
 
+	@Test void testSpliceStringsAsUtf8()
+	throws
+		IOException
+	{
+		assertEquals(OctetVector.of((byte) 'a', (byte) 0xf0, (byte) 0x9f,
+			(byte) 0x98, (byte) 0x80, (byte) 0xc3, (byte) 0xa9, (byte) 0xe9),
+			read("#u8( #\\a \"\\N{GRINNING FACE}\u00e9\" #\\\u00e9 )"));
+		assertEquals(OctetVector.of(), read("#u8( \"\" )"));
+	}
+
 	private static String
 	dump(Datum node, boolean unicode)
 	throws
