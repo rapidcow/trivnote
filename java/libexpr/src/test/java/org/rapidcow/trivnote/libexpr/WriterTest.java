@@ -247,4 +247,140 @@ class WriterTest
 			assertEquals(dump(node), out.toString());
 		}
 	}
+
+	/** A cons cell that picks its own delimiter. */
+	private static final
+	class
+		Cell
+	extends
+		Cons
+	{
+		private final Nil delim;
+		private final Datum car, cdr;
+
+		Cell(Nil delim, Datum car, Datum cdr)
+		{
+			this.delim = delim;
+			this.car = car;
+			this.cdr = cdr;
+		}
+
+		@Override
+		public Nil
+		delimiter()
+		{
+			return delim;
+		}
+
+		@Override
+		public Datum
+		car()
+		{
+			return car;
+		}
+
+		@Override
+		public Datum
+		cdr()
+		{
+			return cdr;
+		}
+	}
+
+	/** Makes {@code delim}-delimited list of the elements. */
+	private static Datum
+	listOf(Nil delim, Datum... items)
+	{
+		Datum rest = delim;
+		for (int i = items.length - 1; i >= 0; i--) {
+			rest = new Cell(delim, items[i], rest);
+		}
+		return rest;
+	}
+
+	@DisplayName("Delimiters follow the cons chain")
+	@Test void testDelimiters()
+	throws
+		IOException
+	{
+		Symbol a = Symbol.of("a"), b = Symbol.of("b"), c = Symbol.of("c");
+		assertEquals("[a b c]", dump(listOf(Nil.BRACK, a, b, c)));
+		assertEquals("{a b}", dump(listOf(Nil.CURLY, a, b)));
+		assertEquals("#(a b)", dump(ConsVector.of(a, b)));
+		assertEquals("#{a}", dump(listOf(Nil.ALT_CURLY, a)));
+		/* every flavor of nil on its own */
+		assertEquals("()", dump(Nil.PAREN));
+		assertEquals("[]", dump(Nil.BRACK));
+		assertEquals("{}", dump(Nil.CURLY));
+		assertEquals("#()", dump(Nil.ALT_PAREN));
+		assertEquals("#[]", dump(Nil.ALT_BRACK));
+		assertEquals("#{}", dump(Nil.ALT_CURLY));
+	}
+
+	@DisplayName("Terminators are inferred only from the same delimiter")
+	@Test void testTypedTerminators()
+	throws
+		IOException
+	{
+		Symbol a = Symbol.of("a"), b = Symbol.of("b");
+		assertDumps("(a b)", Cons.of(a, b, Nil.PAREN));
+		assertEquals("(a . [])", dump(new Cell(Nil.PAREN, a, Nil.BRACK)));
+		assertEquals("[a . ()]", dump(new Cell(Nil.BRACK, a, Nil.PAREN)));
+		assertEquals("[a b . ()]", dump(
+			new Cell(Nil.BRACK, a, new Cell(Nil.BRACK, b, Nil.PAREN))));
+		assertEquals("(a . #())", dump(new Cell(Nil.PAREN, a, Nil.ALT_PAREN)));
+		assertEquals("#(a . ())", dump(new Cell(Nil.ALT_PAREN, a, Nil.PAREN)));
+		assertEquals("[a . b]", dump(new Cell(Nil.BRACK, a, b)));
+	}
+
+	@DisplayName("A cdr with another delimiter is a dotted tail")
+	@Test void testSwitchingDelimiter()
+	throws
+		IOException
+	{
+		Symbol a = Symbol.of("a"), b = Symbol.of("b"), c = Symbol.of("c");
+		assertEquals("(a . [b c])",
+			dump(new Cell(Nil.PAREN, a, listOf(Nil.BRACK, b, c))));
+		assertEquals("[a b . (c)]",
+			dump(new Cell(Nil.BRACK, a,
+				new Cell(Nil.BRACK, b, listOf(Nil.PAREN, c)))));
+		assertEquals("(a . #(b c))",
+			dump(new Cell(Nil.PAREN, a, ConsVector.of(b, c))));
+	}
+
+	@DisplayName("Depth counts every level, whatever the delimiter")
+	@Test void testAlternatingDepth()
+	throws
+		IOException
+	{
+		Symbol a = Symbol.of("a");
+		Datum node = listOf(Nil.PAREN, a,
+			listOf(Nil.BRACK, a,
+				listOf(Nil.CURLY, a,
+					ConsVector.of(a, Nil.ALT_CURLY))));
+		assertEquals("(a [a {a #(a #{})}])", dump(node));
+		StringWriter out = new StringWriter();
+		new DataDumper(out).useDepthLimit(5).writeDatum(node);
+		assertEquals("(a [a {a #(a #{})}])", out.toString());
+		DataDumper strict = new DataDumper(new StringWriter()).useDepthLimit(4);
+		assertThrows(DataDumpingException.class, () -> strict.writeDatum(node));
+		/* an empty list of any flavor still needs depth one */
+		DataDumper none = new DataDumper(new StringWriter()).useDepthLimit(0);
+		for (Nil nil : Nil.values()) {
+			assertThrows(DataDumpingException.class, () -> none.writeDatum(nil));
+		}
+	}
+
+	@DisplayName("Length limit applies to non-paren lists")
+	@Test void testLengthLimitDelimiters()
+	throws
+		IOException
+	{
+		Symbol a = Symbol.of("a");
+		DataDumper dumper = new DataDumper(new StringWriter()).useLengthLimit(2);
+		assertThrows(DataDumpingException.class,
+			() -> dumper.writeDatum(ConsVector.of(a, a, a)));
+		assertThrows(DataDumpingException.class,
+			() -> dumper.writeDatum(listOf(Nil.BRACK, a, a, a)));
+	}
 }

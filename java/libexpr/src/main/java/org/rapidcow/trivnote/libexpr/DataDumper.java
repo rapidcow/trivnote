@@ -167,11 +167,18 @@ class
 	throws
 		IOException
 	{
-		if (Datum.isList(node) && depth >= maxDepth) {
+		/*
+		 * Only plain nil is a "list" to Datum.isList(), but every
+		 * delimited form counts toward nesting, even an empty one:
+		 * it may still hold comments.
+		 */
+		if ((node instanceof Nil || node instanceof Cons)
+			&& depth >= maxDepth)
+		{
 			throw dumpingException("Lists nested deeper than " + maxDepth);
 		}
-		if (node == Nil.INSTANCE) {
-			out.write("()");
+		if (node instanceof Nil nil) {
+			out.write(nil.value());
 			return;
 		}
 		if (node instanceof Symbol name) {
@@ -195,32 +202,51 @@ class
 			return;
 		}
 		if (node instanceof Cons cell) {
-			DatumWalk walk = new DatumWalk(cell);
-			Datum item;
-			out.write("(");
-			boolean once = true;
-			while (walk.hasNext()) {
-				if (walk.position() >= maxLength) {
-					throw dumpingException("List longer than " + maxLength);
-				}
-				item = walk.next();
-				if (once) {
-					once = false;
-				} else {
-					out.write(" ");
-				}
-				writeDatum(item, 1 + depth);
-			}
-			item = walk.rest();
-			if (item != Nil.INSTANCE) {
-				out.write(" . ");
-				writeDatum(item, 1 + depth);
-			}
-			out.write(")");
+			writeList(cell, depth);
 			return;
 		}
 		/* This is impossible to reach as Datum is sealed. */
 		throw new IllegalStateException();
+	}
+
+	/**
+	 * Writes the list rooted at {@code cell}, delimited as
+	 * {@link Cons#delimiter()} says.  The cells of the chain
+	 * are expected to share that delimiter, so the walk stops
+	 * at the first cdr that does not.  Such a cdr, like any other
+	 * terminator that is not nil of the same delimiter, is written
+	 * as a dotted tail: {@code (1 . [2 3])}, {@code [1 2 . ()]}.
+	 * Every level of nesting counts toward the depth limit, no
+	 * matter whether the delimiters alternate.
+	 */
+	private void
+	writeList(Cons cell, long depth)
+	throws
+		IOException
+	{
+		Nil delim = cell.delimiter();
+		Datum rest = cell;
+		long count = 0;
+		if (delim.isAlternative()) {
+			out.write('#');
+		}
+		out.write(delim.openingDelimiter());
+		while (rest instanceof Cons c && c.delimiter() == delim) {
+			if (count >= maxLength) {
+				throw dumpingException("List longer than " + maxLength);
+			}
+			if (count > 0) {
+				out.write(" ");
+			}
+			writeDatum(c.car(), 1 + depth);
+			rest = c.cdr();
+			++count;
+		}
+		if (rest != delim) {
+			out.write(" . ");
+			writeDatum(rest, 1 + depth);
+		}
+		out.write(delim.closingDelimiter());
 	}
 
 	/**
