@@ -83,8 +83,9 @@ implements
 	 */
 	private Map<String,Symbol> sym;
 
-	/**
-	 * Most levels of list nesting, and most elements per list.
+	/*
+	 * Maximum levels of list nesting, and
+	 * maximum elements per list.
 	 */
 	private long maxDepth = Long.MAX_VALUE;
 	private long maxLength = Long.MAX_VALUE;

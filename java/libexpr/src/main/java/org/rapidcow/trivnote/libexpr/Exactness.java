@@ -12,11 +12,11 @@ public enum Exactness
 	 */
 	UNSPECIFIED,
 	/**
-	 * Exact.  Corresponds to the prefix <q>{@code %e}</q>.
+	 * Exact.  Corresponds to the prefix <q>{@code #e}</q>.
 	 */
 	EXACT,
 	/**
-	 * Inexact.  Corresponds to the prefix <q>{@code %i}</q>.
+	 * Inexact.  Corresponds to the prefix <q>{@code #i}</q>.
 	 */
 	LOSSY;
 }
