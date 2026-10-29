@@ -647,7 +647,7 @@ implements
 					case '"':
 						return new Token(readOctetString());
 					case 'u': case 'U':
-						return new Token(readOctets());
+						return new Token(readOctets(depth));
 					case 't': case 'f':
 					case 'T': case 'F':
 						/* a boolean? */
@@ -847,11 +847,12 @@ implements
 	/*
 	 * Reads the rest of a #u8( ... ) octet vector; the cursor is
 	 * just past the #u.  The elements are datums as in a list,
-	 * but must be integers from 0 to 255.  A vector holds no
-	 * nested data, so it does not count towards the depth limit.
+	 * but must be integers from 0 to 255 or octet vectors, whose
+	 * contents are spliced in.  Nested vectors count towards the
+	 * depth limit.
 	 */
 	private OctetVector
-	readOctets()
+	readOctets(long depth)
 	throws
 		IOException
 	{
@@ -877,11 +878,20 @@ implements
 			throw loadingException(
 				"Expected opening bracket or quote after `#u8'");
 		}
+		if (depth >= maxDepth) {
+			throw loadingException(
+				"Lists nested deeper than " + maxDepth
+			);
+		}
 		ByteArrayOutputStream vec = new ByteArrayOutputStream();
 		Token o;
-		while (( o = readDatum(d, 1) ) != null) {
+		while (( o = readDatum(d, 1 + depth) ) != null) {
 			if (o == Token.DOT) {
 				throw loadingException("Unexpected `.' in `#u8'");
+			}
+			if (o.value instanceof OctetVector inner) {
+				vec.writeBytes(inner.toByteArray());
+				continue;
 			}
 			if (!(o.value instanceof NumberScalar nv)) {
 				throw loadingException("Expected a number in `#u8'");

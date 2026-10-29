@@ -100,12 +100,31 @@ class OctetVectorTest
 		assertEquals(Cons.of(OctetVector.of((byte) 1), Nil.INSTANCE), read("(#u8(1))"));
 	}
 
+	@Test void testReadSplice()
+	throws
+		IOException
+	{
+		assertEquals(OctetVector.of((byte) 32, (byte) 97, (byte) 98),
+			read("#u8( #x20 #\"ab\" )"));
+		assertEquals(OctetVector.of((byte) 1, (byte) 2),
+			read("#u8( #u8( #u8( 1 ) 2 ) #\"\" )"));
+		assertEquals(OctetVector.of(), read("#u8(#u8())"));
+	}
+
+	@Test void testReadSpliceDepth()
+	{
+		DataLoader reader = new DataLoader(
+			new StringReader("#u8(#u8(#u8(1)))"));
+		reader.useDepthLimit(2);
+		assertThrows(DataLoadingException.class, reader::readDatum);
+	}
+
 	@Test void testReadInvalid()
 	{
 		for (String source : List.of(
 			"#u", "#u7()", "#u8", "#u8 (1)", "#u8(1", "#u8(1]",
 			"#u8(256)", "#u8(-1)", "#u8(1.5)", "#u8(1/0)",
-			"#u8(a)", "#u8(\"1\")", "#u8((1))", "#u8(1 . 2)", "#u8(#u8())")
+			"#u8(a)", "#u8(\"1\")", "#u8((1))", "#u8(1 . 2)")
 		) {
 			DataLoader reader = new DataLoader(new StringReader(source));
 			assertThrows(DataLoadingException.class, reader::readDatum, source);
