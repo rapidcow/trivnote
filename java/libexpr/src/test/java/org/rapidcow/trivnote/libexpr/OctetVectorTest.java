@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -106,8 +107,9 @@ class OctetVectorTest
 	{
 		assertEquals(OctetVector.of((byte) 32, (byte) 97, (byte) 98),
 			read("#u8( #x20 #\"ab\" )"));
-		assertEquals(OctetVector.of((byte) 1, (byte) 2),
-			read("#u8( #u8( #u8( 1 ) 2 ) #\"\" )"));
+		assertEquals(OctetVector.of("\001\002antelope"
+			.getBytes(StandardCharsets.ISO_8859_1)),
+			read("#u8( #u8( #u8( 1 ) 2 ) #\"antelope\" )"));
 		assertEquals(OctetVector.of(), read("#u8(#u8())"));
 	}
 
