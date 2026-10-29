@@ -2,7 +2,10 @@ package org.rapidcow.trivnote.libexpr;
 
 /**
  * Numeric scalar.  The scalar is stored and compared
- * symbolically, without regards to the numeric value.
+ * symbolically, without regard to the numeric value.
+ * For example, {@code 1}, {@code 1.0}, and {@code #d1}
+ * are distinct values.  Parsing checks syntax rather
+ * than performing arithmetic or reducing fractions.
  *
  * <p>
  * Use {@link Scalar#ofNumber(String)} to parse and
@@ -105,6 +108,7 @@ extends
 
 	/**
 	 * {@return the exactness of this scalar}
+	 * If absent, returns {@link Exactness#UNSPECIFIED}.
 	 */
 	public abstract Exactness
 	exactness();
@@ -121,6 +125,11 @@ extends
 	 * {@return the prefixes of this scalar}
 	 * This should be returned in the original
 	 * casing and order, if they are preserved.
+	 * The default implementation emits lowercase
+	 * exactness followed by radix, omitting
+	 * decimal radix and unspecified exactness.
+	 *
+	 * @throws IllegalStateException if radix is not 2, 8, 10, or 16
 	 */
 	public String
 	prefix()
@@ -175,6 +184,8 @@ extends
 
 	/**
 	 * {@return the sign of this scalar}
+	 * This should be {@code "+"}, {@code "-"}, or
+	 * the empty string if absent.
 	 */
 	public abstract String
 	sign();
@@ -189,7 +200,7 @@ extends
 	 * {@return the exponent of this scalar}  The
 	 * exponent letter, such as {@code e} for powers of
 	 * 10 and {@code p} for powers of 2, is included in
-	 * this string.
+	 * this string.  If absent, returns the empty string.
 	 */
 	public abstract String
 	exponent();

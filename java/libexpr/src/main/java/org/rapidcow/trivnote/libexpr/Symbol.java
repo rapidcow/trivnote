@@ -28,6 +28,7 @@ implements
 	 * in case the underlying implementation changes.
 	 *
 	 * @param value  symbol value
+	 * @throws NullPointerException on null {@code value}
 	 * @since 0.1.0
 	 */
 	public
@@ -46,6 +47,9 @@ implements
 		return value;
 	}
 
+	/**
+	 * {@return a diagnostic string containing this symbol’s value}
+	 */
 	@Override
 	public String
 	toString()
@@ -65,6 +69,9 @@ implements
 		return new Symbol(value);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean
 	equals(Object o)
@@ -78,6 +85,9 @@ implements
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int
 	hashCode()
@@ -86,11 +96,14 @@ implements
 	}
 
 	/**
-	 * Return the comparison result of this against {@code o}.
-	 * Scalars do not equal symbols, even if their values agree.
+	 * Compares symbol values lexicographically.
+	 * This ordering is consistent with symbol equality.
 	 *
 	 * @param o  symbol to compare
-	 * @return the comparison result
+	 * @return a negative integer, zero, or a positive
+	 *    integer as this value sorts before, equals,
+	 *    or sorts after the other value
+	 * @throws NullPointerException on null {@code o}
 	 * @since 0.1.0
 	 */
 	@Override

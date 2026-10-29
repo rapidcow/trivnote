@@ -6,11 +6,10 @@
 package org.rapidcow.trivnote.libexpr;
 
 /**
- * Unquoted {@link Atom}.  Like all atoms, a scalar is
- * represented by its string representation, specified
- * by {@link #value()}.  Unlike other atoms, it is the
- * only atom whose string representation is identical
- * to its wire serialization.
+ * A boolean, number, or string {@link Atom}.
+ * The {@link #value()} of a boolean or number is
+ * its wire representation.  A string’s value is
+ * its unescaped content, without surrounding quotes.
  *
  * <p>
  * A {@code Scalar} is one of three values: boolean,
@@ -22,8 +21,8 @@ package org.rapidcow.trivnote.libexpr;
  * <p>Scalars are compared by {@link #value} for equality
  * with the <em>sole exception</em> of strings, which can
  * be distinguished using {@link #isString()}.  The reason
- * is that while the value of a string scalar is the only
- * escaped string, the value of a non-string scalar
+ * is that while the value of a string scalar is an
+ * unescaped string, the value of a non-string scalar
  * corresponds to its wire representation.  In other
  * words non-string scalars are the only datums who own
  * serialization logic outside of {@link DataDumper}.

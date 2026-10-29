@@ -28,6 +28,7 @@ extends
 	 * Scalar#ofString(String)}.
 	 *
 	 * @param value  the given value
+	 * @throws NullPointerException on null {@code value}
 	 */
 	public
 	StringScalar(String value)
