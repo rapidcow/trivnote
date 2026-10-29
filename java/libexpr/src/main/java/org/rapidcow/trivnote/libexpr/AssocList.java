@@ -13,7 +13,9 @@ import java.util.Set;
 
 /**
  * Associative list view into a datum.
- * Note that this is not a multi-map.
+ * Note that this is not a multi-map;
+ * search aborts on first pair, like
+ * the classic {@code assoc} function.
  *
  * @since 0.1.0
  */
@@ -28,6 +30,14 @@ extends
 	/* Unique pair length.  (The name is bad, but eh.) */
 	private volatile long pLen = -1;
 
+	/**
+	 * Constructs an alist view of the given datum.
+	 *
+	 * @param list  source alist
+	 * @throws NullPointerException on null {@code list}
+	 * @throws IllegalArgumentException if the tail
+	 *    is not a proper list of cons cells
+	 */
 	public
 	AssocList(Datum list)
 	{
@@ -49,6 +59,14 @@ extends
 		size = iter.position();
 	}
 
+	/**
+	 * Constructs entries from a map.
+	 * The map is copied in map entry iteration order.
+	 *
+	 * @param map  source map
+	 * @throws NullPointerException if the map,
+	 *    a key, or a value is {@code null}
+	 */
 	public
 	AssocList(Map<? extends Datum, ? extends Datum> map)
 	{
@@ -68,6 +86,9 @@ extends
 		head = Datum.ofDeque(q);
 	}
 
+	/**
+	 * {@return the underlying proper list datum}
+	 */
 	public final Datum
 	head()
 	{
@@ -76,6 +97,12 @@ extends
 
 	/* There is no tail(); an alist's terminator is always Nil.INSTANCE. */
 
+	/**
+	 * Finds the value of the first pair with an equal key.
+	 *
+	 * @param key  key to find
+	 * @return the value, or {@code null} if absent
+	 */
 	@Override
 	public Datum
 	get(Object key)
@@ -93,6 +120,11 @@ extends
 		return null;
 	}
 
+	/**
+	 * {@return whether an equal key occurs in this alist}
+	 *
+	 * @param key  key to find
+	 */
 	@Override
 	public boolean
 	containsKey(Object key)
@@ -100,6 +132,13 @@ extends
 		return get(key) != null;
 	}
 
+	/**
+	 * {@return the number of distinct keys}
+	 * If the length is too great to fit in a signed
+	 * 32-bit int, return {@link Integer#MAX_VALUE}.
+	 *
+	 * @see #count()
+	 */
 	@Override
 	public final int
 	size()
@@ -107,6 +146,9 @@ extends
 		return (int) Math.min(count(), Integer.MAX_VALUE);
 	}
 
+	/**
+	 * {@return the number of distinct keys}
+	 */
 	public final long
 	count()
 	{
@@ -122,6 +164,9 @@ extends
 		return pLen;
 	}
 
+	/**
+	 * {@return whether this alist has no entries}
+	 */
 	@Override
 	public final boolean
 	isEmpty()
@@ -132,12 +177,21 @@ extends
 		return super.isEmpty();
 	}
 
+	/**
+	 * {@return whether every pair has a distinct key}
+	 */
 	public boolean
 	hasUniqueKeys()
 	{
 		return count() == size;
 	}
 
+	/**
+	 * Requires every pair to have a distinct key.
+	 *
+	 * @return this view
+	 * @throws IllegalArgumentException on duplicate keys
+	 */
 	public AssocList
 	requireUniqueKeys()
 	{
@@ -155,6 +209,14 @@ extends
 		pLen = size;
 	}
 
+	/**
+	 * Returns a pruned alist of uniquely keyed entries.
+	 *
+	 * @return this view if keys are already unique,
+	 *    otherwise the view of the compacted alist
+	 * @throws IllegalStateException if the cached
+	 *    distinct-key count exceeds {@link Integer#MAX_VALUE}
+	 */
 	public AssocList
 	withUniqueKeys()
 	{
@@ -209,6 +271,10 @@ extends
 		return new AssocList(p, len);
 	}
 
+	/**
+	 * {@return a set of entries in this alist}
+	 * The entries are read-only as all datums are immutable.
+	 */
 	@Override
 	public Set< Map.Entry<Datum,Datum> >
 	entrySet()
