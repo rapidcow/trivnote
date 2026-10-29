@@ -26,6 +26,29 @@ extends
 	private final Datum end;
 	private final long size;
 
+	private static
+	class
+		Probe
+	{
+		final Datum end;
+		final long len;
+
+		Probe(Datum tail)
+		{
+			if (!(tail instanceof Cons)) {
+				end = tail;
+				len = 0;
+			} else if (tail instanceof ConsList cList) {
+				end = cList.end;
+				len = cList.size;
+			} else {
+				DatumList list = new DatumList(tail);
+				end = list.tail();
+				len = list.count();
+			}
+		}
+	}
+
 	/**
 	 * Creates a cons chain prefixed with a deque.
 	 * Elements are popped from the front and prepended
@@ -47,23 +70,18 @@ extends
 	{
 		Objects.requireNonNull(q, "q");
 		Objects.requireNonNull(p, "p");
-		Datum tail = p.cdr();
-		long n;
-		if (!(tail instanceof Cons)) {
-			n = 1;
-			end = tail;
-		} else {
-			DatumList list = new DatumList(p);
-			n = list.count();
-			end = list.tail();
-		}
+
+		Probe rp = new Probe(p);
+		long base = rp.len;
+		end = rp.end;
+
 		while (!q.isEmpty()) {
 			p = new ConsCell(q.pop(), p);
-			++n;
+			++base;
 		}
 		car = p.car();
 		cdr = p.cdr();
-		size = n;
+		size = base;
 	}
 
 	/**
@@ -85,10 +103,13 @@ extends
 		Objects.requireNonNull(first, "first");
 		Objects.requireNonNull(second, "second");
 		car = first;
-		size = 1L + etc.length;
+		long base = 1L + etc.length;
+		Probe rp;
 		if (etc.length == 0) {
 			cdr = second;
-			end = second;
+			rp = new Probe(second);
+			end = rp.end;
+			size = base + rp.len;
 			return;
 		}
 		for (int i = 0; i < etc.length; ++i) {
@@ -107,13 +128,15 @@ extends
 			c = new ConsCell(second, c);
 		}
 		cdr = c;
-		end = etc[etc.length - 1];
+		rp = new Probe(etc[etc.length - 1]);
+		end = rp.end;
+		size = base + rp.len;
 	}
 
 	/**
 	 * Creates a non-empty chain with explicit terminator.
 	 *
-	 * @param first  first element
+	 * @param car  first element
 	 * @param etc  remaining elements
 	 * @param tail  list terminator
 	 *
@@ -121,13 +144,14 @@ extends
 	 *    array element is {@code null}
 	 */
 	public
-	ConsList(Datum first, Datum[] etc, Datum tail)
+	ConsList(Datum car, Datum[] etc, Datum tail)
 	{
-		Objects.requireNonNull(first, "first");
+		Objects.requireNonNull(car, "car");
 		Objects.requireNonNull(tail, "tail");
-		car = first;
-		end = tail;
-		size = 1L + etc.length;
+		this.car = car;
+		Probe rp = new Probe(tail);
+		end = rp.end;
+		size = 1L + etc.length + rp.len;
 		if (etc.length == 0) {
 			cdr = tail;
 			return;

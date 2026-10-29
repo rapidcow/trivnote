@@ -279,15 +279,17 @@ extends
 	{
 		return (cdr == Nil.INSTANCE)
 			? new ConsTail(car)
-			: new ConsCell(car, cdr);
+		: (cdr instanceof Cons)
+			? new ConsList(car, cdr)
+		: new ConsCell(car, cdr);
 	}
 
 	/**
 	 * Creates a non-empty cons chain with implicit terminator.
 	 * The last datum is used as the terminator.
 	 *
-	 * @param car  first element
-	 * @param cdr  second element; also the terminator
+	 * @param first  first element
+	 * @param second  second element; also the terminator
 	 *    if {@code etc} is empty
 	 * @param etc  remaining elements, ending with the
 	 *    terminator if non-empty
@@ -297,15 +299,15 @@ extends
 	 * @since 0.1.0
 	 */
 	public static Cons
-	of(Datum car, Datum cdr, Datum... etc)
+	of(Datum first, Datum second, Datum... etc)
 	{
 		if (etc.length == 0) {
-			return Cons.of(car, cdr);
+			return Cons.of(first, second);
 		}
 		if (etc.length == 1 && etc[0] == Nil.INSTANCE) {
-			return Cons.ofList(car, cdr);
+			return Cons.ofList(first, second);
 		}
-		return new ConsList(car, cdr, etc);
+		return new ConsList(first, second, etc);
 	}
 
 	/**
