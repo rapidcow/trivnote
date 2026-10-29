@@ -23,15 +23,19 @@ import java.util.Optional;
 /**
  * S-expression reader.
  *
- * <p>Use {@link #readDatum()} for checked I/O errors, or iterate and check
- * {@link #lastIOException()} afterward. Iteration is single-pass:
- * {@link #iterator()} returns this loader, and {@link #hasNext()} may read
- * ahead. Do not mix direct reads with iteration because direct reads bypass
- * the iterator’s buffered datum. Syntax errors throw {@link DataLoadingException}.
+ * <p>Use {@link #readDatum()} for checked I/O errors, or
+ * iterate and check {@link #lastIOException()} afterwards.
+ * The loader itself is a one-shot iterator, and it depletes
+ * as soon as the underlying stream depletes or dies with
+ * an I/O error.
  *
- * <p>The caller owns and closes the supplied stream.  This loader is
- * not thread-safe. Nesting and list length are unlimited by default;
- * see {@link #useDepthLimit(long)} and {@link #useLengthLimit(long)}.
+ * <p>Caller is responsible for closing the supplied stream
+ * and to not share access across multiple threads, as this
+ * loader is not thread-safe.
+ *
+ * <p>This loader assumes trusts its input, though some
+ * sane limits can be set using {@link #useDepthLimit(long)}
+ * and {@link #useLengthLimit(long)}.
  *
  * <p>Example (by GPT):
  *
