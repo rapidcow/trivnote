@@ -67,7 +67,14 @@ extends
 	}
 
 	/**
-	 * Creates a non-empty chain with the last datum as its tail.
+	 * Creates a non-empty chain with implicit terminator.
+	 * The last datum is used as the terminator.
+	 *
+	 * @param first  first element
+	 * @param second  second element; also the terminator
+	 *    if {@code etc} is empty
+	 * @param etc  remaining elements, ending with the
+	 *    terminator if non-empty
 	 *
 	 * @throws NullPointerException if any argument or
 	 *    array element is {@code null}
@@ -104,7 +111,11 @@ extends
 	}
 
 	/**
-	 * Creates a non-empty chain with the given tail.
+	 * Creates a non-empty chain with explicit terminator.
+	 *
+	 * @param first  first element
+	 * @param etc  remaining elements
+	 * @param tail  list terminator
 	 *
 	 * @throws NullPointerException if any argument or
 	 *    array element is {@code null}
@@ -133,7 +144,9 @@ extends
 	}
 
 	/**
-	 * Creates a cons from a non-empty list.
+	 * Creates a proper cons chain from a non-empty list.
+	 *
+	 * @param list  source elements in iteration order
 	 *
 	 * @throws IllegalArgumentException if {@code list}
 	 *    is empty
@@ -188,6 +201,9 @@ extends
 		cdr = c.cdr();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final Datum
 	car()
@@ -195,6 +211,9 @@ extends
 		return car;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final Datum
 	cdr()
@@ -202,18 +221,31 @@ extends
 		return cdr;
 	}
 
+	/**
+	 * {@return the list terminator}
+	 */
 	public final Datum
 	tail()
 	{
 		return end;
 	}
 
+	/**
+	 * {@return the list size}
+	 * If the length is too great to fit in a signed
+	 * 32-bit int, return {@link Integer#MAX_VALUE}.
+	 *
+	 * @see #count()
+	 */
 	public final int
 	size()
 	{
 		return (int) Math.min(size, Integer.MAX_VALUE);
 	}
 
+	/**
+	 * {@return the list size}
+	 */
 	public final long
 	count()
 	{

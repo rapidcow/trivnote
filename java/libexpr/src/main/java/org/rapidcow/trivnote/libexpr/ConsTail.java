@@ -24,6 +24,7 @@ extends
 	 * Creates a new car-only cons cell.
 	 *
 	 * @param car  the car
+	 * @throws NullPointerException if car is null
 	 */
 	public
 	ConsTail(Datum car)

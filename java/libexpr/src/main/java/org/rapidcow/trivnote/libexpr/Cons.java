@@ -283,11 +283,14 @@ extends
 	}
 
 	/**
-	 * Creates a non-empty cons chain with the last datum as its tail.
+	 * Creates a non-empty cons chain with implicit terminator.
+	 * The last datum is used as the terminator.
 	 *
 	 * @param car  first element
-	 * @param cdr  second element
-	 * @param etc  optionally more elements
+	 * @param cdr  second element; also the terminator
+	 *    if {@code etc} is empty
+	 * @param etc  remaining elements, ending with the
+	 *    terminator if non-empty
 	 * @throws NullPointerException if any argument or
 	 *    array element is {@code null}
 	 * @return the concatenated cons chain
@@ -306,10 +309,10 @@ extends
 	}
 
 	/**
-	 * Creates a non-empty cons chain with the given tail.
+	 * Creates a non-empty cons chain with explicit terminator.
 	 *
 	 * @param car  first element
-	 * @param etc  the rest
+	 * @param etc  remaining elements
 	 * @param tail list terminator
 	 * @throws NullPointerException if any argument or
 	 *    array element is {@code null}
