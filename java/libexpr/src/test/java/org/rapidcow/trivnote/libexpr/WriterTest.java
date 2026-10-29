@@ -383,4 +383,48 @@ class WriterTest
 		assertThrows(DataDumpingException.class,
 			() -> dumper.writeDatum(listOf(Nil.BRACK, a, a, a)));
 	}
+
+	/** Reads {@code source} and writes it back out. */
+	private static String
+	normalize(String source)
+	throws
+		IOException
+	{
+		return dump(new DataLoader(new StringReader(source)).readDatum());
+	}
+
+	@DisplayName("Vectors survive a load/dump round trip")
+	@Test void testVectorRoundTrip()
+	throws
+		IOException
+	{
+		for (String source : new String[] {
+			"#()", "#(a)", "#(a b c)", "#(a #(b) (c) #())", "(a . #(b))", "(a #(b c))"
+		}) {
+			assertEquals(source, normalize(source));
+		}
+		Datum node = new DataLoader(new StringReader("#(a b c)")).readDatum();
+		DatumVector vec = new DatumVector(node);
+		assertEquals(3, vec.size());
+		assertEquals(Symbol.of("c"), vec.get(2L));
+		assertEquals(node, new DataLoader(new StringReader(dump(node))).readDatum());
+	}
+
+	@DisplayName("Delimiters are normalized when read")
+	@Test void testDelimiterNormalization()
+	throws
+		IOException
+	{
+		/* only the # prefix is kept; the shape of the brackets is not */
+		assertEquals("()", normalize("[]"));
+		assertEquals("()", normalize("{}"));
+		assertEquals("#()", normalize("#[]"));
+		assertEquals("#()", normalize("#{}"));
+		assertEquals("(a b)", normalize("[a b]"));
+		assertEquals("(a . b)", normalize("{a . b}"));
+		assertEquals("((a) (b) #(c))", normalize("([a] {b} #(c))"));
+		assertEquals("#(a (b) #(c))", normalize("#(a [b] #(c))"));
+		/* a nil tail of the same flavor collapses back into a vector */
+		assertEquals("#(a)", normalize("#(a . #())"));
+	}
 }
