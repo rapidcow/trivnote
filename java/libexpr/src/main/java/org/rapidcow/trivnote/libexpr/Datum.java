@@ -99,7 +99,7 @@ permits
 	 * This is a basic type check and does not check that
 	 * the terminator is nil.  To validate a <em>proper</em>
 	 * list, use {@link #isProperList(Datum)} or {@link
-	 * #asList(Datum)} if you need to access its elements.
+	 * #asProperList(Datum)} if you need to access its elements.
 	 *
 	 * @param node  the datum
 	 */
@@ -126,11 +126,11 @@ permits
 	/**
 	 * Returns the datum as a list.
 	 * The returned view conforms to the interface
-	 * <code>{@linkplain List List}&lt;{@linkplain Datum Datum},{@linkplain Datum Datum}&gt;</code>.
+	 * <code>{@linkplain List List}&lt;{@linkplain Datum Datum}&gt;</code>.
 	 *
 	 * <p>
 	 * Note this view is even more permissive than
-	 * {@link #isAtom}, treating non-nil atoms as empty
+	 * {@link #isList(Datum)}, treating non-nil atoms as empty
 	 * lists with itself as the improper terminator.
 	 * If this seems unacceptable, chain this call with
 	 * <q><code>.{@linkplain DatumList#requireProperTail() requireProperTail()}</code></q>
@@ -149,7 +149,7 @@ permits
 	/**
 	 * Returns the datum as a proper list.
 	 * The returned view conforms to the interface
-	 * <code>{@linkplain List List}&lt;{@linkplain Datum Datum},{@linkplain Datum Datum}&gt;</code>.
+	 * <code>{@linkplain List List}&lt;{@linkplain Datum Datum}&gt;</code>.
 	 *
 	 * @param node  the datum
 	 * @return a view as a proper list
