@@ -64,4 +64,19 @@ class ReaderExtendedEscapeTest
 		checkStringEscape("\\d{128512}", "😀");
 		checkStringEscape("\\d{1 2_8-512}", "😀");
 	}
+
+	@Test void testBinaryEscape()
+	{
+		checkStringEscape("\\m01000001", "A");
+		checkStringEscape("\\m010000012", "A2");
+		checkStringEscape("\\m1x", "\001x");
+		checkStringEscape("\\mx", "\000x");
+		checkStringEscape("\\m{1000001}", "A");
+		checkStringEscape("\\m{1 1111_0110-0000 0000}", "\uD83D\uDE00");
+	}
+
+	@Test void testCaretControlEscape()
+	{
+		checkStringEscape("\\^A\\^[\\^?", "\001\033\177");
+	}
 }

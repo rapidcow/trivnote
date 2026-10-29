@@ -1105,7 +1105,7 @@ implements
 			}
 			sb.appendCodePoint(readEscapeName());
 			break;
-		case 'c':
+		case 'c': case '^':
 			w = readChar();
 			if (w < 0 || w > 127) {
 				throw loadingException(
@@ -1129,11 +1129,11 @@ implements
 		case '4': case '5': case '6': case '7':
 			strictAppendCodePoint(sb, readEscapeNumber(8, 3, v));
 			break;
-		case 'd':
+		case 'd': case 'm':  /* decimal, machine (binary) */
 			w = readChar();
 			curly = (w == '{');
-			strictAppendCodePoint(sb, readEscapeNumber(10,
-				curly ? 0 : 3, curly ? readChar() : w));
+			strictAppendCodePoint(sb, readEscapeNumber(v == 'd' ? 10 : 2,
+				curly ? 0 : (v == 'd' ? 3 : 8), curly ? readChar() : w));
 			break;
 		case ' ': case '\t': case '\r': case '\n':
 			/* XXX: I don't know what this case means? */
