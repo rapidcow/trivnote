@@ -258,6 +258,91 @@ class ConsTest
 		checkSpine(Cons.of(A, new Datum[] { B }, tail), tail, A, B);
 	}
 
+
+	/* Cached metadata must describe the whole spine, including a cons tail. */
+	static void checkExtendedTail(Cons actual, Cons suffix, Datum tail,
+		Datum... prefix)
+	{
+		checkSpine(actual, suffix, prefix);
+		List<Datum> expected = new ArrayList<>(Arrays.asList(prefix));
+		expected.add(B);
+		expected.add(C);
+		checkSpine(actual, tail, expected.toArray(Datum[]::new));
+		if (actual instanceof ConsList cached) {
+			assertEquals(expected.size(), cached.size());
+			assertEquals((long) expected.size(), cached.count());
+			assertSame(tail, cached.tail());
+		}
+		DatumList view = Datum.asList(actual);
+		assertEquals(expected.size(), view.size());
+		assertEquals((long) expected.size(), view.count());
+		assertSame(tail, view.tail());
+		assertEquals(tail == Nil.INSTANCE, view.isProperList());
+		assertEquals(expected, view);
+		if (tail == Nil.INSTANCE) {
+			assertSame(actual, Datum.asProperList(actual).head());
+		} else {
+			assertThrows(IllegalArgumentException.class,
+				() -> Datum.asProperList(actual));
+		}
+	}
+
+	static List<Cons> consSuffixes(Datum tail)
+	{
+		return List.of(
+			new ConsCell(B, new ConsCell(C, tail)),
+			new ConsList(B, C, tail));
+	}
+
+	@Test void testConsListImplicitConsTailMetadata()
+	{
+		for (Datum tail : List.of(Nil.INSTANCE, Z)) {
+			for (Cons suffix : consSuffixes(tail)) {
+				checkExtendedTail(new ConsList(A, suffix), suffix, tail, A);
+				checkExtendedTail(new ConsList(A, Z, suffix), suffix, tail, A, Z);
+				checkExtendedTail(new ConsList(A, Z, A, suffix), suffix, tail, A, Z, A);
+			}
+		}
+	}
+
+	@Test void testConsListExplicitConsTailMetadata()
+	{
+		for (Datum tail : List.of(Nil.INSTANCE, Z)) {
+			for (Cons suffix : consSuffixes(tail)) {
+				checkExtendedTail(new ConsList(A, new Datum[0], suffix), suffix, tail, A);
+				checkExtendedTail(new ConsList(A, new Datum[] { Z }, suffix), suffix, tail, A, Z);
+				checkExtendedTail(new ConsList(A, new Datum[] { Z, A }, suffix), suffix, tail, A, Z, A);
+			}
+		}
+	}
+
+	@Test void testConsFactoriesIncludeConsTailMetadata()
+	{
+		for (Datum tail : List.of(Nil.INSTANCE, Z)) {
+			for (Cons suffix : consSuffixes(tail)) {
+				checkExtendedTail(Cons.of(A, suffix), suffix, tail, A);
+				checkExtendedTail(Cons.of(A, suffix, new Datum[0]), suffix, tail, A);
+				checkExtendedTail(Cons.of(A, Z, suffix), suffix, tail, A, Z);
+				checkExtendedTail(Cons.of(A, Z, A, suffix), suffix, tail, A, Z, A);
+				checkExtendedTail(Cons.of(A, new Datum[0], suffix), suffix, tail, A);
+				checkExtendedTail(Cons.of(A, new Datum[] { Z }, suffix), suffix, tail, A, Z);
+				checkExtendedTail(Cons.of(A, new Datum[] { Z, A }, suffix), suffix, tail, A, Z, A);
+			}
+		}
+	}
+
+	@Test void testConsTailMetadataThroughRepeatedWrapping()
+	{
+		for (Datum tail : List.of(Nil.INSTANCE, Z)) {
+			for (Cons suffix : consSuffixes(tail)) {
+				ConsList inner = new ConsList(Z, new Datum[0], suffix);
+				checkExtendedTail(new ConsList(A, inner), suffix, tail, A, Z);
+				checkExtendedTail(new ConsList(new ArrayDeque<>(List.of(A)), inner),
+					suffix, tail, A, Z);
+			}
+		}
+	}
+
 	@Test void testOfListTreatsEveryArgumentAsAnElement()
 	{
 		checkSpine(Cons.ofList(A), Nil.INSTANCE, A);
