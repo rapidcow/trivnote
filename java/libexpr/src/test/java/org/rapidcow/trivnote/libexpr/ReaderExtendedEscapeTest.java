@@ -41,4 +41,27 @@ class ReaderExtendedEscapeTest
 		checkStringEscape("\\x{1f_600}", "\uD83D\uDE00");
 		checkStringEscape("\\x{-_ 4 - 1 _-}", "A");
 	}
+
+	@Test void testSpaceEscape()
+	{
+		checkStringEscape("a\\sb", "a b");
+	}
+
+	@Test void testNamedEscape()
+	{
+		checkStringEscape("\\N{LATIN SMALL LETTER A}", "a");
+		checkStringEscape("\\N{ \t latin small letter a}", "a");
+		checkStringEscape("\\N{GRINNING FACE}", "😀");
+	}
+
+	@Test void testDecimalEscape()
+	{
+		checkStringEscape("\\d65", "A");
+		checkStringEscape("\\d0659", "A9");
+		checkStringEscape("\\d6x", "\006x");
+		checkStringEscape("\\dx", "\000x");
+		checkStringEscape("\\d{65}", "A");
+		checkStringEscape("\\d{128512}", "😀");
+		checkStringEscape("\\d{1 2_8-512}", "😀");
+	}
 }

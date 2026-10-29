@@ -1010,6 +1010,37 @@ implements
 		}
 	}
 
+	/**
+	 * Reads the name in {@code \N{...}} (after the opening brace),
+	 * ignoring leading spaces and tabs, and looks it up with
+	 * {@link Character#codePointOf(String)}.
+	 */
+	private int
+	readEscapeName()
+	throws
+		IOException
+	{
+		StringBuilder name = new StringBuilder();
+		int v;
+		while (( v = readChar() ) != '}') {
+			if (v == -1) {
+				throw loadingException(
+					"Unterminated name escape");
+			}
+			if (name.length() == 0 && (v == ' ' || v == '\t')) {
+				continue;
+			}
+			name.append((char) v);
+		}
+		try {
+			return Character.codePointOf(name.toString());
+		}
+		catch (IllegalArgumentException e) {
+			throw loadingException(
+				"Unknown character name: " + name, e);
+		}
+	}
+
 	private void
 	strictAppendCodePoint(StringBuilder sb, int value)
 	{
@@ -1056,6 +1087,7 @@ implements
 		IOException
 	{
 		int w;
+		boolean curly;
 		switch (v) {
 		case 'a': sb.append('\007'); break;  /* BEL */
 		case 'b': sb.append('\010'); break;  /* BS (backspace) */
@@ -1065,6 +1097,14 @@ implements
 		case 'f': sb.append('\014'); break;  /* FF (new page) */
 		case 'r': sb.append('\015'); break;  /* CR */
 		case 'e': sb.append('\033'); break;  /* ESC */
+		case 's': sb.append(' '); break;     /* SP (like Java 15+) */
+		case 'N':
+			if (readChar() != '{') {
+				throw loadingException(
+					"Expected opening brace after name escape");
+			}
+			sb.appendCodePoint(readEscapeName());
+			break;
 		case 'c':
 			w = readChar();
 			if (w < 0 || w > 127) {
@@ -1081,13 +1121,19 @@ implements
 					"Expected opening brace "
 					+ "after octal escape");
 			}
-			boolean curly = (w == '{');
+			curly = (w == '{');
 			strictAppendCodePoint(sb, readEscapeNumber(v == 'x' ? 16 : 8,
 				curly ? 0 : 2, curly ? readChar() : w));
 			break;
 		case '0': case '1': case '2': case '3':
 		case '4': case '5': case '6': case '7':
 			strictAppendCodePoint(sb, readEscapeNumber(8, 3, v));
+			break;
+		case 'd':
+			w = readChar();
+			curly = (w == '{');
+			strictAppendCodePoint(sb, readEscapeNumber(10,
+				curly ? 0 : 3, curly ? readChar() : w));
 			break;
 		case ' ': case '\t': case '\r': case '\n':
 			/* XXX: I don't know what this case means? */
