@@ -20,6 +20,18 @@ import java.util.Objects;
  * If the list terminates with a meaningless datum
  * (i.e., nil), it is considered <em>proper</em>.
  * It is otherwise considered <em>improper</em>.
+ *
+ * <p>
+ * This is a non-sealed class so that it is
+ * possible to specialize storage backend.
+ * In return, we ask that any subclass provides
+ * the same immutable, acyclic structure as the
+ * naive implementation with {@link ConsCell}.
+ * Acyclicity is generally trivially satisfied
+ * when car and cdr are stored as final datum
+ * fields, but it is something to be look out
+ * for when car and cdr are instead dynamically
+ * generated.
  */
 public non-sealed
 abstract class
