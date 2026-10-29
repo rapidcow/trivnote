@@ -89,6 +89,48 @@ class ReaderTest
 		assertNull(loader.lastIOException());
 	}
 
+	@Test void testUnterminatedBlockComments()
+	{
+		for (String source : List.of(
+			"#|", "#| unfinished", "#| trailing #", "#| trailing |",
+			"#| outer #| inner", "#| outer #| inner |#",
+			"(#| unfinished", "#; #| unfinished")) {
+			DataLoader direct = new DataLoader(new StringReader(source));
+			DataLoadingException error = assertThrows(
+				DataLoadingException.class, direct::readDatum, source);
+			assertEquals("Unterminated block comment", error.getMessage());
+			assertEquals(0L, error.getLineOffset());
+			assertEquals((long) source.length(), error.getCharOffset());
+			DataLoader iterated = new DataLoader(new StringReader(source));
+			assertThrows(DataLoadingException.class, iterated::hasNext, source);
+			assertNull(iterated.lastIOException());
+		}
+	}
+
+	@Test void testUnterminatedBlockCommentAfterDatum()
+	{
+		DataLoader reader = new DataLoader(new StringReader("a #| outer\n#| inner |#"));
+		assertEquals(Symbol.of("a"), reader.next());
+		DataLoadingException error = assertThrows(DataLoadingException.class, reader::next);
+		assertEquals("Unterminated block comment", error.getMessage());
+		assertEquals(1L, error.getLineOffset());
+		assertEquals(11L, error.getCharOffset());
+	}
+
+	@Test void testBalancedBlockComments() throws IOException
+	{
+		for (String comment : List.of(
+			"#||#", "#| outer #| inner |# done |#",
+			"#| stray # and | characters |#", "#|#|nested|#|#")) {
+			assertNull(new DataLoader(new StringReader(comment)).readDatum());
+			DataLoader reader = new DataLoader(new StringReader(comment + "a"));
+			assertEquals(Symbol.of("a"), reader.readDatum());
+			assertNull(reader.readDatum());
+			Datum datum = new DataLoader(new StringReader("(a " + comment + "b)")).readDatum();
+			assertEquals(List.of(Symbol.of("a"), Symbol.of("b")), Datum.asProperList(datum));
+		}
+	}
+
 	@Test void testDatumComment()
 	{
 		input = new StringReader("(#;A #;(OA deg 30) 42)");

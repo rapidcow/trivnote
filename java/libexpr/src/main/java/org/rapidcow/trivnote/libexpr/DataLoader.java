@@ -826,6 +826,9 @@ implements
 				}
 			}
 		}
+		if (d > 0) {
+			throw loadingException("Unterminated block comment");
+		}
 	}
 
 	private int
