@@ -484,7 +484,7 @@ implements
 	makeList(Nil d, Deque<Datum> q, Cons p)
 	{
 		if (d.isAlternative()) {
-			throw loadingException("Vectors not implemented");
+			return ConsVector.of(q, p);
 		}
 		Datum e = p.cdr();
 		if (e instanceof Nil ee) {
