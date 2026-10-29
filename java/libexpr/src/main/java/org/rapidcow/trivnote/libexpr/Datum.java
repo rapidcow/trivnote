@@ -15,8 +15,8 @@ import java.util.Map;
 /**
  * Basic unit of an S-expression.
  * A datum is either {@link Nil}, {@link Cons}, {@link Symbol},
- * {@link BoolScalar}, {@link NumberScalar}, {@link StringScalar},
- * or {@link OctetVector}.
+ * {@link BoolScalar}, {@link CharScalar}, {@link NumberScalar},
+ * {@link StringScalar}, or {@link OctetVector}.
  *
  * <p>
  * Note that {@link Nil} is both an <q>{@linkplain #isAtom(Datum) atom}</q>
@@ -37,6 +37,7 @@ interface
 	Datum
 permits
 	BoolScalar,
+	CharScalar,
 	Cons,           /* non-sealed */
 //	DatumVector
 	Nil,
@@ -161,6 +162,22 @@ permits
 			return text;
 		}
 		throw new IllegalArgumentException("not a string");
+	}
+
+	/**
+	 * {@return the given datum as a character}
+	 *
+	 * @param node  the given datum
+	 * @throws IllegalArgumentException if not a character
+	 * @since %v
+	 */
+	public static CharScalar
+	asChar(Datum node)
+	{
+		if (node instanceof CharScalar c) {
+			return c;
+		}
+		throw new IllegalArgumentException("not a character");
 	}
 
 	/**

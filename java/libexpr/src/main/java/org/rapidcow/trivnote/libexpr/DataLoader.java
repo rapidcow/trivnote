@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -460,6 +461,19 @@ implements
 	}
 
 	/**
+	 * Hook called when a character literal has been read.
+	 *
+	 * @param codePoint  the code point
+	 * @return a character scalar by default
+	 * @since %v
+	 */
+	protected CharScalar
+	makeChar(int codePoint)
+	{
+		return CharScalar.of(codePoint);
+	}
+
+	/**
 	 * Hook called when an octet vector has been read.
 	 *
 	 * @param octets  the octets, each from 0 to 255
@@ -644,6 +658,8 @@ implements
 							);
 						}
 						continue;
+					case '\\':
+						return new Token(readCharLiteral());
 					case '"':
 						return new Token(readOctetString());
 					case 'u': case 'U':
@@ -893,6 +909,11 @@ implements
 				vec.writeBytes(inner.toByteArray());
 				continue;
 			}
+			if (o.value instanceof CharScalar c) {
+				/* Like ISO-8859-1: just the low 8 bits. */
+				vec.write(c.codePointValue() & 0xff);
+				continue;
+			}
 			if (!(o.value instanceof NumberScalar nv)) {
 				throw loadingException("Expected a number in `#u8'");
 			}
@@ -1031,6 +1052,137 @@ implements
 		}
 	}
 
+	/** R7RS character names; also aliases for {@code \N{...}}. */
+	private static final Map<String, Integer> CHAR_NAMES = Map.of(
+		"alarm", 0x07, "backspace", 0x08, "delete", 0x7f,
+		"escape", 0x1b, "newline", 0x0a, "null", 0x00,
+		"return", 0x0d, "space", 0x20, "tab", 0x09);
+
+	/**
+	 * {@return the R7RS name of a character, or null if it has none}
+	 *
+	 * @param codePoint  the character
+	 */
+	static String
+	charName(int codePoint)
+	{
+		for (Map.Entry<String, Integer> e : CHAR_NAMES.entrySet()) {
+			if (e.getValue() == codePoint) {
+				return e.getKey();
+			}
+		}
+		return null;
+	}
+
+	private static boolean
+	isDelimiter(int v)
+	{
+		return isPOSIXspace(v) || v == '(' || v == '[' || v == '{' ||
+			v == ')' || v == ']' || v == '}' ||
+			v == '"' || v == '|' || v == ';';
+	}
+
+	/**
+	 * Reads the rest of a {@code #\...} character; the cursor is
+	 * just past the backslash.  The first character is always taken
+	 * as is.  Unless it is a delimiter, the following run of plain
+	 * characters is a name ({@code #\space}), a control character
+	 * ({@code #\cJ}, {@code #\^J}), or a code point in binary,
+	 * octal, decimal or hex ({@code #\m1000001 #\o101 #\d65 #\x41}).
+	 * A lone {@code m o d x} is that letter.  The braced forms
+	 * {@code #\x{...}}, {@code #\N{...}} etc. may hold spaces and
+	 * comments, but no bundling.
+	 */
+	private CharScalar
+	readCharLiteral()
+	throws
+		IOException
+	{
+		int v = readChar();
+		if (v == -1) {
+			throw loadingException("Expected character after `#\\'");
+		}
+		if (Character.isHighSurrogate((char) v)) {
+			int w = readChar();
+			if (w != -1 && Character.isLowSurrogate((char) w)) {
+				return makeChar(Character.toCodePoint((char) v, (char) w));
+			}
+			if (w != -1) {
+				unreadChar(w);
+			}
+			return makeChar(v);
+		}
+		if (isDelimiter(v)) {
+			return makeChar(v);
+		}
+
+		StringBuilder sb = new StringBuilder().append((char) v);
+		int w = readChar();
+		if (w == '{' && "xodmN".indexOf(v) >= 0) {
+			int cp = (v == 'N') ? readEscapeName()
+				: readEscapeNumber(v == 'x' ? 16 : v == 'd' ? 10
+					: v == 'o' ? 8 : 2, 0, readChar());
+			if (!Character.isValidCodePoint(cp)) {
+				throw loadingException("Invalid code point");
+			}
+			return makeChar(cp);
+		}
+		if (w != -1) {
+			if (isDelimiter(w)) {
+				if (!isPOSIXspace(w)) {
+					unreadChar(w);
+				}
+			} else {
+				sb.append((char) w);
+				if (( w = readPlain(sb) ) != -1) {
+					unreadChar(w);
+				}
+			}
+		}
+		return makeChar(parseCharName(sb.toString()));
+	}
+
+	private int
+	parseCharName(String word)
+	{
+		if (word.codePointCount(0, word.length()) == 1) {
+			return word.codePointAt(0);
+		}
+		Integer named = CHAR_NAMES.get(word);
+		if (named != null) {
+			return named;
+		}
+		char c = word.charAt(0);
+		if ((c == 'c' || c == '^') && word.length() == 2
+			&& word.charAt(1) < 128)
+		{
+			return word.charAt(1) ^ '@';
+		}
+		int radix = (c == 'x') ? 16 : (c == 'd') ? 10
+			: (c == 'o') ? 8 : (c == 'm') ? 2 : 0;
+		if (radix != 0) {
+			int value = 0;
+			for (int i = 1; i < word.length(); i++) {
+				int digit = parseDigit(word.charAt(i), radix);
+				if (digit < 0) {
+					value = -1;
+					break;
+				}
+				if (value > (Integer.MAX_VALUE - digit) / radix) {
+					throw loadingException("Code point overflow");
+				}
+				value = value * radix + digit;
+			}
+			if (value >= 0) {
+				if (!Character.isValidCodePoint(value)) {
+					throw loadingException("Invalid code point");
+				}
+				return value;
+			}
+		}
+		throw loadingException("Unknown character name: #\\" + word);
+	}
+
 	/**
 	 * Reads the name in {@code \N{...}} (after the opening brace),
 	 * ignoring leading spaces and tabs, and looks it up with
@@ -1052,6 +1204,17 @@ implements
 				continue;
 			}
 			name.append((char) v);
+		}
+		int end = name.length();
+		while (end > 0 && (name.charAt(end - 1) == ' '
+			|| name.charAt(end - 1) == '\t'))
+		{
+			--end;
+		}
+		name.setLength(end);
+		Integer alias = CHAR_NAMES.get(name.toString().toLowerCase(Locale.ROOT));
+		if (alias != null) {
+			return alias;
 		}
 		try {
 			return Character.codePointOf(name.toString());

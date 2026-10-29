@@ -189,6 +189,10 @@ class
 			writeBool(flag.booleanValue());
 			return;
 		}
+		if (node instanceof CharScalar c) {
+			writeChar(c.codePointValue());
+			return;
+		}
 		if (node instanceof NumberScalar number) {
 			writeNumber(number);
 			return;
@@ -367,6 +371,34 @@ class
 		IOException
 	{
 		out.write(value ? "#t" : "#f");
+	}
+
+	/**
+	 * Writes a character, as {@code #\a}, {@code #\space}, or
+	 * {@code #\x41} for anything unprintable.
+	 * @param codePoint  the character to write
+	 * @throws IOException on output failure
+	 */
+	public void
+	writeChar(int codePoint)
+	throws
+		IOException
+	{
+		String name = DataLoader.charName(codePoint);
+		out.write("#\\");
+		if (name != null) {
+			out.write(name);
+		} else if ('!' <= codePoint && codePoint < '\177') {
+			out.write(codePoint);
+		} else if (unicode && !Character.isISOControl(codePoint)
+			&& !Character.isWhitespace(codePoint)
+			&& (codePoint < 0xD800 || codePoint > 0xDFFF)
+			&& Character.isDefined(codePoint))
+		{
+			out.write(Character.toString(codePoint));
+		} else {
+			out.write("x" + Integer.toHexString(codePoint));
+		}
 	}
 
 	/**
