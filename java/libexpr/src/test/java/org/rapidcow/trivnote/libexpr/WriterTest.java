@@ -427,4 +427,30 @@ class WriterTest
 		/* a nil tail of the same flavor collapses back into a vector */
 		assertEquals("#(a)", normalize("#(a . #())"));
 	}
+
+	@DisplayName("Alternative brackets and braces make vectors too")
+	@Test void testAlternativeVectors()
+	throws
+		IOException
+	{
+		assertEquals("#(a)", normalize("#[a]"));
+		assertEquals("#(a b)", normalize("#[a b]"));
+		assertEquals("#(a)", normalize("#{a}"));
+		assertEquals("#(a #(b) (c))", normalize("#{a #[b] {c}}"));
+		Datum node = new DataLoader(new StringReader("#[a b]")).readDatum();
+		assertEquals(Symbol.of("b"), new DatumVector(node).get(1));
+	}
+
+	@DisplayName("Vectors cannot have a dotted tail")
+	@Test void testVectorDottedTail()
+	{
+		for (String source : new String[] {
+			"#(a . b)", "#(a b . c)", "#[a . b]", "#{a b . c}",
+			"(#(a . b))"
+		}) {
+			assertThrows(DataLoadingException.class,
+				() -> new DataLoader(new StringReader(source)).readDatum(),
+				source);
+		}
+	}
 }
