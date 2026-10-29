@@ -29,6 +29,7 @@ Revision history of trivnote-libexpr
     * DataDumper.writeString/writeNumber/writeBool/writeSymbol
       are public, so you can write a single leaf without a Datum.
     * better Bool and Cons toString (Bool[value=true], Cons@1b2c3d).
+    *** octal escapes without curly braces are OK (unlike Perl 5.14)
 
     NEW stuff!
 
@@ -38,6 +39,7 @@ Revision history of trivnote-libexpr
       Order follows Double.compare (NaN is greatest, equal to NaN).
     * NumberScalar.tryAsInt/asIntExact (value-based; ignores exactness).
     * NumberScalar.ZERO and NumberScalar.of(int) (int-backed).
+    *** Decimal (\d###) and binary (\m########) escapes!
 
     PLANNED: DatumVector and OctetVector (new types, new syntax).
 
