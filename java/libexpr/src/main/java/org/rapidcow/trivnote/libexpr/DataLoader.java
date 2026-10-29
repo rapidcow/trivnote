@@ -22,6 +22,40 @@ import java.util.Optional;
 
 /**
  * S-expression reader.
+ *
+ * <p>Use {@link #readDatum()} for checked I/O errors, or iterate and check
+ * {@link #lastIOException()} afterward. Iteration is single-pass:
+ * {@link #iterator()} returns this loader, and {@link #hasNext()} may read
+ * ahead. Do not mix direct reads with iteration because direct reads bypass
+ * the iterator’s buffered datum. Syntax errors throw {@link DataLoadingException}.
+ *
+ * <p>The caller owns and closes the supplied stream.  This loader is
+ * not thread-safe. Nesting and list length are unlimited by default;
+ * see {@link #useDepthLimit(long)} and {@link #useLengthLimit(long)}.
+ *
+ * <p>Example (by GPT):
+ *
+ * <pre>{@code
+ * try (Reader input = new java.io.StringReader("(name \"Ada\")")) {
+ *     DataLoader loader = new DataLoader(input);
+ *     Datum datum = loader.readDatum();
+ *     java.util.List<Datum> array = Datum.asProperList(datum);
+ *     assertEquals(Symbol.of("name"), array.get(0));
+ *     assertEquals(Scalar.ofString("Ada"), array.get(1));
+ * }
+ * }</pre>
+ *
+ * Another example from me, if you wish to interpret as an alist:
+ *
+ * <pre>{@code
+ * try (Reader input = new java.io.StringReader("([name . \"Ada\"])")) {
+ *     DataLoader loader = new DataLoader(input);
+ *     Datum datum = loader.readDatum();
+ *     java.util.Map<Datum,Datum> hash = Datum.asAlist(datum);
+ *     assertEquals(Scalar.ofString("Ada"), hash.get(Symbol.of("name")));
+ *     assertNull(hash.get(Symbol.of("NAME")));
+ * }
+ * }</pre>
  */
 public
 class
