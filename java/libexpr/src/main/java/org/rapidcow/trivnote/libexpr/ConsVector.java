@@ -93,6 +93,24 @@ extends
 		return of(car, rest);
 	}
 
+	/**
+	 * Not supported, since a vector has no tail.  This hides
+	 * {@link Cons#of(Datum, Datum[], Datum)} so that it does
+	 * not make a plain cons chain by accident.  Use
+	 * {@link #of(Datum, Datum, Datum...)} instead.
+	 *
+	 * @param car  ignored
+	 * @param etc  ignored
+	 * @param tail  ignored
+	 * @return never
+	 * @throws UnsupportedOperationException always
+	 */
+	public static ConsVector
+	of(Datum car, Datum[] etc, Datum tail)
+	{
+		throw new UnsupportedOperationException("A vector has no tail");
+	}
+
 	private static ConsVector
 	of(Datum car, Datum[] etc)
 	{
