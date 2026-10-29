@@ -75,7 +75,7 @@ class ReaderDispatchTest
 			public Cons
 			makeList(Deque<Datum> q, Cons p)
 			{
-				Cons t = Cons.of(q, p);
+				Cons t = super.makeList(q, p);
 				if (Symbol.of(":ieee754").equals(t.car())) {
 					return dispatchIEEE754(t);
 				}
