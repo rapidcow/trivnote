@@ -645,7 +645,7 @@ implements
 						}
 						continue;
 					case '"':
-						return new Token(readByteString());
+						return new Token(readOctetString());
 					case 'u': case 'U':
 						return new Token(readOctets());
 					case 't': case 'f':
@@ -872,7 +872,7 @@ implements
 			d = Nil.CURLY;
 			break;
 		case '"':
-			return readByteString();
+			return readOctetString();
 		default:
 			throw loadingException(
 				"Expected opening bracket or quote after `#u8'");
@@ -1242,7 +1242,7 @@ implements
 	 * string; the cursor is just past the opening quote.
 	 */
 	private OctetVector
-	readByteString()
+	readOctetString()
 	throws
 		IOException
 	{
@@ -1264,7 +1264,7 @@ implements
 			if (( v = readChar() ) == -1) {
 				break;
 			}
-			readByteEscape(out, v);
+			readOctetEscape(out, v);
 		}
 		throw loadingException("Unterminated byte string #\"...\"");
 	}
@@ -1275,7 +1275,7 @@ implements
 	 * {@code \B{...}} is base64, and {@code \N{...}} is not allowed.
 	 */
 	private void
-	readByteEscape(ByteArrayOutputStream out, int v)
+	readOctetEscape(ByteArrayOutputStream out, int v)
 	throws
 		IOException
 	{
