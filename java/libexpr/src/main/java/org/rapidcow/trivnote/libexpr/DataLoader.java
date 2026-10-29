@@ -1445,7 +1445,8 @@ implements
 	/**
 	 * Like {@link #readEscape}, but for byte strings: numeric
 	 * escapes stand for octets (see {@link #readEscapeOctets}),
-	 * {@code \B{...}} is base64, and {@code \N{...}} is not allowed.
+	 * {@code \B{...}} is base64, and {@code \N{...}} must name
+	 * a character below 256.
 	 */
 	private void
 	readOctetEscape(ByteArrayOutputStream out, int v)
@@ -1455,8 +1456,12 @@ implements
 		int w;
 		switch (v) {
 		case 'N':
-			throw loadingException(
-				"Name escape is not allowed in byte string");
+			if (readChar() != '{') {
+				throw loadingException(
+					"Expected opening brace after name escape");
+			}
+			appendOctet(out, readEscapeName());
+			break;
 		case 'B':
 			readEscapeBase64(out);
 			break;

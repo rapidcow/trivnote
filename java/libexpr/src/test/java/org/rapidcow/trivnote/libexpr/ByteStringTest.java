@@ -98,6 +98,15 @@ class ByteStringTest
 			0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a);
 	}
 
+	@Test void testNameEscape()
+	throws
+		IOException
+	{
+		check("\\N{LATIN SMALL LETTER A}\\N{ return }\\N{null}", 97, 13, 0);
+		check("\\N{LATIN SMALL LETTER E WITH ACUTE}", 0xe9);
+		check("\\N{LATIN SMALL LETTER Y WITH DIAERESIS}", 0xff);
+	}
+
 	@Test void testBase64()
 	throws
 		IOException
@@ -113,7 +122,7 @@ class ByteStringTest
 	@Test void testInvalid()
 	{
 		for (String source : List.of(
-			"\\N{LATIN SMALL LETTER A}", "\\B", "\\B{QUJD", "\\B{Q}",
+			"\\N{GRINNING FACE}", "\\N{no such name}", "\\N", "\\N{", "\\B", "\\B{QUJD", "\\B{Q}",
 			"\\B{Q*JD}", "\\B{QQ==QQ}",
 			"\\x{100}", "\\d{256}", "\\d256", "\\o{400}", "\\m{100000000}",
 			"\\x{123}", "\\d{1234}", "\\x{41:}", "\\x{:41}", "\\x{41::42}",
