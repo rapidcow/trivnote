@@ -68,6 +68,9 @@ extends
 		this.charOffset = charOffset;
 	}
 
+	/**
+	 * {@return a diagnostic string including the one-based cursor line and column}
+	 */
 	@Override
 	public final String
 	toString()

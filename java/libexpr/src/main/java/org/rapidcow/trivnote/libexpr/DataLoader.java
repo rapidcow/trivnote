@@ -31,7 +31,12 @@ import java.util.Optional;
  *
  * <p>Caller is responsible for closing the supplied stream
  * and to not share access across multiple threads, as this
- * loader is not thread-safe.
+ * loader is not thread-safe.  Most notably, writes to the
+ * symbol cache (if one is provided) is not synchronized,
+ * so it is possible that multiple newly encountered symbols
+ * are created.  If this is a concern, use a fixed pool of
+ * symbols or provide a synchronized map like
+ * {@link java.util.concurrent.ConcurrentHashMap}.
  *
  * <p>This loader assumes trusts its input, though some
  * sane limits can be set using {@link #useDepthLimit(long)}
@@ -96,6 +101,7 @@ implements
 	 * Creates a reader from a character stream.
 	 *
 	 * @param file  input character stream
+	 * @throws NullPointerException on null {@code file}
 	 */
 	public
 	DataLoader(Reader file)
@@ -108,6 +114,8 @@ implements
 	 *
 	 * @param file    input byte stream
 	 * @param charset character encoding
+	 * @throws NullPointerException on null {@code file}
+	 *    or {@code charset}
 	 */
 	public
 	DataLoader(InputStream file, Charset charset)
@@ -120,6 +128,7 @@ implements
 	 * character encoding, {@link StandardCharsets#UTF_8}.
 	 *
 	 * @param file  input byte stream
+	 * @throws NullPointerException on null {@code file}
 	 */
 	public
 	DataLoader(InputStream file)
@@ -362,7 +371,10 @@ implements
 	/**
 	 * {@return whether no I/O error occurred, and any datum remains}
 	 * If false, caller should check {@link #lastIOException()} to
-	 * tell I/O exceptions from EOF.
+	 * tell I/O exceptions from EOF.  This function is idempotent,
+	 * so repeated calls do not affect the {@link #next()} datum.
+	 *
+	 * @throws DataLoadingException on syntax error or an exceeded limit
 	 */
 	@Override
 	public boolean
@@ -404,9 +416,9 @@ implements
 	}
 
 	/**
-	 * {@return the most recent I/O error}
-	 * Caller is responsible to check this to
-	 * tell EOF from I/O error.
+	 * {@return the I/O error since last iteration}
+	 * Set only when {@link #hasNext()} returns false
+	 * or iteration terminates abnormally.
 	 */
 	public final IOException
 	lastIOException()
@@ -416,8 +428,9 @@ implements
 
 	/**
 	 * Hook called when a symbol token has been read.
-	 * Subclasses may override this to validate or transform
-	 * symbols; throw the result of loadingException to reject one.
+	 * The default implementation returns a cached
+	 * symbol whenever possible, if the symbol cache
+	 * exists.
 	 *
 	 * @param value  the text of the symbol
 	 * @return a symbol for value, from the symbol cache if any
@@ -472,7 +485,8 @@ implements
 	 * reported from here points just after it.
 	 *
 	 * @param value  the text of the number
-	 * @return a plain scalar by default
+	 * @return a validated numeric scalar by default
+	 * @throws DataLoadingException if the number syntax is invalid
 	 * @since 0.1.0
 	 */
 	protected Scalar
@@ -487,9 +501,15 @@ implements
 
 	/**
 	 * Hook called to create a non-empty list.
+	 * The deque is constructed in FIFO order, meaning
+	 * {@link Deque#pop()} or {@link Deque#removeFirst()}
+	 * should be called to retrieve the last parsed datum.
+	 * You are allowed (and even encouraged) to drain the
+	 * deque!
 	 *
 	 * @param q  list contents
-	 * @param p  list trailer
+	 * @param p  list trailer, containing exactly the
+	 *    last element and the list terminator
 	 * @return a list
 	 * @since 0.1.0
 	 */
@@ -535,10 +555,13 @@ implements
 	}
 
 	/**
-	 * Reads and returns the next datum.
+	 * Reads and returns the next datum directly from the input.
+	 * This bypasses the iteration lookahead buffering mechanism
+	 * and carries I/O side-effects.
 	 *
 	 * @return the next datum, or {@code null} on EOF
 	 * @throws IOException on {@link Reader#read} error
+	 * @throws DataLoadingException on syntax error or an exceeded limit
 	 */
 	public Datum
 	readDatum()
