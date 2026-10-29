@@ -10,7 +10,18 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
- * Datum list iterator.
+ * Datum list iterator.  It iteratively takes the
+ * cdr and returns the car until it can’t, in which
+ * case {@link #rest()} holds the last datum it sees
+ * (otherwise known as the terminator).  Obviously
+ * not thread-safe (duh!)
+ *
+ * <p>{@code DatumWalk} is read-only too because
+ * datums are immutable.  Also since cons cells are,
+ * at the core, singly-linked lists, iterating
+ * backwards is actually seeking to the previous
+ * position from the beginning, which is incredibly
+ * inefficient&hellip; so don’t &gt;:(
  */
 public final
 class
@@ -129,7 +140,15 @@ implements
 	 */
 
 	/**
-	 * Seek to an arbitrary relative position by offset.
+	 * Seeks to a position relative to the current cursor.
+	 * An offset of zero is no-op, a positive offset calls
+	 * cdr that many times, and a negative offset effectively
+	 * un-calls cdr that many times (but you know this isn’t
+	 * magic; it actually starts from the beginning and seeks
+	 * just below its current index.  You should not call it
+	 * as it only serves to implement {@link #previous()}!)
+	 *
+	 * <p>A failed seek is guaranteed to be side-effect free.
 	 *
 	 * @param off  offset relative to the current position
 	 * @return sub-list starting at given position
@@ -188,11 +207,13 @@ implements
 	}
 
 	/**
-	 * {@return the previous datum}
+	 * {@return the previous datum}  This is equivalent
+	 * to calling {@link #seek(long)} with {@code -1L}.
 	 *
 	 * @throws NoSuchElementException on start of list
 	 * @implNote This operation is linear in the number
-	 *    of datums preceding this datum.
+	 *    of datums preceding this datum, due to the
+	 *    singly-linked nature of cons cells.
 	 */
 	@Override
 	public Datum

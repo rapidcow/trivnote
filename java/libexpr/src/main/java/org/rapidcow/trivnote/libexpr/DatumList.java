@@ -13,7 +13,20 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 /**
- * List view into a datum.
+ * List view into a datum.  Elements of a list
+ * are the cars along its cdr chain.  The final
+ * non-cons datum (known as the <em>terminator</em>)
+ * is accessible at {@link #tail()}.
+ *
+ * <p>
+ * The terminator is not considered an element
+ * of the list, so Java list operations such as
+ * equality and hash code are not affected by
+ * its value.
+ *
+ * <p>
+ * {@code DatumList} is read-only because datums
+ * are immutable.
  *
  * @since 0.1.0
  */
@@ -53,6 +66,15 @@ implements
 		}
 	}
 
+	/**
+	 * Creates a proper datum list from another list.
+	 * Note that improper lists will not round-trip,
+	 * due to the improper tail being replaced with nil.
+	 *
+	 * @param list  source elements in iteration order
+	 * @throws NullPointerException if {@code list}
+	 *    or any element is {@code null}
+	 */
 	public
 	DatumList(List<? extends Datum> list)
 	{
@@ -91,6 +113,19 @@ implements
 		return tail;
 	}
 
+	/**
+	 * Consumes a datum iterator and updates this list’s
+	 * length and terminator from its states.  It is ideal
+	 * if the iterator has been partially or fully consumed.
+	 *
+	 * <p>Of course, the iterator has to be iterating from
+	 * the same root datum as the one this list is viewing.
+	 *
+	 * @param iter  iterator
+	 * @throws NullPointerException if iter is null
+	 * @throws IllegalArgumentException if the iterator
+	 *    is iterating from a different root datum
+	 */
 	public void
 	finish(DatumWalk iter)
 	{
@@ -121,7 +156,7 @@ implements
 	 *
 	 * <p>
 	 * If you are doing this as a part of validation,
-	 * consider the stricter {@link requireProperTail}.
+	 * consider the stricter {@link #requireProperTail()}.
 	 */
 	public final boolean
 	isProperList()
@@ -184,8 +219,17 @@ implements
 		return new DatumList(new ConsList(q, new ConsTail(s)));
 	}
 
+	/**
+	 * Creates a read-only iterator positioned before the given element.
+	 *
+	 * @param index  starting position, from zero through the list size
+	 * @return a new iterator
+	 * @throws IndexOutOfBoundsException if index is outside that range
+	 * @implNote Reaching the starting position takes linear time. Backward
+	 *    iteration rescans from the head; forward iteration follows cdr links.
+	 */
 	@Override
-	public ListIterator<Datum>
+	public DatumWalk
 	listIterator(int index)
 	{
 		DatumWalk walk = new DatumWalk(head);
@@ -193,6 +237,11 @@ implements
 		return walk;
 	}
 
+	/**
+	 * {@return the element count, capped at {@link Integer#MAX_VALUE}}
+	 * The terminator is excluded.
+	 * @see #count()
+	 */
 	@Override
 	public final int
 	size()
@@ -200,6 +249,12 @@ implements
 		return (int) Math.min(count(), Integer.MAX_VALUE);
 	}
 
+	/**
+	 * {@return the element count, excluding the terminator}
+	 * The count and terminator are computed together and cached.
+	 *
+	 * @implNote The first call walks the chain unless its length is already known.
+	 */
 	public final long
 	count()
 	{
@@ -209,6 +264,10 @@ implements
 		return size;
 	}
 
+	/**
+	 * {@return whether the source has no cons cells}
+	 * Both nil and a non-nil atom yield an empty view.
+	 */
 	@Override
 	public final boolean
 	isEmpty()
