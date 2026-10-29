@@ -1295,7 +1295,7 @@ implements
 				readEscapeOctets(out, radix);
 			} else {
 				appendOctet(out, readEscapeNumber(radix,
-					(v == 'd') ? 3 : (v == 'm') ? 8 : 2, w));
+					(v == 'x') ? 2 : (v == 'm') ? 8 : 3, w));
 			}
 			break;
 		case '0': case '1': case '2': case '3':
@@ -1362,7 +1362,7 @@ implements
 			w = readChar();
 			curly = (w == '{');
 			strictAppendCodePoint(sb, readEscapeNumber(v == 'x' ? 16 : 8,
-				curly ? 0 : 2, curly ? readChar() : w));
+				curly ? 0 : (v == 'x' ? 2 : 3), curly ? readChar() : w));
 			break;
 		case '0': case '1': case '2': case '3':
 		case '4': case '5': case '6': case '7':

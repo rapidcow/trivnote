@@ -79,4 +79,10 @@ class ReaderExtendedEscapeTest
 	{
 		checkStringEscape("\\^A\\^[\\^?", "\001\033\177");
 	}
+
+	@Test void testUnbracedOctalEscape()
+	{
+		checkStringEscape("\\o1011", "A1");
+		checkStringEscape("\\o41z", "!z");
+	}
 }

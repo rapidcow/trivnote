@@ -67,6 +67,7 @@ class ByteStringTest
 		check("\\x41\\x4g\\xe9", 65, 4, 'g', 0xe9);
 		check("\\101\\0\\377", 65, 0, 255);
 		check("\\o41", 33);
+		check("\\o1011", 65, '1');
 		check("\\d065\\d9z", 65, 9, 'z');
 		check("\\m01000001\\m1", 65, 1);
 	}
