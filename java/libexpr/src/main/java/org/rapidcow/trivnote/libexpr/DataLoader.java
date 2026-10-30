@@ -557,8 +557,16 @@ implements
 
 	/**
 	 * Reads and returns the next datum directly from the input.
-	 * This bypasses the iteration lookahead buffering mechanism
-	 * and carries I/O side-effects.
+	 * Caller must handle I/O side-effects.
+	 *
+	 * <p>
+	 * <b>Caveat!</b>
+	 * This is a direct read and does not attempt to
+	 * coordinate with the iterator interface.
+	 * If {@link #hasNext()} has already consumed a
+	 * datum (i.e., returns {@code true}), you must
+	 * drain it with {@link #next()} as you will not
+	 * get it again here.
 	 *
 	 * @return the next datum, or {@code null} on EOF
 	 * @throws IOException on {@link Reader#read} error
