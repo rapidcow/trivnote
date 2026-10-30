@@ -147,6 +147,8 @@ class NumberParser
 		, Pattern.CASE_INSENSITIVE | Pattern.COMMENTS
 	);
 
+	/* -Xlint:fallthrough seems unconvinced by our comments alone. */
+	@SuppressWarnings("fallthrough")
 	public NumberParser(String value)
 	{
 		Exactness exact = Exactness.UNSPECIFIED;
