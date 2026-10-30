@@ -11,6 +11,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 /**
  * List view into a datum.  Elements of a list
@@ -55,11 +56,12 @@ implements
 	 * valid, though possibly improper lists.
 	 *
 	 * @param list  source datum
+	 * @throws NullPointerException on null {@code list}
 	 */
 	public
 	DatumList(Datum list)
 	{
-		head = list;
+		head = Objects.requireNonNull(list);
 		if (list instanceof ConsList cell) {
 			size = cell.count();
 			tail = cell.tail();
