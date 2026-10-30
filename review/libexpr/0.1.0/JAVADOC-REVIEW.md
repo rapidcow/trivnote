@@ -1,5 +1,20 @@
 # Findings for 0.2.0
 
+## Document status
+
+Rechecked against `efb4665` on 2026-10-29. No outstanding bugs remain from the original findings.
+
+- **Cons-valued tails:** fixed in `2bbbb8d`; constructor/factory regression tests cover cached and ordinary tails, proper and improper lists, and repeated wrapping.
+- **Unterminated block comments:** fixed in `8ec8668`; regression tests cover incomplete and nested comments, iteration, and error positions.
+- **Null predicates:** fixed in `5e6e2ef`. `Datum.isAtom(null)` and `Datum.isList(null)` now throw `NullPointerException` immediately.
+- **Null list source:** fixed in `7678e8d`. `new DatumList((Datum) null)` now throws `NullPointerException` at construction.
+- **Direct reads and iterator lookahead:** intentional, documented behavior; not a defect.
+- **DataDumper:** planned for 0.2.0; not an outstanding defect for this release.
+
+Validation: reran the full library test suite and Javadoc generation successfully, without warnings. Also ran a standalone check confirming immediate rejection of all three null inputs above. This closes the original findings; it is not an exhaustive audit of the library.
+
+## Preamble
+
 Found while completing the public/protected API Javadocs. No runtime behavior was changed. The examples below were checked against the compiled library; the existing 181 tests pass.
 
 ## Cons-valued tails invalidate cached list metadata
