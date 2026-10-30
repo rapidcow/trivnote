@@ -71,7 +71,7 @@ class NumberParserTest
 		for (String token : new String[] {
 			"+nan.0", "-nan.0", "+inf.0", "-inf.0",
 			"#i+NaN.0", "#D#I-INF.0", "+0.0", "-0.0"}) {
-			NumberScalar n = (NumberScalar) Scalar.ofNumber(token);
+			NumberScalar n = Scalar.ofNumber(token);
 			assertEquals(token, n.value());
 			assertEquals("", n.exponent());
 		}
