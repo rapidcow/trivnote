@@ -1,4 +1,4 @@
-# Findings for 0.2.0
+# Findings for 0.1.0
 
 ## Document status
 
