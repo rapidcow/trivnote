@@ -11,6 +11,7 @@ package org.rapidcow.trivnote.libexpr;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Basic unit of an S-expression.
@@ -81,10 +82,12 @@ permits
 	 * class: namely, nil is an atom devoid of value.
 	 *
 	 * @param node  the datum
+	 * @throws NullPointerException on null {@code node}
 	 */
 	public static boolean
 	isAtom(Datum node)
 	{
+		Objects.requireNonNull(node);
 		return !(node instanceof Cons);
 	}
 
@@ -102,10 +105,12 @@ permits
 	 * #asProperList(Datum)} if you need to access its elements.
 	 *
 	 * @param node  the datum
+	 * @throws NullPointerException on null {@code node}
 	 */
 	public static boolean
 	isList(Datum node)
 	{
+		Objects.requireNonNull(node);
 		return !(node instanceof Atom);
 	}
 
