@@ -1,7 +1,7 @@
 Revision history of trivnote-libexpr
 
 
-0.1.0
+0.1.0  2026-10-30  RC
     *** DataLoader.ParseException renamed to DataLoadingException
     *** DataLoader.eio() renamed to DataLoader.lastIOException()
     *** Walk renamed to DatumWalk (wherein tail renamed to rest)
