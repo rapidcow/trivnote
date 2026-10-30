@@ -6,6 +6,7 @@
 package org.rapidcow.trivnote.libexpr;
 
 /* This file is GENERATED.  See src/skel/java for original */
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -253,11 +254,17 @@ class NumberParser
 
 		value = value.substring(i);
 
+		/*
+		 * Not equalsIgnoreCase: that applies Unicode case
+		 * rules and would accept e.g. a dotless i.  ROOT
+		 * keeps this independent of the default locale.
+		 */
+		String folded = value.toLowerCase(Locale.ROOT);
 		if (
-			value.equalsIgnoreCase("+inf.0") ||
-			value.equalsIgnoreCase("-inf.0") ||
-			value.equalsIgnoreCase("+nan.0") ||
-			value.equalsIgnoreCase("-nan.0"))
+			folded.equals("+inf.0") ||
+			folded.equals("-inf.0") ||
+			folded.equals("+nan.0") ||
+			folded.equals("-nan.0"))
 		{
 			this.sign = value.substring(0, 1);
 			this.mantissa = value.substring(1);

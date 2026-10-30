@@ -60,7 +60,8 @@ class NumberParserTest
 		for (String token : new String[] {
 			"", "#", "#x", "#e", "#q1", "#e#i1", "#x#d1",
 			"#b2", "#o8", "abc1", "1abc", "1/", "1/2junk",
-			"1e", "1e+", "1.2.3", " 1", "1 ", "+nan.0junk"}) {
+			"1e", "1e+", "1.2.3", " 1", "1 ", "+nan.0junk",
+			"+\u0131nf.0", "+\u0130nf.0", "-nan.0\u0130"}) {
 			assertThrows(IllegalArgumentException.class, () -> Scalar.ofNumber(token), token);
 		}
 	}
