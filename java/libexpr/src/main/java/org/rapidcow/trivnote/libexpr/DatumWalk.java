@@ -191,7 +191,7 @@ implements
 				++pos;
 			} else {
 				/* Compute what the absolute index would have been. */
-				long effIndex = (long) (pos - i) + off;
+				long effIndex = (pos - i) + off;
 				throw new IndexOutOfBoundsException(
 					"Effective index " + effIndex + " out of "
 					+ "bounds for length " + pos
